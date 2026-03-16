@@ -38,10 +38,7 @@ class LiveMapWidget extends StatelessWidget {
       ),
       children: [
         TileLayer(
-          urlTemplate: isDark
-              ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-              : 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-          subdomains: isDark ? const ['a', 'b', 'c', 'd'] : const [],
+          urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
           userAgentPackageName: 'com.kubochain.app',
         ),
         if (routePoints.length > 1)

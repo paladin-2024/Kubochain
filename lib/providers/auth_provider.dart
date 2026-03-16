@@ -141,6 +141,48 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  Future<bool> updateProfile({
+    required String firstName,
+    required String lastName,
+    required String email,
+    required String phone,
+  }) async {
+    try {
+      final res = await ApiService.updateProfile({
+        'firstName': firstName,
+        'lastName': lastName,
+        'email': email,
+        'phone': phone,
+      });
+      _user = _user?.copyWith(
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        phone: phone,
+      );
+      if (_user != null) {
+        await StorageService.saveUser(jsonEncode(_user!.toJson()));
+      }
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _error = _parseError(e);
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<bool> updateVehicle(Map<String, String> vehicle) async {
+    try {
+      await ApiService.updateVehicle(vehicle);
+      return true;
+    } catch (e) {
+      _error = _parseError(e);
+      notifyListeners();
+      return false;
+    }
+  }
+
   void clearError() {
     _error = null;
     notifyListeners();

@@ -191,3 +191,24 @@ exports.getEarnings = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+exports.updateVehicle = async (req, res) => {
+  try {
+    const { vehicleMake, vehicleModel, vehiclePlate, vehicleColor, vehicleType } = req.body;
+    const pool = require('../config/db').pool;
+    await pool.query(
+      `UPDATE drivers SET
+        vehicle_make = COALESCE($1, vehicle_make),
+        vehicle_model = COALESCE($2, vehicle_model),
+        vehicle_plate = COALESCE($3, vehicle_plate),
+        vehicle_color = COALESCE($4, vehicle_color),
+        vehicle_type = COALESCE($5, vehicle_type)
+       WHERE user_id = $6`,
+      [vehicleMake, vehicleModel, vehiclePlate, vehicleColor, vehicleType, req.user.id]
+    );
+    res.json({ message: 'Vehicle updated' });
+  } catch (err) {
+    console.error('updateVehicle error:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+};

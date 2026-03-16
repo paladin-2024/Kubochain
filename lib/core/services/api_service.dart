@@ -75,6 +75,9 @@ class ApiService {
   static Future<Response> updateProfile(Map<String, dynamic> data) =>
       _dio.put('/auth/profile', data: data);
 
+  static Future<Response> updateVehicle(Map<String, String> data) =>
+      _dio.put('/driver/vehicle', data: data);
+
   // Rides
   static Future<Response> createRide(Map<String, dynamic> data) =>
       _dio.post('/rides', data: data);
