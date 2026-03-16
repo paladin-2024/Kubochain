@@ -469,7 +469,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     options: MapOptions(initialCenter: center, initialZoom: 14.5),
                     children: [
                       TileLayer(
-                        urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                        urlTemplate: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+                        subdomains: const ['a', 'b', 'c', 'd'],
                         userAgentPackageName: 'com.kubochain.app',
                       ),
                       if (loc.currentLocation != null)

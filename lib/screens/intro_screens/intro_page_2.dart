@@ -13,6 +13,9 @@ class IntroPage2 extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              // KuboChain logo
+              Image.asset('assets/logo-light.png', height: 48, fit: BoxFit.contain),
+              const SizedBox(height: 16),
               // Image above the text
               Image.asset(
                 'assets/onboarding2.png', // Replace with your actual image path

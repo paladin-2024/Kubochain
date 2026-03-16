@@ -113,6 +113,15 @@ class _SignUpPageState extends State<SignUpPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                const SizedBox(height: 8),
+                Center(
+                  child: Image.asset(
+                    'assets/logo-light.png',
+                    height: 90,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+                const SizedBox(height: 24),
                 Text(
                   'Join KuboChain',
                   style: Theme.of(context).textTheme.headlineLarge,

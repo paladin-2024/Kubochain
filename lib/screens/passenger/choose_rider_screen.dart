@@ -126,8 +126,8 @@ class _ChooseRiderScreenState extends State<ChooseRiderScreen> {
                   ),
                   children: [
                     TileLayer(
-                      urlTemplate:
-                          'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                      urlTemplate: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+                      subdomains: const ['a', 'b', 'c', 'd'],
                       userAgentPackageName: 'com.kubochain.app',
                     ),
                     if (widget.routePoints.length > 1)
