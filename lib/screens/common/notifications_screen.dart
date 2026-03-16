@@ -14,6 +14,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   void initState() {
     super.initState();
     NotificationService.addListener(_onNotificationsChanged);
+    // Mark all as read when this screen opens
+    WidgetsBinding.instance.addPostFrameCallback(
+        (_) => NotificationService.markAllRead());
   }
 
   void _onNotificationsChanged() {

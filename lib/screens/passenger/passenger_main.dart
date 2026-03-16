@@ -5,7 +5,6 @@ import 'home_screen.dart';
 import 'bookings_screen.dart';
 import 'profile_screen.dart';
 import '../common/chat_list_screen.dart';
-import '../common/notifications_screen.dart';
 
 class PassengerMain extends StatefulWidget {
   const PassengerMain({super.key});
@@ -25,7 +24,6 @@ class _PassengerMainState extends State<PassengerMain>
     HomeScreen(),
     BookingsScreen(),
     ChatListScreen(),
-    NotificationsScreen(),
     PassengerProfileScreen(),
   ];
 
@@ -33,7 +31,6 @@ class _PassengerMainState extends State<PassengerMain>
     _NavItem(icon: Icons.home_rounded,           outlineIcon: Icons.home_outlined,               label: 'Home'),
     _NavItem(icon: Icons.receipt_long_rounded,    outlineIcon: Icons.receipt_long_outlined,        label: 'Trips'),
     _NavItem(icon: Icons.chat_bubble_rounded,     outlineIcon: Icons.chat_bubble_outline_rounded,  label: 'Chat'),
-    _NavItem(icon: Icons.notifications_rounded,   outlineIcon: Icons.notifications_outlined,       label: 'Alerts'),
     _NavItem(icon: Icons.person_rounded,          outlineIcon: Icons.person_outline_rounded,       label: 'Profile'),
   ];
 

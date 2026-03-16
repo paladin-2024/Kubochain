@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/services/notification_service.dart';
 import 'rider_home_screen.dart';
 import 'earnings_screen.dart';
 import 'rider_profile_screen.dart';
@@ -17,6 +18,7 @@ class RiderMain extends StatefulWidget {
 class _RiderMainState extends State<RiderMain> with TickerProviderStateMixin {
   int _currentIndex = 0;
   late AnimationController _indicatorController;
+  int _unreadCount = 0;
 
   final List<Widget> _pages = const [
     RiderHomeScreen(),
@@ -34,6 +36,9 @@ class _RiderMainState extends State<RiderMain> with TickerProviderStateMixin {
     _NavItem(icon: Icons.person_rounded,                 outlineIcon: Icons.person_outline_rounded,             label: 'Profile'),
   ];
 
+  // Index of the Alerts tab
+  static const int _notifIndex = 3;
+
   @override
   void initState() {
     super.initState();
@@ -45,10 +50,18 @@ class _RiderMainState extends State<RiderMain> with TickerProviderStateMixin {
       systemNavigationBarColor: Color(0xFF0D1525),
       systemNavigationBarIconBrightness: Brightness.light,
     ));
+
+    _unreadCount = NotificationService.unreadCount;
+    NotificationService.addListener(_onNotifChanged);
+  }
+
+  void _onNotifChanged() {
+    if (mounted) setState(() => _unreadCount = NotificationService.unreadCount);
   }
 
   @override
   void dispose() {
+    NotificationService.removeListener(_onNotifChanged);
     _indicatorController.dispose();
     super.dispose();
   }
@@ -58,6 +71,11 @@ class _RiderMainState extends State<RiderMain> with TickerProviderStateMixin {
     HapticFeedback.lightImpact();
     setState(() => _currentIndex = index);
     _indicatorController.forward(from: 0);
+
+    // Mark all read when rider opens the Alerts tab
+    if (index == _notifIndex) {
+      NotificationService.markAllRead();
+    }
   }
 
   @override
@@ -71,6 +89,8 @@ class _RiderMainState extends State<RiderMain> with TickerProviderStateMixin {
         items: _navItems,
         onTap: _onTap,
         accentColor: AppColors.success,
+        unreadCount: _unreadCount,
+        notifIndex: _notifIndex,
       ),
     );
   }
@@ -82,12 +102,16 @@ class _FloatingNavBar extends StatelessWidget {
   final List<_NavItem> items;
   final ValueChanged<int> onTap;
   final Color accentColor;
+  final int unreadCount;
+  final int notifIndex;
 
   const _FloatingNavBar({
     required this.currentIndex,
     required this.items,
     required this.onTap,
     this.accentColor = AppColors.primary,
+    this.unreadCount = 0,
+    this.notifIndex = -1,
   });
 
   @override
@@ -114,6 +138,7 @@ class _FloatingNavBar extends StatelessWidget {
         child: Row(
           children: List.generate(items.length, (i) {
             final active = i == currentIndex;
+            final hasUnread = i == notifIndex && unreadCount > 0;
             return Expanded(
               child: GestureDetector(
                 behavior: HitTestBehavior.opaque,
@@ -136,27 +161,41 @@ class _FloatingNavBar extends StatelessWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 200),
-                        child: Icon(
-                          active ? items[i].icon : items[i].outlineIcon,
-                          key: ValueKey(active),
-                          size: 22,
-                          color: active
-                              ? accentColor
-                              : AppColors.textSecondary,
-                        ),
+                      Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 200),
+                            child: Icon(
+                              active ? items[i].icon : items[i].outlineIcon,
+                              key: ValueKey(active),
+                              size: 22,
+                              color: active ? accentColor : AppColors.textSecondary,
+                            ),
+                          ),
+                          // Unread dot
+                          if (hasUnread)
+                            Positioned(
+                              top: -3,
+                              right: -3,
+                              child: Container(
+                                width: 8,
+                                height: 8,
+                                decoration: const BoxDecoration(
+                                  color: AppColors.error,
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
                       const SizedBox(height: 4),
                       AnimatedDefaultTextStyle(
                         duration: const Duration(milliseconds: 200),
                         style: TextStyle(
                           fontSize: 10,
-                          fontWeight:
-                              active ? FontWeight.w700 : FontWeight.w400,
-                          color: active
-                              ? accentColor
-                              : AppColors.textSecondary,
+                          fontWeight: active ? FontWeight.w700 : FontWeight.w400,
+                          color: active ? accentColor : AppColors.textSecondary,
                           letterSpacing: active ? 0.3 : 0,
                         ),
                         child: Text(items[i].label),
@@ -177,8 +216,5 @@ class _NavItem {
   final IconData icon;
   final IconData outlineIcon;
   final String label;
-  const _NavItem(
-      {required this.icon,
-      required this.outlineIcon,
-      required this.label});
+  const _NavItem({required this.icon, required this.outlineIcon, required this.label});
 }

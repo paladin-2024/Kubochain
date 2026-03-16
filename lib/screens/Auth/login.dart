@@ -66,14 +66,10 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 20),
                 // Logo
                 Center(
-                  child: Container(
-                    width: 64,
-                    height: 64,
-                    decoration: BoxDecoration(
-                      color: AppColors.primary,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: const Icon(Icons.directions_bike, color: Colors.white, size: 36),
+                  child: Image.asset(
+                    'assets/logo.png',
+                    height: 90,
+                    fit: BoxFit.contain,
                   ),
                 ),
                 const SizedBox(height: 32),
