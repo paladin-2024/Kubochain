@@ -53,16 +53,12 @@ export default function Sidebar() {
       {/* Logo */}
       <div className={cn(
         'flex items-center border-b border-dark-border flex-shrink-0',
-        collapsed ? 'justify-center p-4' : 'gap-3 px-5 py-5'
+        collapsed ? 'justify-center p-4' : 'px-4 py-4'
       )}>
-        <div className="w-9 h-9 bg-primary rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-primary/20">
-          <span className="text-white text-base font-black tracking-tight">K</span>
-        </div>
-        {!collapsed && (
-          <div className="overflow-hidden">
-            <div className="font-bold text-white text-base leading-tight">KuboChain</div>
-            <div className="text-[10px] text-gray-500 font-medium">Admin Dashboard</div>
-          </div>
+        {collapsed ? (
+          <img src="/logo.png" alt="KuboChain" className="w-9 h-9 object-contain" />
+        ) : (
+          <img src="/logo.png" alt="KuboChain" className="h-10 object-contain" />
         )}
       </div>
 
