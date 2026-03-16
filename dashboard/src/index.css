@@ -1,0 +1,31 @@
+@import 'leaflet/dist/leaflet.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  font-family: 'Poppins', sans-serif;
+}
+
+body {
+  @apply bg-dark-bg text-white;
+  margin: 0;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { @apply bg-dark-bg; }
+::-webkit-scrollbar-thumb { @apply bg-dark-border rounded-full; }
+::-webkit-scrollbar-thumb:hover { @apply bg-primary; }
+
+/* Leaflet map dark overlay */
+.leaflet-tile-pane { filter: brightness(0.7) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7); }
+
+/* Status badges */
+.badge-pending   { @apply bg-warning/10 text-warning border border-warning/20; }
+.badge-accepted  { @apply bg-primary/10 text-primary border border-primary/20; }
+.badge-arriving  { @apply bg-orange/10 text-orange border border-orange/20; }
+.badge-in_progress { @apply bg-success/10 text-success border border-success/20; }
+.badge-completed { @apply bg-success/10 text-success border border-success/20; }
+.badge-cancelled { @apply bg-danger/10 text-danger border border-danger/20; }
