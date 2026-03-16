@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:kubochain/screens/Auth/login.dart';
+import '../core/constants/app_colors.dart';
+import 'Auth/login.dart';
 import 'Auth/signup.dart';
 
 class OnBoardingPage extends StatelessWidget {
@@ -8,188 +9,104 @@ class OnBoardingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Set transparent status bar
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.light, // Adjust based on your image
+      statusBarIconBrightness: Brightness.light,
     ));
 
     return Scaffold(
       backgroundColor: Colors.white,
       body: AnnotatedRegion<SystemUiOverlayStyle>(
-        value: SystemUiOverlayStyle.light, // Use light for dark status bar icons
+        value: SystemUiOverlayStyle.light,
         child: Column(
           children: [
-            // Image covering entire top including status bar area
-            Container(
+            // Hero image
+            SizedBox(
               width: double.infinity,
-              height: MediaQuery.of(context).size.height * 0.6 + MediaQuery.of(context).padding.top,
-              child: Image.asset(
-                'assets/bg-1.png',
-                fit: BoxFit.cover,
-              ),
+              height: MediaQuery.of(context).size.height * 0.6 +
+                  MediaQuery.of(context).padding.top,
+              child: Image.asset('assets/bg-1.png', fit: BoxFit.cover),
             ),
 
-            // Content area
+            // Content
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.all(30.0),
+                padding: const EdgeInsets.fromLTRB(28, 24, 28, 32),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    // Title and subtitle
-                    const Column(
+                    // Title
+                    Column(
                       children: [
-                        Text(
-                          'Let\'s get started',
+                        const Text(
+                          "Let's get started",
                           style: TextStyle(
-                            fontSize: 30,
+                            fontSize: 28,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black,
+                            color: AppColors.textPrimary,
                           ),
                         ),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 8),
                         Text(
-                          'Sign up or log in to find out the best \n boda for you',
+                          'Sign up or log in to find the best\nboda for you',
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.grey,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.grey.shade600,
                           ),
                         ),
                       ],
                     ),
 
-                    // Buttons with "or" separator
+                    // Buttons
                     Column(
                       children: [
-                        // Sign Up Button
+                        // Sign Up
                         SizedBox(
                           width: double.infinity,
+                          height: 54,
                           child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.push(context, MaterialPageRoute(builder: (context){
-                                return SignUpPage();
-                              }));
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue,
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(100),
-                              ),
+                            onPressed: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => const SignUpPage()),
                             ),
                             child: const Text(
-                              'Sign Up',
-                              style: TextStyle(
-                                fontSize: 20,
-                                color: Colors.white,
-                                fontWeight: FontWeight.w500,
-                              ),
+                              'Create Account',
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                             ),
                           ),
                         ),
-
                         const SizedBox(height: 12),
 
-                        // "or" separator with continuous lines
+                        // Divider
                         Row(
                           children: [
-                            Expanded(
-                              child: Divider(
-                                color: Colors.grey[300],
-                                thickness: 1,
-                              ),
-                            ),
+                            Expanded(child: Divider(color: Colors.grey.shade300)),
                             Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 16),
                               child: Text(
-                                'Or',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.w500,
-                                ),
+                                'or',
+                                style: TextStyle(color: Colors.grey.shade500, fontSize: 14),
                               ),
                             ),
-                            Expanded(
-                              child: Divider(
-                                color: Colors.grey[300],
-                                thickness: 1,
-                              ),
-                            ),
+                            Expanded(child: Divider(color: Colors.grey.shade300)),
                           ],
                         ),
-
                         const SizedBox(height: 12),
 
-                        // Login with Google Button
-                        /*
-                          SizedBox(
-                            width: double.infinity,
-                            child: OutlinedButton(
-                              onPressed: () {
-
-                              },
-                              style: OutlinedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(vertical: 16),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(100),
-                                ),
-                                side: const BorderSide(color: Colors.grey),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  // Your custom Google icon from assets
-                                  Image.asset(
-                                    'assets/google.png', // Replace with your actual Google icon path
-                                    width: 22,
-                                    height: 22,
-                                    fit: BoxFit.contain,
-                                  ),
-                                  const SizedBox(width: 10),
-                                  const Text(
-                                    'Login with Google',
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                        // Log In outlined
+                        SizedBox(
+                          width: double.infinity,
+                          height: 54,
+                          child: OutlinedButton(
+                            onPressed: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => const LoginPage()),
                             ),
-                          ),
-                          */
-                      ],
-                    ),
-
-                    // Already have account section
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text(
-                          'Already have an account? ',
-                          style: TextStyle(
-                            fontSize: 19,
-                            color: Colors.grey,
-                            fontWeight: FontWeight.w500
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context){
-                              return LoginPage();
-                            }));
-                          },
-                          child: const Text(
-                            'Log In',
-                            style: TextStyle(
-                              fontSize: 19,
-                              color: Colors.blue,
-                              fontWeight: FontWeight.w500,
+                            child: const Text(
+                              'Log In',
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                             ),
                           ),
                         ),

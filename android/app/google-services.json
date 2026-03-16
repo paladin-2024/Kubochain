@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "816842634570",
+    "project_id": "kubochain",
+    "storage_bucket": "kubochain.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:816842634570:android:5084a6c3a781910bd9fdb3",
+        "android_client_info": {
+          "package_name": "com.example.kubochain"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCbFp7RgZHt5aw1SBH2PH28JIBcF_4LH6c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

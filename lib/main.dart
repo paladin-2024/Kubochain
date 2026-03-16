@@ -1,69 +1,62 @@
 import 'package:flutter/material.dart';
-import 'package:kubochain/screens/splash_screen.dart';
-void main() {
-  runApp(const MyApp());
-}
+import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+import 'core/routes/app_routes.dart';
+import 'core/services/api_service.dart';
+import 'core/services/notification_service.dart';
+import 'core/services/storage_service.dart';
+import 'core/theme/app_theme.dart';
+import 'providers/auth_provider.dart';
+import 'providers/ride_provider.dart';
+import 'providers/location_provider.dart';
+import 'providers/driver_provider.dart';
+import 'screens/splash_screen.dart';
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+// Firebase — only imported when configured
+import 'package:firebase_core/firebase_core.dart';
 
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: const SplashScreen(),
-    );
-  }
-}
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await StorageService.init();
+  ApiService.init();
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
+  // Initialize Firebase (requires google-services.json)
+  try {
+    await Firebase.initializeApp();
+  } catch (_) {
+    // Firebase not configured yet — push notifications will be unavailable
   }
 
+  await NotificationService.init();
+
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent,
+    statusBarIconBrightness: Brightness.dark,
+  ));
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+
+  runApp(const KuboChainApp());
+}
+
+class KuboChainApp extends StatelessWidget {
+  const KuboChainApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => RideProvider()),
+        ChangeNotifierProvider(create: (_) => LocationProvider()),
+        ChangeNotifierProvider(create: (_) => DriverProvider()),
+      ],
+      child: MaterialApp(
+        title: 'KuboChain',
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.lightTheme,
+        initialRoute: AppRoutes.splash,
+        onGenerateRoute: AppRoutes.generateRoute,
+        home: const SplashScreen(),
       ),
     );
   }
