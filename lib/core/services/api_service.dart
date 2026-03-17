@@ -3,7 +3,7 @@ import 'storage_service.dart';
 
 class ApiService {
   // Emulator: 10.0.2.2 | Physical device: your machine's LAN IP (run `ip a` or `ifconfig`)
-  static const String _host = 'http://192.168.1.10:5000';
+  static const String _host = 'http://172.20.10.5:5000';
   static const String baseUrl = '$_host/api';
 
   /// Use this to build image URLs: ApiService.imageUrl('/uploads/profile_xxx.jpg')
