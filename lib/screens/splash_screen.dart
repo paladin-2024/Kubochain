@@ -236,7 +236,7 @@ class _SplashScreenState extends State<SplashScreen>
             child: FadeTransition(
               opacity: _textFade,
               child: Text(
-                'Rwanda · Safe · Fast · Trusted',
+                'Goma · Safe · Fast · Trusted',
                 textAlign: TextAlign.center,
                 style: GoogleFonts.sora(
                   color: AppColors.textMuted,
@@ -257,28 +257,26 @@ class _LogoMark extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 100,
-      height: 100,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(32),
-        gradient: AppColors.primaryGradient,
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.5),
+            color: AppColors.primary.withOpacity(0.4),
             blurRadius: 40,
             spreadRadius: 0,
           ),
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.2),
+            color: AppColors.primary.withOpacity(0.15),
             blurRadius: 80,
             spreadRadius: 10,
           ),
         ],
       ),
-      child: const Icon(
-        Icons.directions_bike_rounded,
-        color: Colors.white,
-        size: 52,
+      child: Image.asset(
+        'assets/logo.png',
+        width: 120,
+        height: 120,
+        fit: BoxFit.contain,
       ),
     );
   }
