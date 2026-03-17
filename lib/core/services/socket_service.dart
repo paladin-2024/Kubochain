@@ -2,7 +2,7 @@ import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'storage_service.dart';
 
 class SocketService {
-  static const String socketUrl = 'http://172.20.10.5:5000';
+  static const String socketUrl = 'https://kubochain-backend.onrender.com';
 
   static IO.Socket? _socket;
   static IO.Socket? get socket => _socket;
