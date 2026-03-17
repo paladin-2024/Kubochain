@@ -409,6 +409,60 @@ class _DriverArrivingScreenState extends State<DriverArrivingScreen>
                         ),
                         const SizedBox(height: 12),
 
+                        // Cancel trip button
+                        GestureDetector(
+                          onTap: () async {
+                            final confirm = await showDialog<bool>(
+                              context: context,
+                              builder: (_) => AlertDialog(
+                                backgroundColor: AppColors.cardDark,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                                title: const Text('Cancel Trip?',
+                                    style: TextStyle(color: AppColors.textOnDark, fontWeight: FontWeight.bold)),
+                                content: const Text('Are you sure you want to cancel? Your driver is already on the way.',
+                                    style: TextStyle(color: AppColors.textSecondary)),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(_, false),
+                                    child: const Text('No, keep it', style: TextStyle(color: AppColors.primary)),
+                                  ),
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(_, true),
+                                    child: const Text('Yes, cancel', style: TextStyle(color: AppColors.error)),
+                                  ),
+                                ],
+                              ),
+                            );
+                            if (confirm == true && mounted) {
+                              await context.read<RideProvider>().cancelRide('Cancelled by passenger');
+                              if (mounted) Navigator.of(context).popUntil((r) => r.isFirst);
+                            }
+                          },
+                          child: Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            decoration: BoxDecoration(
+                              color: AppColors.error.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(color: AppColors.error.withOpacity(0.4)),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(Icons.cancel_outlined, color: AppColors.error, size: 18),
+                                const SizedBox(width: 8),
+                                Text('Cancel Trip',
+                                    style: GoogleFonts.sora(
+                                      color: AppColors.error,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 15,
+                                    )),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+
                         // Start Messaging CTA
                         if (driver != null && currentRide != null)
                           GestureDetector(

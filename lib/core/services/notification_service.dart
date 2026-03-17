@@ -64,6 +64,9 @@ class NotificationService {
 
   // Pending data from a notification tap (consumed by screens on init)
   static Map<String, dynamic>? _pendingData;
+  static void storePendingNotification(Map<String, dynamic> data) {
+    _pendingData = data;
+  }
   static Map<String, dynamic>? consumePendingNotification() {
     final data = _pendingData;
     _pendingData = null;

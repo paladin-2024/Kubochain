@@ -94,6 +94,21 @@ class DriverProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Called when rider taps a FCM notification to load the ride from the API
+  Future<void> loadRideFromNotification(String rideId) async {
+    try {
+      final res = await ApiService.getRide(rideId);
+      final ride = RideModel.fromJson(res.data['ride']);
+      // Only show if ride is still pending
+      if (ride.status == 'pending') {
+        _pendingRequest = ride;
+        notifyListeners();
+      }
+    } catch (_) {
+      // Ride may already be taken — silently ignore
+    }
+  }
+
   Future<void> notifyArrived() async {
     if (_activeRide == null) return;
     SocketService.notifyArrived(_activeRide!.id);

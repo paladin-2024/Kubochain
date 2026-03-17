@@ -5,6 +5,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_constants.dart';
+import '../../core/services/notification_service.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/driver_provider.dart';
 import '../../providers/location_provider.dart';
@@ -42,6 +43,15 @@ class _RiderHomeScreenState extends State<RiderHomeScreen>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<LocationProvider>().init();
       context.read<DriverProvider>().addListener(_onDriverStateChange);
+
+      // If the app was opened via a ride request notification, load that ride
+      final pending = NotificationService.consumePendingNotification();
+      if (pending != null && pending['type'] == 'new_ride_request') {
+        final rideId = pending['rideId'] as String?;
+        if (rideId != null) {
+          context.read<DriverProvider>().loadRideFromNotification(rideId);
+        }
+      }
     });
   }
 

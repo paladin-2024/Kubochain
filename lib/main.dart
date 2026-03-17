@@ -33,7 +33,7 @@ void main() async {
   // Handle notification taps — store data + navigate to the right screen
   NotificationService.setNotificationTapHandler((data) {
     // Store so the target screen can consume it and act
-    NotificationService._pendingData = data;
+    NotificationService.storePendingNotification(data);
     final type = data['type'] as String?;
     if (type == 'new_ride_request') {
       NavigationService.navigateTo(AppRoutes.riderMain);
