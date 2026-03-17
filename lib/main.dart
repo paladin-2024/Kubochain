@@ -30,10 +30,11 @@ void main() async {
 
   await NotificationService.init();
 
-  // Handle notification taps — navigate to the right screen
+  // Handle notification taps — store data + navigate to the right screen
   NotificationService.setNotificationTapHandler((data) {
+    // Store so the target screen can consume it and act
+    NotificationService._pendingData = data;
     final type = data['type'] as String?;
-    final rideId = data['rideId'] as String?;
     if (type == 'new_ride_request') {
       NavigationService.navigateTo(AppRoutes.riderMain);
     } else if (type == 'ride_accepted' || type == 'trip_confirmation_needed') {

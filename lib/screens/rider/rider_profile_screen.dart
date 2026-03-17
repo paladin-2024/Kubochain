@@ -171,30 +171,54 @@ class _RiderProfileScreenState extends State<RiderProfileScreen> {
                 _DarkField(ctrl: colorCtrl, label: 'Color', icon: Icons.color_lens_outlined),
                 const SizedBox(height: 12),
                 // Vehicle type selector
-                Container(
-                  decoration: BoxDecoration(
-                    color: AppColors.backgroundDark,
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: AppColors.borderDark),
-                  ),
-                  child: DropdownButtonFormField<String>(
-                    value: vehicleType,
-                    dropdownColor: AppColors.cardDark,
-                    decoration: const InputDecoration(
-                      labelText: 'Vehicle Type',
-                      labelStyle: TextStyle(color: AppColors.textSecondary),
-                      border: InputBorder.none,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                      prefixIcon: Icon(Icons.category_outlined, color: AppColors.primary, size: 20),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Vehicle Type',
+                        style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        {'value': 'motorcycle', 'label': 'Moto', 'icon': Icons.two_wheeler},
+                        {'value': 'bicycle', 'label': 'Bicycle', 'icon': Icons.pedal_bike_outlined},
+                        {'value': 'car', 'label': 'Car', 'icon': Icons.directions_car_outlined},
+                      ].map((item) {
+                        final selected = vehicleType == item['value'];
+                        return Expanded(
+                          child: GestureDetector(
+                            onTap: () => setModalState(() => vehicleType = item['value'] as String),
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              margin: const EdgeInsets.symmetric(horizontal: 4),
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              decoration: BoxDecoration(
+                                color: selected ? AppColors.primary.withOpacity(0.15) : AppColors.backgroundDark,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: selected ? AppColors.primary : AppColors.borderDark,
+                                  width: selected ? 1.5 : 1,
+                                ),
+                              ),
+                              child: Column(
+                                children: [
+                                  Icon(item['icon'] as IconData,
+                                      color: selected ? AppColors.primary : AppColors.textSecondary,
+                                      size: 22),
+                                  const SizedBox(height: 4),
+                                  Text(item['label'] as String,
+                                      style: TextStyle(
+                                        color: selected ? AppColors.primary : AppColors.textSecondary,
+                                        fontSize: 11,
+                                        fontWeight: selected ? FontWeight.w700 : FontWeight.w400,
+                                      )),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      }).toList(),
                     ),
-                    style: const TextStyle(color: AppColors.textOnDark),
-                    items: const [
-                      DropdownMenuItem(value: 'motorcycle', child: Text('Motorcycle')),
-                      DropdownMenuItem(value: 'bicycle', child: Text('Bicycle')),
-                      DropdownMenuItem(value: 'car', child: Text('Car')),
-                    ],
-                    onChanged: (v) => setModalState(() => vehicleType = v ?? vehicleType),
-                  ),
+                  ],
                 ),
                 const SizedBox(height: 20),
                 SizedBox(

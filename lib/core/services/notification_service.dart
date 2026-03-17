@@ -62,6 +62,14 @@ class NotificationService {
     _onNotificationTap = handler;
   }
 
+  // Pending data from a notification tap (consumed by screens on init)
+  static Map<String, dynamic>? _pendingData;
+  static Map<String, dynamic>? consumePendingNotification() {
+    final data = _pendingData;
+    _pendingData = null;
+    return data;
+  }
+
   static const _channelId = 'kubochain_main';
   static const _channelName = 'KuboChain';
   static const _channelDesc = 'Ride updates, promotions, and alerts';
