@@ -88,6 +88,45 @@ exports.toggleAvailability = async (req, res) => {
       [isOnline, req.user.id]
     );
 
+    // If going online, check for any pending ride requests and notify this driver
+    if (isOnline) {
+      try {
+        const pool = require('../config/db').pool;
+        const { rows: pendingRides } = await pool.query(
+          `SELECT r.id, r.pickup_address,
+                  u.first_name AS passenger_first_name, u.last_name AS passenger_last_name
+           FROM rides r
+           JOIN users u ON r.passenger_id = u.id
+           WHERE r.status = 'pending'
+           ORDER BY r.created_at DESC
+           LIMIT 3`
+        );
+        if (pendingRides.length > 0) {
+          const { rows: driverUserRow } = await pool.query(
+            `SELECT u.fcm_token FROM users u WHERE u.id = $1 AND u.fcm_token IS NOT NULL AND u.fcm_token != ''`,
+            [req.user.id]
+          );
+          if (driverUserRow[0]?.fcm_token) {
+            const { sendPush } = require('../config/firebase-admin');
+            const count = pendingRides.length;
+            const first = pendingRides[0];
+            const passengerName = `${first.passenger_first_name || ''} ${first.passenger_last_name || ''}`.trim() || 'Passenger';
+            await sendPush({
+              token: driverUserRow[0].fcm_token,
+              title: `🚀 ${count} Ride Request${count > 1 ? 's' : ''} Waiting!`,
+              body: `${passengerName} — ${first.pickup_address?.split(',')[0] || 'New ride'}`,
+              data: {
+                type: 'new_ride_request',
+                rideId: String(first.id),
+                pickupAddress: first.pickup_address || '',
+                passengerName,
+              },
+            });
+          }
+        }
+      } catch (e) { console.error('FCM pending rides on online:', e.message); }
+    }
+
     res.json({ driver: formatDriver({ ...rows[0], is_online: isOnline }) });
   } catch (err) {
     res.status(500).json({ message: err.message });

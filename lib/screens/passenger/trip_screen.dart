@@ -36,6 +36,9 @@ class _TripScreenState extends State<TripScreen> {
         MaterialPageRoute(builder: (_) => const RateDriverScreen()),
       );
     }
+    if (ride.rideStatus == RideStatus.awaitingConfirmation && mounted) {
+      setState(() {}); // rebuild to show confirmation button
+    }
   }
 
   @override
@@ -167,6 +170,60 @@ class _TripScreenState extends State<TripScreen> {
               ),
             ),
           ),
+
+          // Passenger confirmation overlay
+          if (ride.rideStatus == RideStatus.awaitingConfirmation)
+            Positioned(
+              bottom: 0, left: 0, right: 0,
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(20, 24, 20, 40),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF0D1525),
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+                  boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.4), blurRadius: 20)],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.flag_rounded, color: Color(0xFF00C853), size: 48),
+                    const SizedBox(height: 12),
+                    const Text(
+                      'Trip Complete!',
+                      style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 6),
+                    const Text(
+                      'Your driver has ended the trip.\nPlease confirm to complete.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Color(0xFF8899AA), fontSize: 14),
+                    ),
+                    const SizedBox(height: 24),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF00C853),
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        ),
+                        onPressed: () async {
+                          final ok = await context.read<RideProvider>().passengerConfirmRide();
+                          if (!ok && mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Failed to confirm. Try again.')),
+                            );
+                          }
+                        },
+                        child: const Text(
+                          'Confirm Trip Completion',
+                          style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
         ],
       ),
     );

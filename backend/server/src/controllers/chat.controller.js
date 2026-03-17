@@ -1,4 +1,5 @@
 const { query } = require('../config/db');
+const { sendPush } = require('../config/firebase-admin');
 
 // GET /api/chat/conversations — all ride-chats for the current user
 exports.getConversations = async (req, res) => {
@@ -106,6 +107,23 @@ exports.sendMessage = async (req, res) => {
     if (io) {
       io.to(`ride_${rideId}`).emit('chat:message', { message: full });
     }
+
+    // FCM push to receiver (works even if app is closed/backgrounded)
+    try {
+      const { rows: receiverRow } = await query(
+        `SELECT fcm_token, first_name FROM users WHERE id = $1 AND fcm_token IS NOT NULL AND fcm_token != ''`,
+        [receiverId]
+      );
+      if (receiverRow[0]?.fcm_token) {
+        const senderName = `${senderRows[0]?.first_name || ''} ${senderRows[0]?.last_name || ''}`.trim() || 'Someone';
+        await sendPush({
+          token: receiverRow[0].fcm_token,
+          title: `💬 ${senderName}`,
+          body: content.trim().length > 80 ? content.trim().slice(0, 80) + '…' : content.trim(),
+          data: { type: 'chat_message', rideId: String(rideId), senderId: String(senderId) },
+        });
+      }
+    } catch (e) { console.error('FCM chat push:', e.message); }
 
     res.status(201).json({ message: full });
   } catch (err) {

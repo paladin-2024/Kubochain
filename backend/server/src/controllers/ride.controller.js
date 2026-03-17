@@ -181,31 +181,63 @@ exports.startRide = async (req, res) => {
   }
 };
 
-// Driver completes trip
+// Driver marks trip as done — waits for passenger to confirm
 exports.completeRide = async (req, res) => {
   try {
     const { rows } = await query(
-      `UPDATE rides SET status = 'completed', completed_at = NOW()
-       WHERE id = $1 RETURNING id, driver_id, passenger_id, price`,
+      `UPDATE rides SET status = 'awaiting_confirmation', driver_completed_at = NOW()
+       WHERE id = $1 AND status = 'in_progress' RETURNING id, driver_id, passenger_id, price`,
       [req.params.id]
     );
-    if (!rows[0]) return res.status(404).json({ message: 'Ride not found' });
+    if (!rows[0]) return res.status(404).json({ message: 'Ride not found or not in progress' });
+    const { id, passenger_id, price } = rows[0];
+
+    const ride = await getRide(id);
+    const formatted = formatRide(ride);
+
+    const io = req.app.get('io');
+    io.to(`ride_${id}`).emit('ride:awaitingConfirmation', { ride: formatted });
+
+    // FCM push to passenger to confirm
+    try {
+      const { rows: pt } = await query(
+        `SELECT fcm_token FROM users WHERE id = $1 AND fcm_token IS NOT NULL AND fcm_token != ''`,
+        [passenger_id]
+      );
+      if (pt[0]?.fcm_token) {
+        const driverName = [ride.driver_first_name, ride.driver_last_name].filter(Boolean).join(' ') || 'Your driver';
+        await sendPush({
+          token: pt[0].fcm_token,
+          title: '🏁 Trip Complete!',
+          body: `${driverName} has ended the trip. Please confirm to complete your ride.`,
+          data: { type: 'trip_confirmation_needed', rideId: String(id) },
+        });
+      }
+    } catch (e) { console.error('FCM completeRide:', e.message); }
+
+    res.json({ ride: formatted });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// Passenger confirms trip is done — finalises earnings
+exports.passengerConfirmRide = async (req, res) => {
+  try {
+    const { rows } = await query(
+      `UPDATE rides SET status = 'completed', completed_at = NOW(), passenger_confirmed_at = NOW()
+       WHERE id = $1 AND status = 'awaiting_confirmation' RETURNING id, driver_id, passenger_id, price`,
+      [req.params.id]
+    );
+    if (!rows[0]) return res.status(400).json({ message: 'Ride not awaiting confirmation' });
     const { id, driver_id, passenger_id, price } = rows[0];
 
-    // Update driver earnings and ride counts
     await Promise.all([
       query(
-        `UPDATE drivers
-         SET total_earnings = total_earnings + $1,
-             today_earnings = today_earnings + $1,
-             total_rides    = total_rides + 1
-         WHERE id = $2`,
+        `UPDATE drivers SET total_earnings = total_earnings + $1, today_earnings = today_earnings + $1, total_rides = total_rides + 1 WHERE id = $2`,
         [price, driver_id]
       ),
-      query(
-        'UPDATE users SET total_rides = total_rides + 1 WHERE id = $1',
-        [passenger_id]
-      ),
+      query('UPDATE users SET total_rides = total_rides + 1 WHERE id = $1', [passenger_id]),
     ]);
 
     const ride = await getRide(id);
@@ -213,6 +245,22 @@ exports.completeRide = async (req, res) => {
 
     const io = req.app.get('io');
     io.to(`ride_${id}`).emit('ride:completed', { ride: formatted });
+
+    // Notify driver
+    try {
+      const { rows: driverUser } = await query(
+        `SELECT u.fcm_token FROM drivers d JOIN users u ON d.user_id = u.id WHERE d.id = $1 AND u.fcm_token IS NOT NULL`,
+        [driver_id]
+      );
+      if (driverUser[0]?.fcm_token) {
+        await sendPush({
+          token: driverUser[0].fcm_token,
+          title: '✅ Trip Confirmed!',
+          body: 'Passenger confirmed the trip. Earnings updated.',
+          data: { type: 'trip_confirmed', rideId: String(id) },
+        });
+      }
+    } catch (e) { console.error('FCM passengerConfirm:', e.message); }
 
     res.json({ ride: formatted });
   } catch (err) {

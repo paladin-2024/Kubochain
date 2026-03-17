@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'core/routes/app_routes.dart';
 import 'core/services/api_service.dart';
+import 'core/services/navigation_service.dart';
 import 'core/services/notification_service.dart';
 import 'core/services/storage_service.dart';
 import 'core/theme/app_theme.dart';
@@ -29,6 +30,19 @@ void main() async {
 
   await NotificationService.init();
 
+  // Handle notification taps — navigate to the right screen
+  NotificationService.setNotificationTapHandler((data) {
+    final type = data['type'] as String?;
+    final rideId = data['rideId'] as String?;
+    if (type == 'new_ride_request') {
+      NavigationService.navigateTo(AppRoutes.riderMain);
+    } else if (type == 'ride_accepted' || type == 'trip_confirmation_needed') {
+      NavigationService.navigateTo(AppRoutes.passengerMain);
+    } else if (type == 'chat_message') {
+      NavigationService.navigateTo(AppRoutes.passengerMain);
+    }
+  });
+
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
     statusBarIconBrightness: Brightness.dark,
@@ -54,6 +68,7 @@ class KuboChainApp extends StatelessWidget {
         title: 'KuboChain',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme,
+        navigatorKey: NavigationService.navigatorKey,
         initialRoute: AppRoutes.splash,
         onGenerateRoute: AppRoutes.generateRoute,
         home: const SplashScreen(),

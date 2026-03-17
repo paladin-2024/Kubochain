@@ -56,6 +56,12 @@ class NotificationService {
   static final FlutterLocalNotificationsPlugin _local =
       FlutterLocalNotificationsPlugin();
 
+  // Navigation callback — set from main.dart
+  static void Function(Map<String, dynamic> data)? _onNotificationTap;
+  static void setNotificationTapHandler(void Function(Map<String, dynamic> data) handler) {
+    _onNotificationTap = handler;
+  }
+
   static const _channelId = 'kubochain_main';
   static const _channelName = 'KuboChain';
   static const _channelDesc = 'Ride updates, promotions, and alerts';
@@ -119,19 +125,26 @@ class NotificationService {
         }
       });
 
-      // App opened from a notification (background → foreground)
+      // App opened from background via notification tap
       FirebaseMessaging.onMessageOpenedApp.listen((message) {
-        final n = message.notification;
-        if (n != null) {
-          show(title: n.title ?? 'KuboChain', body: n.body ?? '');
+        if (message.data.isNotEmpty) {
+          _onNotificationTap?.call(Map<String, dynamic>.from(message.data));
         }
+        final n = message.notification;
+        if (n != null) show(title: n.title ?? 'KuboChain', body: n.body ?? '');
       });
 
-      // App launched from a terminated state via notification
+      // App launched from terminated state via notification tap
       final initial = await messaging.getInitialMessage();
-      if (initial?.notification != null) {
-        final n = initial!.notification!;
-        show(title: n.title ?? 'KuboChain', body: n.body ?? '');
+      if (initial != null) {
+        if (initial.data.isNotEmpty) {
+          // Delay to let the app finish initializing before navigating
+          Future.delayed(const Duration(seconds: 1), () {
+            _onNotificationTap?.call(Map<String, dynamic>.from(initial.data));
+          });
+        }
+        final n = initial.notification;
+        if (n != null) show(title: n.title ?? 'KuboChain', body: n.body ?? '');
       }
 
       final token = await messaging.getToken();

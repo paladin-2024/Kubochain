@@ -42,10 +42,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       context.read<RideProvider>().fetchRideHistory();
     });
     NotificationService.addListener(_onNotificationsChanged);
+    _unreadCount = NotificationService.unreadCount;
   }
 
   void _onNotificationsChanged() {
-    if (mounted) setState(() => _unreadCount = NotificationService.history.length);
+    if (mounted) setState(() => _unreadCount = NotificationService.unreadCount);
   }
 
   @override

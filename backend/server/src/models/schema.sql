@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS rides (
   destination_lat     DECIMAL(10,8) NOT NULL,
   destination_lng     DECIMAL(11,8) NOT NULL,
   status              VARCHAR(20) NOT NULL DEFAULT 'pending'
-                        CHECK (status IN ('pending','accepted','arriving','in_progress','completed','cancelled')),
+                        CHECK (status IN ('pending','accepted','arriving','in_progress','awaiting_confirmation','completed','cancelled')),
   price               DECIMAL(10,2) NOT NULL,
   distance            DECIMAL(8,3)  NOT NULL,
   estimated_minutes   INTEGER,
@@ -78,6 +78,8 @@ CREATE TABLE IF NOT EXISTS rides (
   arrived_at          TIMESTAMPTZ,
   started_at          TIMESTAMPTZ,
   completed_at        TIMESTAMPTZ,
+  driver_completed_at     TIMESTAMPTZ,
+  passenger_confirmed_at  TIMESTAMPTZ,
   created_at          TIMESTAMPTZ  DEFAULT NOW()
 );
 

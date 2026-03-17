@@ -6,7 +6,7 @@ import '../core/services/socket_service.dart';
 import '../core/services/location_service.dart';
 import '../core/services/notification_service.dart';
 
-enum RideStatus { idle, searching, found, arriving, inProgress, completed, cancelled, error }
+enum RideStatus { idle, searching, found, arriving, inProgress, awaitingConfirmation, completed, cancelled, error }
 
 class RideProvider extends ChangeNotifier {
   RideStatus _rideStatus = RideStatus.idle;
@@ -33,6 +33,7 @@ class RideProvider extends ChangeNotifier {
     SocketService.off('ride:driverLocation');
     SocketService.off('ride:driverArrived');
     SocketService.off('ride:started');
+    SocketService.off('ride:awaitingConfirmation');
     SocketService.off('ride:completed');
     SocketService.off('ride:cancelled');
 
@@ -75,6 +76,19 @@ class RideProvider extends ChangeNotifier {
         title: 'Trip Started',
         body: 'Your trip is now in progress.',
         type: 'trip_started',
+      );
+    });
+
+    SocketService.socket?.on('ride:awaitingConfirmation', (data) {
+      _rideStatus = RideStatus.awaitingConfirmation;
+      if (data['ride'] != null) {
+        _currentRide = RideModel.fromJson(data['ride']);
+      }
+      notifyListeners();
+      NotificationService.show(
+        title: '🏁 Trip Complete!',
+        body: 'Driver has ended the trip. Please confirm to complete.',
+        type: 'trip_confirmation_needed',
       );
     });
 
@@ -197,5 +211,20 @@ class RideProvider extends ChangeNotifier {
   void clearError() {
     _error = null;
     notifyListeners();
+  }
+
+  Future<bool> passengerConfirmRide() async {
+    if (_currentRide == null) return false;
+    try {
+      final res = await ApiService.passengerConfirmRide(_currentRide!.id);
+      _currentRide = RideModel.fromJson(res.data['ride']);
+      _rideStatus = RideStatus.completed;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _error = 'Failed to confirm ride';
+      notifyListeners();
+      return false;
+    }
   }
 }
