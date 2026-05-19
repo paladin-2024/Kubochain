@@ -60,7 +60,7 @@ class _PassengerProfileScreenState
         setState(() => _uploading = false);
         if (!ok) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Failed to upload photo.')),
+            const SnackBar(content: Text('Échec du téléchargement de la photo.')),
           );
         }
       }
@@ -68,7 +68,7 @@ class _PassengerProfileScreenState
       if (mounted) {
         setState(() => _uploading = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Upload error: $e')),
+          SnackBar(content: Text('Erreur : $e')),
         );
       }
     }
@@ -103,7 +103,7 @@ class _PassengerProfileScreenState
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(ok ? 'Profile updated' : 'Failed to update',
+        content: Text(ok ? 'Profil mis à jour' : 'Échec de la mise à jour',
             style: GoogleFonts.dmSans()),
         backgroundColor: ok ? AppColors.success : AppColors.error,
         behavior: SnackBarBehavior.floating,
@@ -136,7 +136,7 @@ class _PassengerProfileScreenState
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
                   child: Text(
-                    'Profile',
+                    'Profil',
                     style: GoogleFonts.sora(
                       fontSize: 28,
                       fontWeight: FontWeight.w700,
@@ -267,7 +267,7 @@ class _PassengerProfileScreenState
                                       color: AppColors.success, size: 12),
                                   const SizedBox(width: 4),
                                   Text(
-                                    'Verified Passenger',
+                                    'Passager Vérifié',
                                     style: GoogleFonts.dmSans(
                                       color: AppColors.success,
                                       fontSize: 11,
@@ -294,7 +294,7 @@ class _PassengerProfileScreenState
                       Expanded(
                         child: _StatCard(
                           icon: HugeIcons.strokeRoundedMotorbike01,
-                          label: 'Total Trips',
+                          label: 'Trajets totaux',
                           value: '$completedRides',
                           color: AppColors.primary,
                           bgColor: AppColors.primary.withOpacity(0.07),
@@ -304,7 +304,7 @@ class _PassengerProfileScreenState
                       Expanded(
                         child: _StatCard(
                           icon: HugeIcons.strokeRoundedWallet01,
-                          label: 'Total Spent',
+                          label: 'Total dépensé',
                           value: 'FC ${totalSpent.toStringAsFixed(0)}',
                           color: AppColors.success,
                           bgColor: AppColors.success.withOpacity(0.07),
@@ -314,7 +314,7 @@ class _PassengerProfileScreenState
                       Expanded(
                         child: _StatCard(
                           icon: HugeIcons.strokeRoundedShield01,
-                          label: 'Safety Score',
+                          label: 'Score sécurité',
                           value: '100%',
                           color: AppColors.safetyGold,
                           bgColor: AppColors.safetyGold.withOpacity(0.07),
@@ -329,40 +329,40 @@ class _PassengerProfileScreenState
               SliverToBoxAdapter(
                 child: _SectionCard(
                   margin: const EdgeInsets.fromLTRB(24, 16, 24, 0),
-                  title: 'Personal Info',
+                  title: 'Infos personnelles',
                   child: Column(
                     children: [
                       _InfoTile(
                         icon: HugeIcons.strokeRoundedUser,
-                        label: 'First name',
+                        label: 'Prénom',
                         value: user?.firstName ?? '',
                         onTap: () => _showEditDialog(
-                            'First name',
+                            'Prénom',
                             user?.firstName ?? '',
                             'firstName'),
                       ),
                       const _TileDivider(),
                       _InfoTile(
                         icon: HugeIcons.strokeRoundedUser,
-                        label: 'Last name',
+                        label: 'Nom',
                         value: user?.lastName ?? '',
                         onTap: () => _showEditDialog(
-                            'Last name',
+                            'Nom',
                             user?.lastName ?? '',
                             'lastName'),
                       ),
                       const _TileDivider(),
                       _InfoTile(
                         icon: HugeIcons.strokeRoundedMail01,
-                        label: 'Email',
+                        label: 'E-mail',
                         value: user?.email ?? '',
                         onTap: () => _showEditDialog(
-                            'Email', user?.email ?? '', 'email'),
+                            'E-mail', user?.email ?? '', 'email'),
                       ),
                       const _TileDivider(),
                       _InfoTile(
                         icon: HugeIcons.strokeRoundedSmartPhone01,
-                        label: 'Phone',
+                        label: 'Téléphone',
                         value: user?.phone ?? '',
                         trailing: _VerifiedBadge(),
                       ),
@@ -375,24 +375,24 @@ class _PassengerProfileScreenState
               SliverToBoxAdapter(
                 child: _SectionCard(
                   margin: const EdgeInsets.fromLTRB(24, 12, 24, 0),
-                  title: 'Safety & Trust',
+                  title: 'Sécurité & Confiance',
                   child: Column(
                     children: const [
                       _TrustRow(
                         icon: HugeIcons.strokeRoundedShieldUser,
-                        label: 'Phone Verified',
+                        label: 'Téléphone vérifié',
                         active: true,
                       ),
                       _TileDivider(),
                       _TrustRow(
                         icon: HugeIcons.strokeRoundedLock,
-                        label: 'Account Secured',
+                        label: 'Compte sécurisé',
                         active: true,
                       ),
                       _TileDivider(),
                       _TrustRow(
                         icon: HugeIcons.strokeRoundedLocation01,
-                        label: 'Location Services',
+                        label: 'Localisation',
                         active: true,
                       ),
                     ],
@@ -404,12 +404,12 @@ class _PassengerProfileScreenState
               SliverToBoxAdapter(
                 child: _SectionCard(
                   margin: const EdgeInsets.fromLTRB(24, 12, 24, 0),
-                  title: 'More',
+                  title: 'Plus',
                   child: Column(
                     children: [
                       _ActionTile(
                         icon: HugeIcons.strokeRoundedHelpCircle,
-                        label: 'Help & Support',
+                        label: 'Aide & Support',
                         onTap: () => Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -419,7 +419,7 @@ class _PassengerProfileScreenState
                       const _TileDivider(),
                       _ActionTile(
                         icon: HugeIcons.strokeRoundedInformationCircle,
-                        label: 'About KuboChain',
+                        label: 'À propos de KuboChain',
                         onTap: () => Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -429,7 +429,7 @@ class _PassengerProfileScreenState
                       const _TileDivider(),
                       _ActionTile(
                         icon: HugeIcons.strokeRoundedLogoutSquare01,
-                        label: 'Log Out',
+                        label: 'Se déconnecter',
                         iconColor: AppColors.error,
                         textColor: AppColors.error,
                         showChevron: false,
@@ -484,7 +484,7 @@ class _EditDialog extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Edit $label',
+              'Modifier $label',
               style: GoogleFonts.sora(
                 color: AppColors.textPrimary,
                 fontSize: 18,
@@ -528,7 +528,7 @@ class _EditDialog extends StatelessWidget {
                       ),
                       child: Center(
                         child: Text(
-                          'Cancel',
+                          'Annuler',
                           style: GoogleFonts.sora(
                             color: AppColors.textSecondary,
                             fontWeight: FontWeight.w600,
@@ -550,7 +550,7 @@ class _EditDialog extends StatelessWidget {
                       ),
                       child: Center(
                         child: Text(
-                          'Save',
+                          'Enregistrer',
                           style: GoogleFonts.sora(
                             color: Colors.white,
                             fontWeight: FontWeight.w700,
@@ -607,7 +607,7 @@ class _VerifiedBadge extends StatelessWidget {
               size: 11, color: AppColors.success),
           const SizedBox(width: 4),
           Text(
-            'Verified',
+            'Vérifié',
             style: GoogleFonts.dmSans(
               color: AppColors.success,
               fontSize: 11,
@@ -861,7 +861,7 @@ class _TrustRow extends StatelessWidget {
               ),
             ),
             child: Text(
-              active ? 'Active' : 'Inactive',
+              active ? 'Actif' : 'Inactif',
               style: GoogleFonts.dmSans(
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
@@ -961,7 +961,7 @@ class _PhotoSourceSheet extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
               child: Text(
-                'Update Photo',
+                'Changer la photo',
                 style: GoogleFonts.sora(
                   color: AppColors.textPrimary,
                   fontSize: 16,
@@ -971,7 +971,7 @@ class _PhotoSourceSheet extends StatelessWidget {
             ),
             _SourceOption(
               icon: HugeIcons.strokeRoundedCamera01,
-              label: 'Take Photo',
+              label: 'Prendre une photo',
               onTap: () => Navigator.pop(context, ImageSource.camera),
             ),
             Container(
@@ -980,7 +980,7 @@ class _PhotoSourceSheet extends StatelessWidget {
                 margin: const EdgeInsets.only(left: 56)),
             _SourceOption(
               icon: HugeIcons.strokeRoundedImage01,
-              label: 'Choose from Gallery',
+              label: 'Choisir depuis la galerie',
               onTap: () => Navigator.pop(context, ImageSource.gallery),
             ),
             const SizedBox(height: 8),

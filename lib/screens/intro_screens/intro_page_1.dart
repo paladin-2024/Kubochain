@@ -97,7 +97,7 @@ class _IntroPage1State extends State<IntroPage1>
                         borderRadius: BorderRadius.circular(50),
                       ),
                       child: Text(
-                        'RIDE SMARTER',
+                        'ROULEZ MIEUX',
                         style: GoogleFonts.sora(
                           fontSize: 11,
                           fontWeight: FontWeight.w700,
@@ -124,9 +124,9 @@ class _IntroPage1State extends State<IntroPage1>
                             letterSpacing: -0.5,
                           ),
                           children: const [
-                            TextSpan(text: 'Your city,\nmoves with '),
+                            TextSpan(text: 'Votre ville\nbat pour '),
                             TextSpan(
-                              text: 'you.',
+                              text: 'vous.',
                               style: TextStyle(color: AppColors.primary),
                             ),
                           ],
@@ -140,7 +140,7 @@ class _IntroPage1State extends State<IntroPage1>
                   FadeTransition(
                     opacity: _textFade,
                     child: Text(
-                      'The best boda-boda experience in Goma — fast, safe, and always on demand.',
+                      'La meilleure expérience boda-boda à Goma — rapide, sécurisée et toujours disponible.',
                       style: GoogleFonts.dmSans(
                         fontSize: 15,
                         color: const Color(0xFF64748B),

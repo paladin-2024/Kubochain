@@ -105,9 +105,9 @@ class _OnBoardingPageState extends State<OnBoardingPage>
                         opacity: _ctaFade,
                         child: Row(
                           children: [
-                            _TrustBadge(icon: Icons.shield_rounded, label: 'Verified Riders'),
+                            _TrustBadge(icon: Icons.shield_rounded, label: 'Pilotes vérifiés'),
                             const SizedBox(width: 8),
-                            _TrustBadge(icon: Icons.bolt_rounded, label: 'Instant Booking'),
+                            _TrustBadge(icon: Icons.bolt_rounded, label: 'Réservation rapide'),
                           ],
                         ),
                       ),
@@ -124,14 +124,14 @@ class _OnBoardingPageState extends State<OnBoardingPage>
                             letterSpacing: -1.0,
                           ),
                           children: const [
-                            TextSpan(text: "Let's get\n"),
-                            TextSpan(text: 'moving.'),
+                            TextSpan(text: 'En route\nvers '),
+                            TextSpan(text: "l'aventure."),
                           ],
                         ),
                       ),
                       const SizedBox(height: 12),
                       Text(
-                        "Goma's fastest boda booking.\nSign up or log in to ride now.",
+                        "La réservation boda la plus rapide de Goma.\nInscrivez-vous ou connectez-vous pour commencer.",
                         style: GoogleFonts.dmSans(
                           fontSize: 15,
                           color: Colors.white.withOpacity(0.7),
@@ -148,7 +148,7 @@ class _OnBoardingPageState extends State<OnBoardingPage>
                           children: [
                             // Create Account — primary CTA
                             _LandingButton(
-                              label: 'Create Account',
+                              label: 'Créer un compte',
                               icon: Icons.person_add_rounded,
                               isPrimary: true,
                               onTap: () {
@@ -177,7 +177,7 @@ class _OnBoardingPageState extends State<OnBoardingPage>
 
                             // Log In — secondary
                             _LandingButton(
-                              label: 'Log In',
+                              label: 'Se connecter',
                               icon: Icons.login_rounded,
                               isPrimary: false,
                               onTap: () {

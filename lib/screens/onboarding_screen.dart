@@ -115,7 +115,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen>
                         ],
                       ),
                       child: Text(
-                        'Skip',
+                        'Passer',
                         style: GoogleFonts.dmSans(
                           fontSize: 13,
                           color: AppColors.textSecondary,
@@ -197,7 +197,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen>
                               children: [
                                 if (isLast) ...[
                                   Text(
-                                    'Get Started',
+                                    'Commencer',
                                     style: GoogleFonts.sora(
                                       color: Colors.white,
                                       fontWeight: FontWeight.w700,

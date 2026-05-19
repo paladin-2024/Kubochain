@@ -29,22 +29,22 @@ class _PassengerMainState extends State<PassengerMain>
     _NavItem(
       icon: Icons.home_rounded,
       outlineIcon: Icons.home_outlined,
-      label: 'Home',
+      label: 'Accueil',
     ),
     _NavItem(
       icon: Icons.receipt_long_rounded,
       outlineIcon: Icons.receipt_long_outlined,
-      label: 'Trips',
+      label: 'Trajets',
     ),
     _NavItem(
       icon: Icons.chat_bubble_rounded,
       outlineIcon: Icons.chat_bubble_outline_rounded,
-      label: 'Chat',
+      label: 'Messages',
     ),
     _NavItem(
       icon: Icons.person_rounded,
       outlineIcon: Icons.person_outline_rounded,
-      label: 'Profile',
+      label: 'Profil',
     ),
   ];
 

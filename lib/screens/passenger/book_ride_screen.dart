@@ -34,7 +34,7 @@ class _BookRideScreenState extends ConsumerState<BookRideScreen> {
   bool _isLoadingRoute = false;
 
   static const _rideTypes = [
-    {'type': 'economy', 'label': 'Economy', 'icon': Icons.directions_bike, 'multiplier': 1.0},
+    {'type': 'economy', 'label': 'Économique', 'icon': Icons.directions_bike, 'multiplier': 1.0},
     {'type': 'premium', 'label': 'Premium', 'icon': Icons.electric_bike, 'multiplier': 1.5},
   ];
 
@@ -166,7 +166,7 @@ class _BookRideScreenState extends ConsumerState<BookRideScreen> {
                           ),
                           const SizedBox(width: 12),
                           const Text(
-                            'Plan your ride',
+                            'Planifier votre trajet',
                             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: AppColors.textPrimary),
                           ),
                         ],
@@ -212,7 +212,7 @@ class _BookRideScreenState extends ConsumerState<BookRideScreen> {
                                     children: [
                                       Expanded(
                                         child: Text(
-                                          pickup?.address.split(',').first ?? 'Getting location...',
+                                          pickup?.address.split(',').first ?? 'Localisation en cours...',
                                           style: const TextStyle(fontSize: 13, color: AppColors.textPrimary),
                                           overflow: TextOverflow.ellipsis,
                                         ),
@@ -227,7 +227,7 @@ class _BookRideScreenState extends ConsumerState<BookRideScreen> {
                                   onChanged: _searchDestination,
                                   style: const TextStyle(fontSize: 13, color: AppColors.textPrimary),
                                   decoration: InputDecoration(
-                                    hintText: 'Where to?',
+                                    hintText: 'Où allez-vous ?',
                                     hintStyle: const TextStyle(color: AppColors.textHint),
                                     filled: true,
                                     fillColor: AppColors.backgroundLight,
@@ -336,7 +336,7 @@ class _BookRideScreenState extends ConsumerState<BookRideScreen> {
 
                     // Ride type selection
                     const Text(
-                      'Choose ride type',
+                      'Choisissez votre trajet',
                       style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: AppColors.textPrimary),
                     ),
                     const SizedBox(height: 12),
@@ -387,7 +387,7 @@ class _BookRideScreenState extends ConsumerState<BookRideScreen> {
                     const SizedBox(height: 20),
 
                     AppButton(
-                      label: 'Find Now',
+                      label: 'Trouver maintenant',
                       onPressed: _bookRide,
                     ),
                   ],

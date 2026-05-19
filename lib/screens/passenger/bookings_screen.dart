@@ -18,7 +18,7 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _fadeCtrl;
   int _filterIdx = 0; // 0=All, 1=Completed, 2=Cancelled
-  static const _filters = ['All', 'Completed', 'Cancelled'];
+  static const _filters = ['Tous', 'Terminés', 'Annulés'];
 
   @override
   void initState() {
@@ -68,7 +68,7 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'My Trips',
+                            'Mes Trajets',
                             style: GoogleFonts.sora(
                               fontSize: 28,
                               fontWeight: FontWeight.w700,
@@ -77,7 +77,7 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen>
                             ),
                           ),
                           Text(
-                            '${ride.rideHistory.length} total rides',
+                            '${ride.rideHistory.length} trajet(s) au total',
                             style: GoogleFonts.sora(
                               fontSize: 13,
                               color: AppColors.textSecondary,
@@ -102,7 +102,7 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen>
                               color: AppColors.primary, size: 16),
                           const SizedBox(width: 6),
                           Text(
-                            '${ride.rideHistory.where((r) => r.isCompleted).length} done',
+                            '${ride.rideHistory.where((r) => r.isCompleted).length} terminé(s)',
                             style: GoogleFonts.sora(
                               fontSize: 12,
                               color: AppColors.textOnDark,
@@ -230,7 +230,7 @@ class _EmptyState extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           Text(
-            'No ${filter == "All" ? "" : "$filter "}trips yet',
+            filter == 'Tous' ? 'Aucun trajet' : 'Aucun trajet ${filter.toLowerCase()}',
             style: GoogleFonts.sora(
               fontSize: 18,
               fontWeight: FontWeight.w700,
@@ -239,7 +239,7 @@ class _EmptyState extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Your ride history will appear here.',
+            'Votre historique de trajets apparaîtra ici.',
             style: GoogleFonts.sora(
               fontSize: 13,
               color: AppColors.textSecondary,
@@ -260,7 +260,7 @@ class _EmptyState extends StatelessWidget {
                 boxShadow: AppColors.primaryGlow,
               ),
               child: Text(
-                'Book a Ride',
+                'Réserver un trajet',
                 style: GoogleFonts.sora(
                   color: Colors.white,
                   fontWeight: FontWeight.w600,
@@ -289,12 +289,12 @@ class _HistoryCard extends StatelessWidget {
   }
 
   String get _statusLabel {
-    if (ride.isCompleted) return 'Completed';
-    if (ride.isCancelled) return 'Cancelled';
-    if (ride.isInProgress) return 'In Progress';
-    if (ride.isArriving) return 'Arriving';
-    if (ride.isAccepted) return 'Accepted';
-    return 'Pending';
+    if (ride.isCompleted) return 'Terminé';
+    if (ride.isCancelled) return 'Annulé';
+    if (ride.isInProgress) return 'En cours';
+    if (ride.isArriving) return 'En route';
+    if (ride.isAccepted) return 'Accepté';
+    return 'En attente';
   }
 
   void _showDetails(BuildContext context) {
@@ -316,8 +316,8 @@ class _HistoryCard extends StatelessWidget {
 
     final months = [
       '',
-      'Jan','Feb','Mar','Apr','May','Jun',
-      'Jul','Aug','Sep','Oct','Nov','Dec'
+      'Jan','Fév','Mar','Avr','Mai','Jun',
+      'Jul','Aoû','Sep','Oct','Nov','Déc'
     ];
     final dt = ride.createdAt;
     final dateStr =
@@ -428,15 +428,15 @@ class _HistoryCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   _CardStat(
-                    label: 'Driver',
-                    value: driverName.isEmpty ? 'Pending' : driverName,
+                    label: 'Conducteur',
+                    value: driverName.isEmpty ? 'En attente' : driverName,
                   ),
                   _CardStat(
                     label: 'Distance',
                     value: '${ride.distance.toStringAsFixed(1)} km',
                   ),
                   _CardStat(
-                    label: 'Fare',
+                    label: 'Prix',
                     value: 'FC ${ride.price.toStringAsFixed(0)}',
                     valueColor: AppColors.success,
                     bold: true,
@@ -538,18 +538,18 @@ class _RideDetailSheet extends StatelessWidget {
   }
 
   String get _statusLabel {
-    if (ride.isCompleted) return 'Completed';
-    if (ride.isCancelled) return 'Cancelled';
-    if (ride.isInProgress) return 'In Progress';
-    if (ride.isArriving) return 'Arriving';
-    if (ride.isAccepted) return 'Accepted';
-    return 'Pending';
+    if (ride.isCompleted) return 'Terminé';
+    if (ride.isCancelled) return 'Annulé';
+    if (ride.isInProgress) return 'En cours';
+    if (ride.isArriving) return 'En route';
+    if (ride.isAccepted) return 'Accepté';
+    return 'En attente';
   }
 
   String _formatDt(DateTime dt) {
     final months = [
-      '','Jan','Feb','Mar','Apr','May','Jun',
-      'Jul','Aug','Sep','Oct','Nov','Dec'
+      '','Jan','Fév','Mar','Avr','Mai','Jun',
+      'Jul','Aoû','Sep','Oct','Nov','Déc'
     ];
     return '${dt.day} ${months[dt.month]} ${dt.year}, ${dt.hour}:${dt.minute.toString().padLeft(2, '0')}';
   }
@@ -656,7 +656,7 @@ class _RideDetailSheet extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Total Fare',
+                              'Montant total',
                               style: GoogleFonts.sora(
                                 fontSize: 12,
                                 color: AppColors.textSecondary,
@@ -683,7 +683,7 @@ class _RideDetailSheet extends StatelessWidget {
                             borderRadius: BorderRadius.circular(50),
                           ),
                           child: Text(
-                            ride.isCompleted ? 'Paid' : 'Unpaid',
+                            ride.isCompleted ? 'Payé' : 'Non payé',
                             style: GoogleFonts.sora(
                               fontSize: 11,
                               fontWeight: FontWeight.w600,
@@ -700,13 +700,13 @@ class _RideDetailSheet extends StatelessWidget {
 
                   // Route
                   _DarkSection(
-                    title: 'Route',
+                    title: 'Itinéraire',
                     child: Column(
                       children: [
                         _DarkDetailRow(
                           iconWidget: const Icon(Icons.radio_button_checked,
                               color: AppColors.primary, size: 18),
-                          label: 'Pickup',
+                          label: 'Départ',
                           value: ride.pickup.address,
                         ),
                         const SizedBox(height: 12),
@@ -723,19 +723,21 @@ class _RideDetailSheet extends StatelessWidget {
 
                   // Trip details
                   _DarkSection(
-                    title: 'Trip Details',
+                    title: 'Détails du trajet',
                     child: Column(
                       children: [
                         _SheetRow(
                             label: 'Distance',
                             value: '${ride.distance.toStringAsFixed(1)} km'),
                         _SheetRow(
-                            label: 'Duration', value: _duration),
+                            label: 'Durée', value: _duration),
                         _SheetRow(
-                            label: 'Ride Type',
+                            label: 'Type de trajet',
                             value: ride.rideType == 'premium'
                                 ? 'Premium'
-                                : 'Economy'),
+                                : ride.rideType == 'cargo'
+                                    ? 'Cargo'
+                                    : 'Économique'),
                       ],
                     ),
                   ),
@@ -744,7 +746,7 @@ class _RideDetailSheet extends StatelessWidget {
                   // Driver
                   if (ride.driver != null)
                     _DarkSection(
-                      title: 'Driver',
+                      title: 'Conducteur',
                       child: Column(
                         children: [
                           // Avatar row
@@ -771,7 +773,7 @@ class _RideDetailSheet extends StatelessWidget {
                                 children: [
                                   Text(
                                     _driverName.isEmpty
-                                        ? 'Unknown'
+                                        ? 'Inconnu'
                                         : _driverName,
                                     style: GoogleFonts.sora(
                                       color: AppColors.textOnDark,
@@ -799,12 +801,12 @@ class _RideDetailSheet extends StatelessWidget {
                           ),
                           const SizedBox(height: 12),
                           _SheetRow(
-                              label: 'Vehicle',
+                              label: 'Véhicule',
                               value:
                                   '${ride.driver?['vehicle']?['color'] ?? ''} ${ride.driver?['vehicle']?['make'] ?? ''}'
                                       .trim()),
                           _SheetRow(
-                              label: 'Plate',
+                              label: 'Plaque',
                               value:
                                   ride.driver?['vehicle']?['plateNumber'] ??
                                       '—'),
@@ -816,7 +818,7 @@ class _RideDetailSheet extends StatelessWidget {
                   if (ride.isCompleted && (ride.rating ?? 0) > 0) ...[
                     const SizedBox(height: 12),
                     _DarkSection(
-                      title: 'Your Rating',
+                      title: 'Votre note',
                       child: Row(
                         children: List.generate(
                           5,
@@ -856,7 +858,7 @@ class _RideDetailSheet extends StatelessWidget {
                       icon: const Icon(Icons.electric_moped_rounded,
                           color: Colors.white, size: 18),
                       label: Text(
-                        'Book Again',
+                        'Réserver à nouveau',
                         style: GoogleFonts.sora(
                           color: Colors.white,
                           fontWeight: FontWeight.w700,

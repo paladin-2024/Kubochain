@@ -43,6 +43,9 @@ dependencies:
   flutter_rating_bar: ^4.0.1
   hugeicons: ^0.0.7
 
+  # Deep links / phone calls
+  url_launcher: ^6.3.1
+
   # Permissions
   permission_handler: ^11.3.1
 

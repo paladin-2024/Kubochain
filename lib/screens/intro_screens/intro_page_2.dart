@@ -106,7 +106,7 @@ class _IntroPage2State extends State<IntroPage2>
                         borderRadius: BorderRadius.circular(50),
                       ),
                       child: Text(
-                        'ONE TAP AWAY',
+                        'UN SEUL APPUI',
                         style: GoogleFonts.sora(
                           fontSize: 11,
                           fontWeight: FontWeight.w700,
@@ -132,9 +132,9 @@ class _IntroPage2State extends State<IntroPage2>
                             letterSpacing: -0.5,
                           ),
                           children: const [
-                            TextSpan(text: 'The perfect\nride, '),
+                            TextSpan(text: 'Le trajet parfait,\nen un '),
                             TextSpan(
-                              text: 'instantly.',
+                              text: 'instant.',
                               style: TextStyle(color: Color(0xFFF97316)),
                             ),
                           ],
@@ -147,7 +147,7 @@ class _IntroPage2State extends State<IntroPage2>
                   FadeTransition(
                     opacity: _textFade,
                     child: Text(
-                      'Book a ride in seconds. Your driver arrives, you go. Zero hassle, maximum comfort.',
+                      'Réservez en quelques secondes. Votre conducteur arrive, vous partez. Zéro stress, confort maximal.',
                       style: GoogleFonts.dmSans(
                         fontSize: 15,
                         color: const Color(0xFF64748B),

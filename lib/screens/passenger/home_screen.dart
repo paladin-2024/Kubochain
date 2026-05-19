@@ -63,7 +63,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
     final ride   = ref.watch(rideProvider);
     final center = loc.currentLocation ?? AppConstants.defaultLocation;
     final hour   = DateTime.now().hour;
-    final greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+    final greeting = hour < 12 ? 'Bonjour' : hour < 17 ? 'Bon après-midi' : 'Bonsoir';
 
     return Scaffold(
       backgroundColor: AppColors.backgroundDark,
@@ -95,7 +95,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
             const SliverToBoxAdapter(
               child: Padding(
                 padding: EdgeInsets.fromLTRB(20, 24, 20, 12),
-                child: _SectionHeader(title: 'Recent Trips', actionLabel: 'See all'),
+                child: _SectionHeader(title: 'Trajets récents', actionLabel: 'Voir tout'),
               ),
             ),
 
@@ -256,7 +256,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Where to?',
+                      'Où allez-vous ?',
                       style: GoogleFonts.sora(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
@@ -264,7 +264,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                       ),
                     ),
                     Text(
-                      'Book a safe boda ride',
+                      'Réservez votre boda en toute sécurité',
                       style: TextStyle(
                         fontSize: 11,
                         color: AppColors.textSecondary,
@@ -284,7 +284,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                   ),
                 ),
                 child: Text(
-                  'Ride',
+                  'Trajet',
                   style: TextStyle(
                     color: AppColors.primary,
                     fontSize: 11,
@@ -301,10 +301,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
 
   Widget _buildQuickActions() {
     final actions = [
-      _QuickAction(icon: Icons.home_outlined,  label: 'Home',    color: AppColors.primary,  dest: BookRideScreen()),
-      _QuickAction(icon: Icons.work_outline,   label: 'Work',    color: AppColors.safetyGold, dest: BookRideScreen()),
-      _QuickAction(icon: Icons.favorite_border, label: 'Saved',  color: AppColors.error,    dest: BookRideScreen()),
-      _QuickAction(icon: Icons.emoji_events_rounded, label: 'Top Riders', color: AppColors.gold, dest: TopRidersScreen()),
+      _QuickAction(icon: Icons.home_outlined,  label: 'Maison',    color: AppColors.primary,  dest: BookRideScreen()),
+      _QuickAction(icon: Icons.work_outline,   label: 'Travail',    color: AppColors.safetyGold, dest: BookRideScreen()),
+      _QuickAction(icon: Icons.favorite_border, label: 'Favoris',  color: AppColors.error,    dest: BookRideScreen()),
+      _QuickAction(icon: Icons.emoji_events_rounded, label: 'Top Pilotes', color: AppColors.gold, dest: TopRidersScreen()),
     ];
 
     return Padding(
@@ -394,7 +394,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Ride Safe with KuboChain',
+                    'Roulez en sécurité avec KuboChain',
                     style: GoogleFonts.sora(
                       fontSize: 13,
                       fontWeight: FontWeight.w700,
@@ -403,7 +403,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    'All drivers are verified • SOS available anytime',
+                    'Tous les conducteurs sont vérifiés • SOS disponible',
                     style: TextStyle(
                       fontSize: 11,
                       color: AppColors.textSecondary,
@@ -442,7 +442,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
               ),
               const SizedBox(width: 8),
               Text(
-                'Your location',
+                'Votre position',
                 style: GoogleFonts.sora(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -517,78 +517,90 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
   Widget _buildPromoBanner() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-      child: Container(
-        padding: const EdgeInsets.all(18),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              AppColors.primary.withOpacity(0.18),
-              AppColors.primaryDark.withOpacity(0.10),
-            ],
+      child: GestureDetector(
+        onTap: () => _showPromoSheet(context),
+        child: Container(
+          padding: const EdgeInsets.all(18),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                AppColors.primary.withOpacity(0.18),
+                AppColors.primaryDark.withOpacity(0.10),
+              ],
+            ),
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
+              color: AppColors.primary.withOpacity(0.2),
+              width: 0.5,
+            ),
           ),
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(
-            color: AppColors.primary.withOpacity(0.2),
-            width: 0.5,
-          ),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                    decoration: BoxDecoration(
-                      gradient: AppColors.primaryGradient,
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Text(
-                      'LIMITED OFFER',
-                      style: GoogleFonts.sora(
-                        fontSize: 9,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 0.8,
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        gradient: AppColors.primaryGradient,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        'OFFRE LIMITÉE',
+                        style: GoogleFonts.sora(
+                          fontSize: 9,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 0.8,
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    '20% off your\nnext 3 rides',
-                    style: GoogleFonts.sora(
-                      fontSize: 17,
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.textOnDark,
-                      height: 1.2,
+                    const SizedBox(height: 8),
+                    Text(
+                      '20% de réduction\nsur vos 3 prochains trajets',
+                      style: GoogleFonts.sora(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.textOnDark,
+                        height: 1.2,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Use code KRIDE20',
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: AppColors.primaryLight,
-                      fontWeight: FontWeight.w500,
+                    const SizedBox(height: 4),
+                    Text(
+                      'Appuyez pour entrer votre code',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: AppColors.primaryLight,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            Container(
-              width: 64,
-              height: 64,
-              decoration: BoxDecoration(
-                gradient: AppColors.primaryGradient,
-                shape: BoxShape.circle,
-                boxShadow: AppColors.primaryGlow,
+              Container(
+                width: 64,
+                height: 64,
+                decoration: BoxDecoration(
+                  gradient: AppColors.primaryGradient,
+                  shape: BoxShape.circle,
+                  boxShadow: AppColors.primaryGlow,
+                ),
+                child: const Icon(Icons.local_offer_rounded, color: Colors.white, size: 30),
               ),
-              child: const Icon(Icons.local_offer_rounded, color: Colors.white, size: 30),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
+    );
+  }
+
+  void _showPromoSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => const _PromoSheet(),
     );
   }
 }
@@ -641,7 +653,7 @@ class _EmptyRides extends StatelessWidget {
                 size: 48, color: AppColors.textSecondary),
             SizedBox(height: 12),
             Text(
-              'No trips yet',
+              'Aucun trajet',
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
@@ -650,7 +662,7 @@ class _EmptyRides extends StatelessWidget {
             ),
             SizedBox(height: 4),
             Text(
-              'Your first boda ride is waiting!',
+              'Votre premier trajet boda vous attend !',
               style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
             ),
           ],
@@ -676,10 +688,10 @@ class _RideHistoryCard extends StatelessWidget {
 
   String _statusLabel() {
     switch (ride.status) {
-      case 'completed': return 'Completed';
-      case 'cancelled': return 'Cancelled';
-      case 'in_progress': return 'In Progress';
-      default: return 'Pending';
+      case 'completed': return 'Terminé';
+      case 'cancelled': return 'Annulé';
+      case 'in_progress': return 'En cours';
+      default: return 'En attente';
     }
   }
 
@@ -812,8 +824,8 @@ class _RideHistoryCard extends StatelessWidget {
   }
 
   String _month(int m) => const [
-    '', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    '', 'Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun',
+    'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'
   ][m];
 }
 
@@ -823,4 +835,159 @@ class _QuickAction {
   final Color color;
   final Widget dest;
   const _QuickAction({required this.icon, required this.label, required this.color, required this.dest});
+}
+
+// ── Promo Code Sheet ───────────────────────────────────────────────────────────
+class _PromoSheet extends StatefulWidget {
+  const _PromoSheet();
+
+  @override
+  State<_PromoSheet> createState() => _PromoSheetState();
+}
+
+class _PromoSheetState extends State<_PromoSheet> {
+  final _ctrl = TextEditingController();
+  String? _status; // 'success' | 'error'
+  static const _validCodes = {'KRIDE20', 'BIENVENUE', 'GOMA10'};
+
+  @override
+  void dispose() { _ctrl.dispose(); super.dispose(); }
+
+  void _apply() {
+    final code = _ctrl.text.trim().toUpperCase();
+    setState(() => _status = _validCodes.contains(code) ? 'success' : 'error');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bottom = MediaQuery.of(context).viewInsets.bottom;
+    return Container(
+      padding: EdgeInsets.fromLTRB(24, 20, 24, 24 + bottom),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Center(
+            child: Container(
+              width: 40, height: 4,
+              decoration: BoxDecoration(
+                color: const Color(0xFFE2E8F0),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            'Entrez votre code promo',
+            style: GoogleFonts.sora(fontSize: 20, fontWeight: FontWeight.w800, color: AppColors.textOnDark),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Codes disponibles : KRIDE20 · BIENVENUE · GOMA10',
+            style: GoogleFonts.dmSans(fontSize: 12, color: AppColors.textSecondary),
+          ),
+          const SizedBox(height: 20),
+          Row(
+            children: [
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: AppColors.backgroundDark,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(
+                      color: _status == 'error'
+                          ? AppColors.error
+                          : _status == 'success'
+                              ? AppColors.success
+                              : AppColors.borderDark,
+                    ),
+                  ),
+                  child: TextField(
+                    controller: _ctrl,
+                    textCapitalization: TextCapitalization.characters,
+                    style: GoogleFonts.sora(fontSize: 16, fontWeight: FontWeight.w700, letterSpacing: 2),
+                    decoration: InputDecoration(
+                      hintText: 'CODE PROMO',
+                      hintStyle: GoogleFonts.sora(fontSize: 13, color: AppColors.textSecondary, letterSpacing: 1),
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    ),
+                    onChanged: (_) => setState(() => _status = null),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              GestureDetector(
+                onTap: _apply,
+                child: Container(
+                  height: 52,
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  decoration: BoxDecoration(
+                    gradient: AppColors.primaryGradient,
+                    borderRadius: BorderRadius.circular(14),
+                    boxShadow: AppColors.primaryGlow,
+                  ),
+                  child: Center(
+                    child: Text(
+                      'Appliquer',
+                      style: GoogleFonts.sora(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 14),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          if (_status != null) ...[
+            const SizedBox(height: 14),
+            Row(
+              children: [
+                Icon(
+                  _status == 'success' ? Icons.check_circle_rounded : Icons.error_outline_rounded,
+                  color: _status == 'success' ? AppColors.success : AppColors.error,
+                  size: 18,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  _status == 'success'
+                      ? '🎉 Code appliqué ! 20% de réduction sur votre prochain trajet.'
+                      : 'Code invalide. Vérifiez et réessayez.',
+                  style: GoogleFonts.dmSans(
+                    fontSize: 13,
+                    color: _status == 'success' ? AppColors.success : AppColors.error,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ],
+          if (_status == 'success') ...[
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: GestureDetector(
+                onTap: () => Navigator.pop(context),
+                child: Container(
+                  height: 52,
+                  decoration: BoxDecoration(
+                    gradient: AppColors.primaryGradient,
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Center(
+                    child: Text(
+                      'Réserver maintenant',
+                      style: GoogleFonts.sora(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 15),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
 }

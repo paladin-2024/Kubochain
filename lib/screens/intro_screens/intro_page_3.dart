@@ -107,7 +107,7 @@ class _IntroPage3State extends State<IntroPage3>
                         borderRadius: BorderRadius.circular(50),
                       ),
                       child: Text(
-                        'SAFE & TRUSTED',
+                        'SÛR & FIABLE',
                         style: GoogleFonts.sora(
                           fontSize: 11,
                           fontWeight: FontWeight.w700,
@@ -133,9 +133,9 @@ class _IntroPage3State extends State<IntroPage3>
                             letterSpacing: -0.5,
                           ),
                           children: [
-                            const TextSpan(text: 'Ride with\n'),
+                            const TextSpan(text: 'Roulez en toute\n'),
                             TextSpan(
-                              text: 'confidence.',
+                              text: 'confiance.',
                               style: TextStyle(color: AppColors.success),
                             ),
                           ],
@@ -148,7 +148,7 @@ class _IntroPage3State extends State<IntroPage3>
                   FadeTransition(
                     opacity: _textFade,
                     child: Text(
-                      'Verified drivers, real-time tracking, and transparent pricing — every trip, every time.',
+                      'Conducteurs vérifiés, suivi en temps réel et tarifs transparents — chaque trajet, à chaque fois.',
                       style: GoogleFonts.dmSans(
                         fontSize: 15,
                         color: const Color(0xFF64748B),
@@ -164,11 +164,11 @@ class _IntroPage3State extends State<IntroPage3>
                     opacity: _chipsFade,
                     child: Row(
                       children: [
-                        _TrustChip(icon: Icons.verified_rounded, label: 'Verified', color: AppColors.primary),
+                        _TrustChip(icon: Icons.verified_rounded, label: 'Vérifié', color: AppColors.primary),
                         const SizedBox(width: 10),
-                        _TrustChip(icon: Icons.shield_rounded, label: 'Safe', color: AppColors.success),
+                        _TrustChip(icon: Icons.shield_rounded, label: 'Sécurisé', color: AppColors.success),
                         const SizedBox(width: 10),
-                        _TrustChip(icon: Icons.bolt_rounded, label: 'Fast', color: const Color(0xFFF97316)),
+                        _TrustChip(icon: Icons.bolt_rounded, label: 'Rapide', color: const Color(0xFFF97316)),
                       ],
                     ),
                   ),

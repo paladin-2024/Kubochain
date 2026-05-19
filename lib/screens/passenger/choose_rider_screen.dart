@@ -69,12 +69,18 @@ class _ChooseRiderScreenState extends ConsumerState<ChooseRiderScreen>
   }
 
   double get _premiumPrice => widget.estimatedPrice * 1.4;
+  double get _cargoPrice => widget.estimatedPrice * 1.55;
 
   Future<void> _confirmRide() async {
     if (_confirming) return;
     HapticFeedback.mediumImpact();
     setState(() => _confirming = true);
     final ride = ref.read(rideProvider);
+    final price = _selectedType == 'economy'
+        ? widget.estimatedPrice
+        : _selectedType == 'premium'
+            ? _premiumPrice
+            : _cargoPrice;
     await ride.requestRide(
       pickup: LocationPoint(
         address: widget.pickupAddress,
@@ -87,7 +93,7 @@ class _ChooseRiderScreenState extends ConsumerState<ChooseRiderScreen>
         lng: widget.destination.longitude,
       ),
       rideType: _selectedType,
-      price: _selectedType == 'economy' ? widget.estimatedPrice : _premiumPrice,
+      price: price,
       distance: widget.distanceKm,
     );
     if (!mounted) return;
@@ -221,7 +227,7 @@ class _ChooseRiderScreenState extends ConsumerState<ChooseRiderScreen>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Choose your ride',
+                          'Choisissez votre trajet',
                           style: GoogleFonts.sora(
                             fontSize: 20, fontWeight: FontWeight.w800,
                             color: const Color(0xFF0D1629),
@@ -229,7 +235,7 @@ class _ChooseRiderScreenState extends ConsumerState<ChooseRiderScreen>
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          '${widget.distanceKm.toStringAsFixed(1)} km · ${_drivers.length} drivers nearby',
+                          '${widget.distanceKm.toStringAsFixed(1)} km · ${_drivers.length} conducteurs à proximité',
                           style: GoogleFonts.dmSans(
                             fontSize: 13, color: AppColors.textSecondary),
                         ),
@@ -240,7 +246,7 @@ class _ChooseRiderScreenState extends ConsumerState<ChooseRiderScreen>
                           children: [
                             Expanded(child: _VehicleCard(
                               type: 'economy',
-                              label: 'Economy',
+                              label: 'Économique',
                               subtitle: 'Boda-boda',
                               icon: Icons.two_wheeler_rounded,
                               price: widget.estimatedPrice,
@@ -251,11 +257,11 @@ class _ChooseRiderScreenState extends ConsumerState<ChooseRiderScreen>
                                 setState(() => _selectedType = 'economy');
                               },
                             )),
-                            const SizedBox(width: 12),
+                            const SizedBox(width: 8),
                             Expanded(child: _VehicleCard(
                               type: 'premium',
                               label: 'Premium',
-                              subtitle: 'Top-rated',
+                              subtitle: 'Top noté',
                               icon: Icons.electric_moped_rounded,
                               price: _premiumPrice,
                               minutes: (widget.distanceKm * 3.5).ceil(),
@@ -263,6 +269,20 @@ class _ChooseRiderScreenState extends ConsumerState<ChooseRiderScreen>
                               onTap: () {
                                 HapticFeedback.selectionClick();
                                 setState(() => _selectedType = 'premium');
+                              },
+                            )),
+                            const SizedBox(width: 8),
+                            Expanded(child: _VehicleCard(
+                              type: 'cargo',
+                              label: 'Cargo',
+                              subtitle: 'Livraison',
+                              icon: Icons.inventory_2_rounded,
+                              price: _cargoPrice,
+                              minutes: (widget.distanceKm * 4.5).ceil(),
+                              isSelected: _selectedType == 'cargo',
+                              onTap: () {
+                                HapticFeedback.selectionClick();
+                                setState(() => _selectedType = 'cargo');
                               },
                             )),
                           ],
@@ -275,7 +295,7 @@ class _ChooseRiderScreenState extends ConsumerState<ChooseRiderScreen>
                           Row(
                             children: [
                               Text(
-                                'Nearby drivers',
+                                'Conducteurs à proximité',
                                 style: GoogleFonts.dmSans(
                                   fontSize: 13, fontWeight: FontWeight.w600,
                                   color: AppColors.textSecondary),
@@ -288,7 +308,7 @@ class _ChooseRiderScreenState extends ConsumerState<ChooseRiderScreen>
                                   borderRadius: BorderRadius.circular(50),
                                 ),
                                 child: Text(
-                                  '${_drivers.length} available',
+                                  '${_drivers.length} disponible(s)',
                                   style: GoogleFonts.dmSans(
                                     fontSize: 11, fontWeight: FontWeight.w600,
                                     color: AppColors.success),
@@ -388,7 +408,7 @@ class _ChooseRiderScreenState extends ConsumerState<ChooseRiderScreen>
                                       child: CircularProgressIndicator(
                                           color: Colors.white, strokeWidth: 2.5))
                                   : Text(
-                                      'Confirm ${_selectedType == 'economy' ? 'Economy' : 'Premium'} Ride  ·  FC ${(_selectedType == 'economy' ? widget.estimatedPrice : _premiumPrice).toStringAsFixed(0)}',
+                                      'Confirmer · FC ${(_selectedType == 'economy' ? widget.estimatedPrice : _selectedType == 'premium' ? _premiumPrice : _cargoPrice).toStringAsFixed(0)}',
                                       style: GoogleFonts.sora(
                                         fontSize: 15, fontWeight: FontWeight.w700,
                                         color: Colors.white),
@@ -432,10 +452,10 @@ class _VehicleCard extends StatelessWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         curve: Curves.easeOutCubic,
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: isSelected ? AppColors.primary : const Color(0xFFF8FAFC),
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: isSelected ? AppColors.primary : const Color(0xFFE2E8F0),
             width: isSelected ? 0 : 1,
@@ -448,31 +468,31 @@ class _VehicleCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              width: 44, height: 44,
+              width: 36, height: 36,
               decoration: BoxDecoration(
                 color: isSelected ? Colors.white.withOpacity(0.2) : AppColors.primary.withOpacity(0.08),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(10),
               ),
-              child: Icon(icon, size: 24,
+              child: Icon(icon, size: 20,
                   color: isSelected ? Colors.white : AppColors.primary),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 8),
             Text(label,
               style: GoogleFonts.sora(
-                fontSize: 14, fontWeight: FontWeight.w700,
+                fontSize: 12, fontWeight: FontWeight.w700,
                 color: isSelected ? Colors.white : const Color(0xFF0D1629))),
             Text(subtitle,
               style: GoogleFonts.dmSans(
-                fontSize: 11, color: isSelected ? Colors.white70 : AppColors.textSecondary)),
+                fontSize: 10, color: isSelected ? Colors.white70 : AppColors.textSecondary)),
             const SizedBox(height: 8),
             Text(
               'FC ${price.toStringAsFixed(0)}',
               style: GoogleFonts.sora(
-                fontSize: 16, fontWeight: FontWeight.w800,
+                fontSize: 13, fontWeight: FontWeight.w800,
                 color: isSelected ? Colors.white : AppColors.primary)),
             Text('~$minutes min',
               style: GoogleFonts.dmSans(
-                fontSize: 11, color: isSelected ? Colors.white70 : AppColors.textSecondary)),
+                fontSize: 10, color: isSelected ? Colors.white70 : AppColors.textSecondary)),
           ],
         ),
       ),

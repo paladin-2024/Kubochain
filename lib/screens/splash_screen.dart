@@ -206,7 +206,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Your boda, on demand.',
+                          'Votre boda, à la demande.',
                           style: GoogleFonts.sora(
                             color: AppColors.textSecondary,
                             fontSize: 15,
@@ -237,7 +237,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
             child: FadeTransition(
               opacity: _textFade,
               child: Text(
-                'Goma · Safe · Fast · Trusted',
+                'Goma · Sécurisé · Rapide · Fiable',
                 textAlign: TextAlign.center,
                 style: GoogleFonts.sora(
                   color: AppColors.textMuted,

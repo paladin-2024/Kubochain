@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_constants.dart';
 import '../../providers/ride_provider.dart';
@@ -142,10 +143,10 @@ class _DriverArrivingScreenState extends ConsumerState<DriverArrivingScreen>
                         const SizedBox(width: 8),
                         Text(
                           isArrived
-                              ? 'Driver Arrived!'
+                              ? 'Conducteur arrivé !'
                               : etaMinutes > 0
-                                  ? '$etaMinutes min away'
-                                  : 'On the way...',
+                                  ? 'À $etaMinutes min'
+                                  : 'En route...',
                           style: GoogleFonts.sora(
                             color: isArrived
                                 ? Colors.white
@@ -296,7 +297,14 @@ class _DriverArrivingScreenState extends ConsumerState<DriverArrivingScreen>
                               const SizedBox(width: 8),
                               _CircleBtn(
                                 icon: Icons.phone_rounded,
-                                onTap: () {},
+                                onTap: () async {
+                                  final phone = driver['phone'] as String?;
+                                  if (phone == null || phone.isEmpty) return;
+                                  final uri = Uri.parse('tel:$phone');
+                                  if (await canLaunchUrl(uri)) {
+                                    await launchUrl(uri);
+                                  }
+                                },
                               ),
                             ],
                           ),
@@ -398,7 +406,7 @@ class _DriverArrivingScreenState extends ConsumerState<DriverArrivingScreen>
                               const SizedBox(width: 10),
                               Expanded(
                                 child: Text(
-                                  'Confirm the plate number before boarding.',
+                                  'Vérifiez la plaque avant de monter.',
                                   style: GoogleFonts.sora(
                                     color: AppColors.textOnDark.withOpacity(0.7),
                                     fontSize: 12,
@@ -418,18 +426,18 @@ class _DriverArrivingScreenState extends ConsumerState<DriverArrivingScreen>
                               builder: (_) => AlertDialog(
                                 backgroundColor: AppColors.cardDark,
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                                title: const Text('Cancel Trip?',
+                                title: const Text('Annuler le trajet ?',
                                     style: TextStyle(color: AppColors.textOnDark, fontWeight: FontWeight.bold)),
-                                content: const Text('Are you sure you want to cancel? Your driver is already on the way.',
+                                content: const Text('Votre conducteur est déjà en route. Annuler quand même ?',
                                     style: TextStyle(color: AppColors.textSecondary)),
                                 actions: [
                                   TextButton(
                                     onPressed: () => Navigator.pop(_, false),
-                                    child: const Text('No, keep it', style: TextStyle(color: AppColors.primary)),
+                                    child: const Text('Non, garder', style: TextStyle(color: AppColors.primary)),
                                   ),
                                   TextButton(
                                     onPressed: () => Navigator.pop(_, true),
-                                    child: const Text('Yes, cancel', style: TextStyle(color: AppColors.error)),
+                                    child: const Text('Oui, annuler', style: TextStyle(color: AppColors.error)),
                                   ),
                                 ],
                               ),
@@ -452,7 +460,7 @@ class _DriverArrivingScreenState extends ConsumerState<DriverArrivingScreen>
                               children: [
                                 const Icon(Icons.cancel_outlined, color: AppColors.error, size: 18),
                                 const SizedBox(width: 8),
-                                Text('Cancel Trip',
+                                Text('Annuler le trajet',
                                     style: GoogleFonts.sora(
                                       color: AppColors.error,
                                       fontWeight: FontWeight.w600,
@@ -502,7 +510,7 @@ class _DriverArrivingScreenState extends ConsumerState<DriverArrivingScreen>
                                       color: Colors.white, size: 18),
                                   const SizedBox(width: 10),
                                   Text(
-                                    'Start Messaging',
+                                    'Envoyer un message',
                                     style: GoogleFonts.sora(
                                       color: Colors.white,
                                       fontWeight: FontWeight.w700,
