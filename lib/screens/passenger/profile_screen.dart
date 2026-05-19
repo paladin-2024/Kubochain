@@ -263,7 +263,7 @@ class _PassengerProfileScreenState
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  const Icon(HugeIcons.strokeRoundedShieldUser01,
+                                  const Icon(HugeIcons.strokeRoundedShieldUser,
                                       color: AppColors.success, size: 12),
                                   const SizedBox(width: 4),
                                   Text(
@@ -333,7 +333,7 @@ class _PassengerProfileScreenState
                   child: Column(
                     children: [
                       _InfoTile(
-                        icon: HugeIcons.strokeRoundedUser01,
+                        icon: HugeIcons.strokeRoundedUser,
                         label: 'First name',
                         value: user?.firstName ?? '',
                         onTap: () => _showEditDialog(
@@ -343,7 +343,7 @@ class _PassengerProfileScreenState
                       ),
                       const _TileDivider(),
                       _InfoTile(
-                        icon: HugeIcons.strokeRoundedUser01,
+                        icon: HugeIcons.strokeRoundedUser,
                         label: 'Last name',
                         value: user?.lastName ?? '',
                         onTap: () => _showEditDialog(
@@ -379,13 +379,13 @@ class _PassengerProfileScreenState
                   child: Column(
                     children: const [
                       _TrustRow(
-                        icon: HugeIcons.strokeRoundedShieldUser01,
+                        icon: HugeIcons.strokeRoundedShieldUser,
                         label: 'Phone Verified',
                         active: true,
                       ),
                       _TileDivider(),
                       _TrustRow(
-                        icon: HugeIcons.strokeRoundedLock01,
+                        icon: HugeIcons.strokeRoundedLock,
                         label: 'Account Secured',
                         active: true,
                       ),
@@ -408,7 +408,7 @@ class _PassengerProfileScreenState
                   child: Column(
                     children: [
                       _ActionTile(
-                        icon: HugeIcons.strokeRoundedHelpCircle01,
+                        icon: HugeIcons.strokeRoundedHelpCircle,
                         label: 'Help & Support',
                         onTap: () => Navigator.push(
                           context,
@@ -418,7 +418,7 @@ class _PassengerProfileScreenState
                       ),
                       const _TileDivider(),
                       _ActionTile(
-                        icon: HugeIcons.strokeRoundedInformationCircle01,
+                        icon: HugeIcons.strokeRoundedInformationCircle,
                         label: 'About KuboChain',
                         onTap: () => Navigator.push(
                           context,

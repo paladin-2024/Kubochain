@@ -8,6 +8,8 @@ import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/services/notification_service.dart';
 import '../../providers/providers.dart';
+import '../../providers/location_provider.dart';
+import '../../providers/auth_provider.dart';
 import '../../models/ride_model.dart';
 import '../common/notifications_screen.dart';
 import 'book_ride_screen.dart';

@@ -279,7 +279,7 @@ class _DriverVehicleSetupScreenState extends State<DriverVehicleSetupScreen>
                       _FormField(
                         controller: _plateCtrl,
                         hint: 'e.g. RAB 123A',
-                        prefixIcon: HugeIcons.strokeRoundedCreditCard01,
+                        prefixIcon: HugeIcons.strokeRoundedCreditCard,
                         textCapitalization: TextCapitalization.characters,
                         validator: (v) => (v == null || v.trim().isEmpty)
                             ? 'Plate number is required'
