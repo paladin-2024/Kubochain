@@ -59,11 +59,11 @@ function ZoneCard({ zone, onToggle }) {
       </div>
 
       <div className="grid grid-cols-2 gap-3 mb-4">
-        <div className="bg-dark-bg/50 rounded-xl p-2.5 text-center">
+        <div className="bg-slate-50 rounded-xl p-2.5 text-center">
           <p className="text-[11px] text-slate-500 mb-0.5">Active Rides</p>
           <p className="font-heading font-bold text-orange text-lg">{zone.active_rides}</p>
         </div>
-        <div className="bg-dark-bg/50 rounded-xl p-2.5 text-center">
+        <div className="bg-slate-50 rounded-xl p-2.5 text-center">
           <p className="text-[11px] text-slate-500 mb-0.5">Free Drivers</p>
           <p className="font-heading font-bold text-success text-lg">{zone.available_drivers}</p>
         </div>
@@ -170,7 +170,7 @@ export default function SurgePricing() {
               className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm transition-all ${
                 globalSurge
                   ? 'bg-danger text-slate-800 hover:bg-danger/80'
-                  : 'bg-warning text-dark-bg hover:bg-warning/80'
+                  : 'bg-warning text-slate-800 hover:bg-warning/80'
               }`}
             >
               {globalSurge ? <ToggleOffIcon size={16} /> : <ToggleOnIcon size={16} />}
@@ -205,7 +205,7 @@ export default function SurgePricing() {
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-medium text-slate-800 text-sm">{rule.name}</span>
                     <MultiplierBadge value={rule.multiplier} />
-                    {!rule.enabled && <span className="text-[10px] text-slate-500 bg-gray-700/30 border border-gray-600/20 rounded-full px-2 py-0.5">DISABLED</span>}
+                    {!rule.enabled && <span className="text-[10px] text-slate-500 bg-slate-100 border border-slate-200 rounded-full px-2 py-0.5">DISABLED</span>}
                   </div>
                   <p className="text-xs text-slate-500 mt-0.5">{rule.schedule}</p>
                   <div className="flex flex-wrap gap-1 mt-1.5">

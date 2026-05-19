@@ -98,19 +98,19 @@ function IncidentModal({ inc, onClose, onResolve }) {
         </div>
         <p className="text-slate-500 text-sm leading-relaxed">{inc.description}</p>
         <div className="grid grid-cols-2 gap-3 text-sm">
-          <div className="bg-dark-bg/50 rounded-xl p-3">
+          <div className="bg-slate-50 rounded-xl p-3">
             <p className="text-[10px] uppercase tracking-widest text-slate-500 mb-1">Reporter</p>
             <p className="text-slate-800 font-medium">{inc.reporter}</p>
           </div>
-          <div className="bg-dark-bg/50 rounded-xl p-3">
+          <div className="bg-slate-50 rounded-xl p-3">
             <p className="text-[10px] uppercase tracking-widest text-slate-500 mb-1">Ride ID</p>
             <p className="text-primary font-mono">{inc.ride_id}</p>
           </div>
-          <div className="bg-dark-bg/50 rounded-xl p-3">
+          <div className="bg-slate-50 rounded-xl p-3">
             <p className="text-[10px] uppercase tracking-widest text-slate-500 mb-1">Assigned To</p>
             <p className={inc.assigned_to ? 'text-slate-800 font-medium' : 'text-warning'}>{inc.assigned_to ?? 'Unassigned'}</p>
           </div>
-          <div className="bg-dark-bg/50 rounded-xl p-3">
+          <div className="bg-slate-50 rounded-xl p-3">
             <p className="text-[10px] uppercase tracking-widest text-slate-500 mb-1">Reported</p>
             <p className="text-slate-800 font-medium">{new Date(inc.created_at).toLocaleDateString()}</p>
           </div>

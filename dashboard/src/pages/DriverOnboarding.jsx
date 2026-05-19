@@ -6,6 +6,7 @@ import {
   Tick01Icon, Image01Icon,
 } from 'hugeicons-react';
 import api from '../config/api';
+import Avatar from '../components/Avatar';
 
 const TABS = ['all', 'pending', 'documents_uploaded', 'incomplete'];
 const TAB_LABELS = { all: 'All', pending: 'Pending Review', documents_uploaded: 'Docs Uploaded', incomplete: 'Incomplete' };
@@ -30,16 +31,6 @@ const MOCK = [
   { id: '4', name: 'Sylvie Nzigire', phone: '+243 845 667 788', email: 'sn@example.com', created_at: '2025-05-14T11:20:00Z', status: 'pending', vehicle_type: 'motorcycle', vehicle_model: 'TVS Apache', plate: 'GOM-5500', docs: { license: 'verified', insurance: 'uploaded', vehicle_photo: 'uploaded' }, selfie: null },
 ];
 
-function Initials({ name }) {
-  const parts = name.split(' ');
-  const ini = parts.map((p) => p[0]).slice(0, 2).join('');
-  return (
-    <div className="w-12 h-12 rounded-full bg-primary/15 border border-primary/30 flex items-center justify-center flex-shrink-0">
-      <span className="font-heading font-bold text-primary text-sm">{ini}</span>
-    </div>
-  );
-}
-
 function DocBadge({ label, status }) {
   const s = DOC_STATUS[status] ?? DOC_STATUS.missing;
   return (
@@ -54,7 +45,7 @@ function DriverCard({ driver, onAction, loading }) {
   return (
     <div className="bg-dark-card border border-dark-border rounded-2xl p-5 flex flex-col gap-4 hover:border-primary/30 transition-colors">
       <div className="flex items-start gap-3">
-        <Initials name={driver.name} />
+        <Avatar name={driver.name} size={48} />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
             <p className="font-heading font-semibold text-slate-900 text-sm truncate">{driver.name}</p>
@@ -67,7 +58,7 @@ function DriverCard({ driver, onAction, loading }) {
         </div>
       </div>
 
-      <div className="flex items-center gap-2 bg-dark-bg/50 rounded-xl px-3 py-2">
+      <div className="flex items-center gap-2 bg-slate-50 rounded-xl px-3 py-2">
         <Motorbike01Icon size={16} className="text-orange flex-shrink-0" />
         <div className="min-w-0">
           <p className="text-xs font-semibold text-slate-900">{driver.vehicle_model}</p>

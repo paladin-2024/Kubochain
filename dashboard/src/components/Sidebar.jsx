@@ -8,9 +8,11 @@ import {
   StarCircleIcon, DangerIcon, Megaphone01Icon, GiftIcon, Image01Icon,
   ToggleOnIcon, CloudServerIcon, SmartPhone01Icon, FlashIcon, Route01Icon,
   Audit01Icon, UserEdit01Icon, BankIcon, PromotionIcon, Shield01Icon, CustomerSupportIcon,
+  PencilEdit01Icon,
 } from 'hugeicons-react';
 import { cn } from '../lib/utils';
 import Avatar from './Avatar';
+import AvatarPicker from './AvatarPicker';
 
 const NAV_GROUPS = [
   {
@@ -82,10 +84,23 @@ const NAV_GROUPS = [
 export default function Sidebar() {
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
+  const [showPicker, setShowPicker] = useState(false);
+  const [avatarSeed, setAvatarSeed] = useState(() => localStorage.getItem('admin_avatar_seed') || null);
 
   const adminUser = useMemo(() => {
     try { return JSON.parse(localStorage.getItem('admin_user') || '{}'); } catch { return {}; }
   }, []);
+
+  const handleAvatarSelect = (seed) => {
+    if (seed) {
+      localStorage.setItem('admin_avatar_seed', seed);
+      setAvatarSeed(seed);
+    } else {
+      localStorage.removeItem('admin_avatar_seed');
+      setAvatarSeed(null);
+    }
+    setShowPicker(false);
+  };
 
   const logout = () => {
     localStorage.removeItem('admin_token');
@@ -184,7 +199,16 @@ export default function Sidebar() {
       <div className={cn('border-t border-dark-border p-2', collapsed ? '' : 'px-2')}>
         {!collapsed && adminUser.name && (
           <div className="flex items-center gap-2.5 px-3 py-2 mb-1">
-            <Avatar name={adminUser.name} size={30} />
+            <button
+              onClick={() => setShowPicker(true)}
+              className="relative group flex-shrink-0"
+              title="Change avatar"
+            >
+              <Avatar name={adminUser.name} size={30} seed={avatarSeed || undefined} />
+              <span className="absolute inset-0 rounded-full bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <PencilEdit01Icon size={11} className="text-white" />
+              </span>
+            </button>
             <div className="flex-1 min-w-0">
               <p className="text-xs font-semibold text-slate-700 truncate">{adminUser.name}</p>
               <p className="text-[10px] text-slate-400 truncate">{adminUser.email}</p>
@@ -193,7 +217,16 @@ export default function Sidebar() {
         )}
         {collapsed && adminUser.name && (
           <div className="flex justify-center py-2 mb-1">
-            <Avatar name={adminUser.name} size={30} />
+            <button
+              onClick={() => setShowPicker(true)}
+              className="relative group"
+              title="Change avatar"
+            >
+              <Avatar name={adminUser.name} size={30} seed={avatarSeed || undefined} />
+              <span className="absolute inset-0 rounded-full bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <PencilEdit01Icon size={11} className="text-white" />
+              </span>
+            </button>
           </div>
         )}
         <button
@@ -208,6 +241,13 @@ export default function Sidebar() {
           {!collapsed && <span className="text-[13px]">Log Out</span>}
         </button>
       </div>
+      {showPicker && (
+        <AvatarPicker
+          currentSeed={avatarSeed}
+          onSelect={handleAvatarSelect}
+          onClose={() => setShowPicker(false)}
+        />
+      )}
     </aside>
   );
 }

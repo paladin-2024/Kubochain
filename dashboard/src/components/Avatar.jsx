@@ -25,10 +25,10 @@ function initials(name = '') {
  *   ring     {boolean} — Adds a 2px primary-colour border ring
  *   className {string} — Extra classes on the wrapper div
  */
-export default function Avatar({ name = '', size = 40, online, ring = false, className = '' }) {
+export default function Avatar({ name = '', size = 40, online, ring = false, className = '', seed: seedOverride }) {
   const [imgError, setImgError] = useState(false);
   const bg = seedColor(name);
-  const seed = encodeURIComponent((name || 'user').trim());
+  const seed = seedOverride ?? encodeURIComponent((name || 'user').trim());
   const src = `https://api.dicebear.com/8.x/open-peeps/svg?seed=${seed}&backgroundColor=${bg}&backgroundType=solid&scale=120&translateY=8`;
 
   const fontSize = Math.round(size * 0.35);

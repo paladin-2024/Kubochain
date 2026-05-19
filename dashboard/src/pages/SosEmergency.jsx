@@ -76,7 +76,7 @@ function SosItem({ sos, onResolve, onRespond }) {
       <p className="text-sm text-slate-700 font-medium mb-3 leading-relaxed">"{sos.message}"</p>
 
       <div className="grid grid-cols-2 gap-3 mb-4">
-        <div className="bg-dark-bg/60 rounded-xl p-3">
+        <div className="bg-slate-50 rounded-xl p-3">
           <div className="flex items-center gap-1.5 mb-1">
             {sos.reporter_type === 'driver' ? <Motorbike01Icon size={12} className="text-orange" /> : <UserGroupIcon size={12} className="text-primary" />}
             <span className="text-[10px] uppercase tracking-widest text-slate-500">
@@ -86,7 +86,7 @@ function SosItem({ sos, onResolve, onRespond }) {
           <p className="text-sm font-medium text-slate-800">{sos.reporter}</p>
           <a href={`tel:${sos.reporter_phone}`} className="text-xs text-primary hover:underline">{sos.reporter_phone}</a>
         </div>
-        <div className="bg-dark-bg/60 rounded-xl p-3">
+        <div className="bg-slate-50 rounded-xl p-3">
           <div className="flex items-center gap-1.5 mb-1">
             <MapPinpoint01Icon size={12} className="text-danger" />
             <span className="text-[10px] uppercase tracking-widest text-slate-500">Location</span>

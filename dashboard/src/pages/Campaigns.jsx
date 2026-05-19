@@ -117,15 +117,15 @@ export default function Campaigns() {
               </div>
 
               <div className="grid grid-cols-3 gap-2 mb-3">
-                <div className="bg-dark-bg/50 rounded-xl p-2 text-center">
+                <div className="bg-slate-50 rounded-xl p-2 text-center">
                   <p className="text-[10px] text-slate-500">Reach</p>
                   <p className="font-heading font-bold text-primary">{c.reach.toLocaleString()}</p>
                 </div>
-                <div className="bg-dark-bg/50 rounded-xl p-2 text-center">
+                <div className="bg-slate-50 rounded-xl p-2 text-center">
                   <p className="text-[10px] text-slate-500">Conversions</p>
                   <p className="font-heading font-bold text-success">{c.conversions}</p>
                 </div>
-                <div className="bg-dark-bg/50 rounded-xl p-2 text-center">
+                <div className="bg-slate-50 rounded-xl p-2 text-center">
                   <p className="text-[10px] text-slate-500">CVR</p>
                   <p className="font-heading font-bold text-orange">{convRate}%</p>
                 </div>

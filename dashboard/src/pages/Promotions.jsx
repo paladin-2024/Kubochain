@@ -155,13 +155,13 @@ export default function Promotions() {
               </div>
 
               <div className="grid grid-cols-2 gap-2 mb-3">
-                <div className="bg-dark-bg/50 rounded-xl p-2.5">
+                <div className="bg-slate-50 rounded-xl p-2.5">
                   <p className="text-[10px] text-slate-500 mb-0.5">Discount</p>
                   <p className="font-heading font-bold text-primary">
                     {p.type === 'percentage' ? `${p.discount}%` : p.type === 'fixed' ? `FC ${p.discount.toLocaleString()}` : 'Free'}
                   </p>
                 </div>
-                <div className="bg-dark-bg/50 rounded-xl p-2.5">
+                <div className="bg-slate-50 rounded-xl p-2.5">
                   <p className="text-[10px] text-slate-500 mb-0.5">Min. Fare</p>
                   <p className="font-heading font-bold text-slate-600">FC {p.min_fare.toLocaleString()}</p>
                 </div>

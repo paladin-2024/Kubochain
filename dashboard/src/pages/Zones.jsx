@@ -179,7 +179,7 @@ export default function Zones() {
                 { label: 'Rides', value: zone.active_rides, color: 'text-primary' },
                 { label: 'Total', value: zone.total_rides?.toLocaleString(), color: 'text-success' },
               ].map(({ label, value, color }) => (
-                <div key={label} className="bg-dark-bg/50 rounded-xl p-2 text-center">
+                <div key={label} className="bg-slate-50 rounded-xl p-2 text-center">
                   <p className="text-[10px] text-slate-500 mb-0.5">{label}</p>
                   <p className={`font-heading font-bold text-base ${color}`}>{value}</p>
                 </div>

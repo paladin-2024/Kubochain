@@ -60,7 +60,7 @@ function StaffModal({ staff, onClose, onSave }) {
             </select>
           </div>
           {form.role && (
-            <div className="bg-dark-bg/50 rounded-xl p-3">
+            <div className="bg-slate-50 rounded-xl p-3">
               <p className="text-[10px] uppercase text-slate-500 tracking-widest mb-1.5">Permissions</p>
               <ul className="space-y-0.5">
                 {ROLE_PERMISSIONS[form.role]?.map((p) => (
