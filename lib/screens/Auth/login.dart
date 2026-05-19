@@ -1,6 +1,6 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/constants/app_colors.dart';
@@ -21,13 +21,15 @@ class LoginPage extends ConsumerStatefulWidget {
 class _LoginPageState extends ConsumerState<LoginPage>
     with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
-  final _emailCtrl = TextEditingController();
+  final _phoneCtrl = TextEditingController();
   final _passwordCtrl = TextEditingController();
   bool _obscurePassword = true;
 
   late AnimationController _ctrl;
   late Animation<Offset> _slideAnim;
   late Animation<double> _fadeAnim;
+
+  static const String _countryCode = '+243';
 
   @override
   void initState() {
@@ -42,17 +44,19 @@ class _LoginPageState extends ConsumerState<LoginPage>
 
   @override
   void dispose() {
-    _emailCtrl.dispose();
+    _phoneCtrl.dispose();
     _passwordCtrl.dispose();
     _ctrl.dispose();
     super.dispose();
   }
 
+  String get _fullPhone => '$_countryCode${_phoneCtrl.text.trim()}';
+
   Future<void> _login() async {
     if (!_formKey.currentState!.validate()) return;
     HapticFeedback.mediumImpact();
     final auth = ref.read(authProvider);
-    final ok = await auth.login(_emailCtrl.text.trim(), _passwordCtrl.text);
+    final ok = await auth.login(_fullPhone, _passwordCtrl.text);
     if (!mounted) return;
     if (ok) {
       final role = auth.user?.role ?? 'passenger';
@@ -96,10 +100,7 @@ class _LoginPageState extends ConsumerState<LoginPage>
         child: SafeArea(
           child: Column(
             children: [
-              // Header
               _buildHeader(context),
-
-              // Form
               Expanded(
                 child: SlideTransition(
                   position: _slideAnim,
@@ -112,9 +113,8 @@ class _LoginPageState extends ConsumerState<LoginPage>
                         children: [
                           const SizedBox(height: 32),
 
-                          // Welcome headline
                           Text(
-                            'Welcome\nback.',
+                            'Bienvenue.',
                             style: GoogleFonts.sora(
                               fontSize: 40,
                               fontWeight: FontWeight.w800,
@@ -125,7 +125,7 @@ class _LoginPageState extends ConsumerState<LoginPage>
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            'Sign in to continue riding with KuboChain.',
+                            'Connectez-vous pour continuer avec KuboChain.',
                             style: GoogleFonts.dmSans(
                               fontSize: 15,
                               color: AppColors.textSecondary,
@@ -135,30 +135,23 @@ class _LoginPageState extends ConsumerState<LoginPage>
 
                           const SizedBox(height: 40),
 
-                          // Email field
-                          _FormLabel(label: 'Email address'),
+                          // Phone field
+                          _FormLabel(label: 'Numéro de téléphone'),
                           const SizedBox(height: 8),
-                          _StyledField(
-                            controller: _emailCtrl,
-                            hint: 'you@example.com',
-                            icon: Icons.alternate_email_rounded,
-                            keyboardType: TextInputType.emailAddress,
-                            validator: (v) {
-                              if (v == null || v.isEmpty) return AppStrings.fieldRequired;
-                              if (!v.contains('@')) return AppStrings.invalidEmail;
-                              return null;
-                            },
+                          _PhoneField(
+                            controller: _phoneCtrl,
+                            onSubmitted: (_) => FocusScope.of(context).nextFocus(),
                           ),
 
                           const SizedBox(height: 20),
 
                           // Password field
-                          _FormLabel(label: 'Password'),
+                          _FormLabel(label: 'Mot de passe'),
                           const SizedBox(height: 8),
                           _StyledField(
                             controller: _passwordCtrl,
                             hint: '••••••••',
-                            icon: Icons.lock_outline_rounded,
+                            icon: HugeIcons.strokeRoundedLock,
                             obscureText: _obscurePassword,
                             textInputAction: TextInputAction.done,
                             onFieldSubmitted: (_) => _login(),
@@ -166,8 +159,8 @@ class _LoginPageState extends ConsumerState<LoginPage>
                               onTap: () => setState(() => _obscurePassword = !_obscurePassword),
                               child: Icon(
                                 _obscurePassword
-                                    ? Icons.visibility_off_outlined
-                                    : Icons.visibility_outlined,
+                                    ? HugeIcons.strokeRoundedViewOff
+                                    : HugeIcons.strokeRoundedView,
                                 color: AppColors.textMuted,
                                 size: 20,
                               ),
@@ -181,13 +174,12 @@ class _LoginPageState extends ConsumerState<LoginPage>
 
                           const SizedBox(height: 12),
 
-                          // Forgot password
                           Align(
                             alignment: Alignment.centerRight,
                             child: GestureDetector(
                               onTap: () {},
                               child: Text(
-                                'Forgot password?',
+                                AppStrings.forgotPassword,
                                 style: GoogleFonts.dmSans(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w600,
@@ -199,15 +191,10 @@ class _LoginPageState extends ConsumerState<LoginPage>
 
                           const SizedBox(height: 36),
 
-                          // Login button
-                          _LoginButton(
-                            isLoading: isLoading,
-                            onTap: _login,
-                          ),
+                          _LoginButton(isLoading: isLoading, onTap: _login),
 
                           const SizedBox(height: 32),
 
-                          // Sign up link
                           Center(
                             child: GestureDetector(
                               onTap: () {
@@ -229,9 +216,9 @@ class _LoginPageState extends ConsumerState<LoginPage>
                                     color: AppColors.textSecondary,
                                   ),
                                   children: [
-                                    const TextSpan(text: "Don't have an account? "),
+                                    const TextSpan(text: 'Pas de compte ? '),
                                     TextSpan(
-                                      text: 'Sign up',
+                                      text: "S'inscrire",
                                       style: GoogleFonts.sora(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w700,
@@ -272,7 +259,7 @@ class _LoginPageState extends ConsumerState<LoginPage>
                 boxShadow: AppColors.softShadow,
               ),
               child: const Icon(
-                Icons.arrow_back_ios_new_rounded,
+                HugeIcons.strokeRoundedArrowLeft01,
                 size: 18,
                 color: AppColors.textPrimary,
               ),
@@ -298,6 +285,88 @@ class _FormLabel extends StatelessWidget {
       letterSpacing: 0.2,
     ),
   );
+}
+
+// Phone field with DRC flag + +243 prefix
+class _PhoneField extends StatelessWidget {
+  final TextEditingController controller;
+  final void Function(String)? onSubmitted;
+
+  const _PhoneField({required this.controller, this.onSubmitted});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: AppColors.softShadow,
+      ),
+      child: TextFormField(
+        controller: controller,
+        keyboardType: TextInputType.phone,
+        textInputAction: TextInputAction.next,
+        onFieldSubmitted: onSubmitted,
+        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+        style: GoogleFonts.dmSans(
+          fontSize: 15,
+          color: AppColors.textPrimary,
+          fontWeight: FontWeight.w500,
+        ),
+        validator: (v) {
+          if (v == null || v.trim().isEmpty) return AppStrings.fieldRequired;
+          if (v.trim().length < 8) return 'Numéro de téléphone invalide';
+          return null;
+        },
+        decoration: InputDecoration(
+          hintText: '812 345 678',
+          hintStyle: GoogleFonts.dmSans(fontSize: 15, color: AppColors.textHint),
+          prefixIcon: Container(
+            margin: const EdgeInsets.only(left: 14, right: 0),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('🇨🇩', style: const TextStyle(fontSize: 20)),
+                const SizedBox(width: 6),
+                Text(
+                  '+243',
+                  style: GoogleFonts.dmSans(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Container(width: 1, height: 22, color: AppColors.border),
+                const SizedBox(width: 8),
+              ],
+            ),
+          ),
+          prefixIconConstraints: const BoxConstraints(minWidth: 0),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide.none,
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: const BorderSide(color: AppColors.primary, width: 2),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: const BorderSide(color: AppColors.error, width: 1.5),
+          ),
+          focusedErrorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: const BorderSide(color: AppColors.error, width: 2),
+          ),
+          filled: true,
+          fillColor: Colors.white,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+          errorStyle: GoogleFonts.dmSans(fontSize: 12, color: AppColors.error),
+        ),
+      ),
+    );
+  }
 }
 
 class _StyledField extends StatelessWidget {
@@ -345,20 +414,14 @@ class _StyledField extends StatelessWidget {
         ),
         decoration: InputDecoration(
           hintText: hint,
-          hintStyle: GoogleFonts.dmSans(
-            fontSize: 15,
-            color: AppColors.textHint,
-          ),
+          hintStyle: GoogleFonts.dmSans(fontSize: 15, color: AppColors.textHint),
           prefixIcon: Padding(
             padding: const EdgeInsets.only(left: 16, right: 12),
             child: Icon(icon, color: AppColors.textMuted, size: 20),
           ),
           prefixIconConstraints: const BoxConstraints(minWidth: 52),
           suffixIcon: suffixIcon != null
-              ? Padding(
-                  padding: const EdgeInsets.only(right: 16),
-                  child: suffixIcon,
-                )
+              ? Padding(padding: const EdgeInsets.only(right: 16), child: suffixIcon)
               : null,
           suffixIconConstraints: const BoxConstraints(minWidth: 48),
           border: OutlineInputBorder(
@@ -429,13 +492,15 @@ class _LoginButtonState extends State<_LoginButton>
           width: double.infinity,
           height: 58,
           decoration: BoxDecoration(
-            color: widget.isLoading ? AppColors.primary.withOpacity(0.7) : AppColors.primary,
+            color: widget.isLoading
+                ? AppColors.primary.withValues(alpha: 0.7)
+                : AppColors.primary,
             borderRadius: BorderRadius.circular(50),
             boxShadow: widget.isLoading
                 ? []
                 : [
                     BoxShadow(
-                      color: AppColors.primary.withOpacity(0.4),
+                      color: AppColors.primary.withValues(alpha: 0.4),
                       blurRadius: 20,
                       offset: const Offset(0, 8),
                     ),
@@ -444,19 +509,15 @@ class _LoginButtonState extends State<_LoginButton>
           child: widget.isLoading
               ? const Center(
                   child: SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(
-                      color: Colors.white,
-                      strokeWidth: 2.5,
-                    ),
+                    width: 24, height: 24,
+                    child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5),
                   ),
                 )
               : Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'Sign In',
+                      'Se connecter',
                       style: GoogleFonts.sora(
                         color: Colors.white,
                         fontSize: 16,
@@ -465,17 +526,12 @@ class _LoginButtonState extends State<_LoginButton>
                     ),
                     const SizedBox(width: 10),
                     Container(
-                      width: 28,
-                      height: 28,
+                      width: 28, height: 28,
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
+                        color: Colors.white.withValues(alpha: 0.2),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(
-                        Icons.arrow_forward_rounded,
-                        color: Colors.white,
-                        size: 16,
-                      ),
+                      child: const Icon(HugeIcons.strokeRoundedArrowRight01, color: Colors.white, size: 16),
                     ),
                   ],
                 ),

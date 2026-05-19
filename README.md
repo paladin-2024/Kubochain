@@ -54,4 +54,12 @@ Make sure you have the Flutter SDK and Node.js installed on your machine.
 ### Installation
 
 1.  **Clone the repository:**
+
+┌────────────────────┬────────────────────┬───────────┐
+│        Role        │       Email        │ Password  │
+├────────────────────┼────────────────────┼───────────┤
+│ Passenger (client) │ passenger@test.com │ Test1234! │
+├────────────────────┼────────────────────┼───────────┤
+│ Driver (rider)     │ driver@test.com    │ Test1234! │
+└────────────────────┴────────────────────┴───────────┘
     

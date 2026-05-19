@@ -78,6 +78,10 @@ async def verify_otp(phone: str, code: str, db: AsyncSession) -> bool:
     if total_recent > settings.otp_max_attempts * 2:
         raise HTTPException(status_code=429, detail="Too many OTP attempts. Please try again later.")
 
+    # Dev bypass: accept "000000" when Twilio is not configured
+    if not settings.twilio_account_sid and code == "000000":
+        return True
+
     result = await db.execute(
         select(OtpCode)
         .where(

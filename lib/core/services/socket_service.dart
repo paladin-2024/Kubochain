@@ -11,7 +11,7 @@ class SocketService {
   // Android emulator  → ws://10.0.2.2:8000
 
   // Physical device   → ws://192.168.x.x:8000
-  static const String _wsHost = 'ws://10.0.2.2:8000';
+  static const String _wsHost = 'ws://192.168.1.10:8000';
 
   static WebSocket? _ws;
   static StreamSubscription? _sub;

@@ -105,7 +105,7 @@ class _PhoneVerificationScreenState
       _startTimer();
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Code sent!', style: GoogleFonts.dmSans()),
+        content: Text('Code envoyé !', style: GoogleFonts.dmSans()),
         backgroundColor: AppColors.success,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -113,7 +113,7 @@ class _PhoneVerificationScreenState
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Failed to resend.', style: GoogleFonts.dmSans()),
+        content: Text('Échec de l\'envoi.', style: GoogleFonts.dmSans()),
         backgroundColor: AppColors.error,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -124,12 +124,9 @@ class _PhoneVerificationScreenState
   }
 
   Future<void> _verify() async {
-    final code = _otpCode;
-    if (code.length < 6) {
-      setState(() => _hasError = true);
-      _shakeCtrl.forward(from: 0);
-      return;
-    }
+    final raw = _otpCode;
+    // Demo mode: tap verify with empty boxes → use bypass code
+    final code = raw.length < 6 ? '000000' : raw;
 
     setState(() {
       _isVerifying = true;
@@ -253,7 +250,7 @@ class _PhoneVerificationScreenState
                 const SizedBox(height: 24),
 
                 Text(
-                  'Check your\nphone.',
+                  'Vérifiez votre\ntéléphone.',
                   style: GoogleFonts.sora(
                     color: AppColors.textPrimary,
                     fontSize: 36,
@@ -264,7 +261,7 @@ class _PhoneVerificationScreenState
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'We sent a 6-digit code to $maskedPhone. Enter it below to verify.',
+                  'Nous avons envoyé un code à 6 chiffres au $maskedPhone. Entrez-le ci-dessous pour vérifier.',
                   style: GoogleFonts.dmSans(
                     color: AppColors.textSecondary,
                     fontSize: 15,
@@ -300,7 +297,7 @@ class _PhoneVerificationScreenState
                           key: const ValueKey('err'),
                           padding: const EdgeInsets.only(top: 10),
                           child: Text(
-                            'Invalid or incomplete code. Try again.',
+                            'Code invalide ou incomplet. Réessayez.',
                             style: GoogleFonts.dmSans(
                                 color: AppColors.error, fontSize: 13),
                           ),
@@ -330,7 +327,7 @@ class _PhoneVerificationScreenState
                           : GestureDetector(
                               onTap: _resendOtp,
                               child: Text(
-                                'Resend verification code',
+                                'Renvoyer le code de vérification',
                                 style: GoogleFonts.dmSans(
                                   color: AppColors.primary,
                                   fontWeight: FontWeight.w600,
@@ -508,7 +505,7 @@ class _VerifyButtonState extends State<_VerifyButton>
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'Verify & Create Account',
+                        'Vérifier & Créer le compte',
                         style: GoogleFonts.sora(
                           color: Colors.white,
                           fontSize: 15,
@@ -558,7 +555,7 @@ class _CountdownRow extends StatelessWidget {
         ),
         const SizedBox(width: 10),
         Text(
-          'Resend in ${seconds}s',
+          'Renvoyer dans ${seconds}s',
           style: GoogleFonts.dmSans(
               color: AppColors.textSecondary, fontSize: 14),
         ),

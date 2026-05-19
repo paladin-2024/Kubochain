@@ -93,13 +93,13 @@ async def register(request: Request, body: RegisterIn, db: AsyncSession = Depend
 @router.post("/login", response_model=AuthOut)
 @limiter.limit("10/minute")
 async def login(request: Request, body: LoginIn, db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(User).where(User.email == body.email))
+    result = await db.execute(select(User).where(User.phone == body.phone))
     user = result.scalar_one_or_none()
     # Always run bcrypt even when user not found — prevents timing-based user enumeration
     dummy_hash = "$2b$12$eImiTXuWVxfM37uY4JANjQuu1WTgP8I9yBLKDFAGHI7tQDq6jZKJy"
     valid = verify_password(body.password, user.password if user else dummy_hash)
     if not user or not valid:
-        raise HTTPException(status_code=401, detail="Invalid email or password")
+        raise HTTPException(status_code=401, detail="Numéro de téléphone ou mot de passe incorrect")
     if not user.is_active:
         raise HTTPException(status_code=403, detail="Account is disabled")
     return _auth_out(user)

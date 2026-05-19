@@ -4,7 +4,7 @@ import 'storage_service.dart';
 class ApiService {
   // Android emulator  → 10.0.2.2
   // Physical device   → your machine's LAN IP (run `ip a` / `ipconfig`)
-  static const String _host   = 'http://10.0.2.2:8000';
+  static const String _host   = 'http://192.168.1.10:8000';
   static const String baseUrl = '$_host/api';
 
   static String imageUrl(String path) => '$_host$path';
@@ -83,8 +83,8 @@ class ApiService {
 
   // ── Auth ───────────────────────────────────────────────────────────────────
 
-  static Future<Response> login(String email, String password) =>
-      _dio.post('/auth/login', data: {'email': email, 'password': password});
+  static Future<Response> login(String phone, String password) =>
+      _dio.post('/auth/login', data: {'phone': phone, 'password': password});
 
   // FastAPI RegisterIn uses snake_case field names.
   static Future<Response> register(Map<String, dynamic> data) =>

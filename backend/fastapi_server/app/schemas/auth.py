@@ -70,8 +70,16 @@ class RegisterIn(BaseModel):
 
 
 class LoginIn(BaseModel):
-    email: EmailStr
+    phone: str
     password: str
+
+    @field_validator("phone")
+    @classmethod
+    def _validate_phone(cls, v: str) -> str:
+        cleaned = v.strip()
+        if not _PHONE_RE.match(cleaned):
+            raise ValueError("Invalid phone number format")
+        return cleaned
 
 
 class UpdateProfileIn(BaseModel):
