@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/services/location_service.dart';
 import '../../models/ride_model.dart';
-import '../../providers/location_provider.dart';
+import '../../providers/providers.dart';
 import '../../widgets/common/app_button.dart';
 import '../../widgets/map/live_map_widget.dart';
 import 'choose_rider_screen.dart';
 
-class BookRideScreen extends StatefulWidget {
+class BookRideScreen extends ConsumerStatefulWidget {
   const BookRideScreen({super.key});
 
   @override
-  State<BookRideScreen> createState() => _BookRideScreenState();
+  ConsumerState<BookRideScreen> createState() => _BookRideScreenState();
 }
 
-class _BookRideScreenState extends State<BookRideScreen> {
+class _BookRideScreenState extends ConsumerState<BookRideScreen> {
   final _destinationCtrl = TextEditingController();
   final MapController _mapController = MapController();
 
@@ -47,7 +47,7 @@ class _BookRideScreenState extends State<BookRideScreen> {
   }
 
   Future<void> _initPickup() async {
-    final loc = context.read<LocationProvider>();
+    final loc = ref.read(locationProvider);
     if (loc.currentLocation != null) {
       _pickup = LocationPoint(
         address: loc.currentAddress,

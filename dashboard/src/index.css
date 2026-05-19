@@ -1,31 +1,114 @@
-@import 'leaflet/dist/leaflet.css';
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-* {
-  font-family: 'Poppins', sans-serif;
-}
+/* ── Fonts ─────────────────────────────────────────────────────────────────── */
+* { font-family: 'DM Sans', sans-serif; }
+h1, h2, h3, h4, h5, h6, .font-heading { font-family: 'Sora', sans-serif; }
 
+/* ── Base ──────────────────────────────────────────────────────────────────── */
 body {
-  @apply bg-dark-bg text-white;
+  background-color: #F1F5F9;
+  color: #1E293B;
   margin: 0;
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { @apply bg-dark-bg; }
-::-webkit-scrollbar-thumb { @apply bg-dark-border rounded-full; }
-::-webkit-scrollbar-thumb:hover { @apply bg-primary; }
+/* ── Scrollbar ─────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: #F1F5F9; }
+::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: #2563EB; }
 
-/* Leaflet map dark overlay */
-.leaflet-tile-pane { filter: brightness(0.7) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7); }
+/* ── Status badges ─────────────────────────────────────────────────────────── */
+.badge-pending     { @apply bg-warning/10 text-warning   border border-warning/25; }
+.badge-accepted    { @apply bg-primary/10 text-primary   border border-primary/25; }
+.badge-arriving    { @apply bg-orange/10  text-orange    border border-orange/25; }
+.badge-in_progress { @apply bg-success/10 text-success   border border-success/25; }
+.badge-completed   { @apply bg-success/10 text-success   border border-success/25; }
+.badge-cancelled   { @apply bg-danger/10  text-danger    border border-danger/25; }
 
-/* Status badges */
-.badge-pending   { @apply bg-warning/10 text-warning border border-warning/20; }
-.badge-accepted  { @apply bg-primary/10 text-primary border border-primary/20; }
-.badge-arriving  { @apply bg-orange/10 text-orange border border-orange/20; }
-.badge-in_progress { @apply bg-success/10 text-success border border-success/20; }
-.badge-completed { @apply bg-success/10 text-success border border-success/20; }
-.badge-cancelled { @apply bg-danger/10 text-danger border border-danger/20; }
+/* ── Misc ──────────────────────────────────────────────────────────────────── */
+input[type="date"] { color-scheme: light; }
+.gm-style { border-radius: inherit; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   WHITE THEME — global overrides
+   All pages, sidebar, and components are affected.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Primary text: anything that used text-white in dark mode → slate-900 ── */
+.text-white {
+  color: #1E293B !important;
+}
+
+/* ── Hover / group-hover white → also slate ─────────────────────────────── */
+.hover\:text-white:hover,
+.group:hover .group-hover\:text-white {
+  color: #475569 !important;
+}
+
+/* ── RESTORE real white text on colored solid backgrounds ───────────────── */
+/* Same element: bg-primary + text-white → stays white */
+.bg-primary.text-white,
+.bg-primary-dark.text-white,
+.bg-success.text-white,
+.bg-danger.text-white,
+.bg-warning.text-white,
+.bg-orange.text-white {
+  color: #ffffff !important;
+}
+/* Child elements inside solid-color wrappers */
+.bg-primary .text-white,
+.bg-primary-dark .text-white,
+.bg-success .text-white,
+.bg-danger .text-white,
+.bg-warning .text-white,
+.bg-orange .text-white {
+  color: #ffffff !important;
+}
+/* Buttons with colored backgrounds should always have white text */
+button.bg-primary,
+button.bg-success,
+button.bg-danger,
+button.bg-warning,
+button.bg-orange,
+a.bg-primary,
+a.bg-success,
+a.bg-danger,
+a.bg-warning,
+a.bg-orange {
+  color: #ffffff !important;
+}
+
+/* ── Gray scale: dark-mode grays are too light for white bg ─────────────── */
+.text-gray-300 { color: #475569 !important; }   /* was near-invisible → slate-600 */
+.text-gray-400 { color: #64748B !important; }   /* slate-500                      */
+/* gray-500, 600, 700 are fine as Tailwind defaults on white bg */
+
+/* ── Hover backgrounds: semi-transparent white → light slate ────────────── */
+.hover\:bg-white\/2:hover,
+.hover\:bg-white\/3:hover,
+.hover\:bg-white\/5:hover,
+.hover\:bg-white\/6:hover { background-color: #F8FAFC !important; }
+
+/* ── Nested dark-bg surfaces (inner panels, table alt rows) ─────────────── */
+.bg-dark-bg { background-color: #F8FAFC !important; }
+
+/* ── Card surfaces: force white background ───────────────────────────────── */
+.bg-dark-card {
+  background-color: #FFFFFF !important;
+  box-shadow: 0 1px 3px rgba(15,23,42,0.07), 0 1px 2px rgba(15,23,42,0.04) !important;
+}
+
+/* ── Border color ────────────────────────────────────────────────────────── */
+.border-dark-border { border-color: #E2E8F0 !important; }
+
+/* ── Inputs / selects: ensure readable text ─────────────────────────────── */
+input, select, textarea {
+  color: #1E293B;
+}
+input::placeholder,
+textarea::placeholder { color: #94A3B8; }
+
+/* ── Leaflet / map popups (if any remain) ───────────────────────────────── */
+.leaflet-popup-content { color: #1E293B; }

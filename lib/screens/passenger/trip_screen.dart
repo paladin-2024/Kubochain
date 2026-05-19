@@ -1,24 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_constants.dart';
 import '../../providers/ride_provider.dart';
+import '../../providers/providers.dart';
 import '../../widgets/map/live_map_widget.dart';
 import 'rate_driver_screen.dart';
 
-class TripScreen extends StatefulWidget {
+class TripScreen extends ConsumerStatefulWidget {
   const TripScreen({super.key});
 
   @override
-  State<TripScreen> createState() => _TripScreenState();
+  ConsumerState<TripScreen> createState() => _TripScreenState();
 }
 
-class _TripScreenState extends State<TripScreen> {
+class _TripScreenState extends ConsumerState<TripScreen> {
   @override
   void initState() {
     super.initState();
-    final ride = context.read<RideProvider>();
+    final ride = ref.read(rideProvider);
     if (ride.currentRide != null) {
       ride.loadRoutePoints(
         LatLng(ride.currentRide!.pickup.lat, ride.currentRide!.pickup.lng),
@@ -29,27 +31,29 @@ class _TripScreenState extends State<TripScreen> {
   }
 
   void _onStatusChange() {
-    final ride = context.read<RideProvider>();
+    final ride = ref.read(rideProvider);
     if (ride.rideStatus == RideStatus.completed && mounted) {
+      HapticFeedback.mediumImpact();
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const RateDriverScreen()),
       );
     }
     if (ride.rideStatus == RideStatus.awaitingConfirmation && mounted) {
-      setState(() {}); // rebuild to show confirmation button
+      HapticFeedback.mediumImpact();
+      setState(() {});
     }
   }
 
   @override
   void dispose() {
-    context.read<RideProvider>().removeListener(_onStatusChange);
+    ref.read(rideProvider).removeListener(_onStatusChange);
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final ride = context.watch<RideProvider>();
+    final ride = ref.watch(rideProvider);
     final currentRide = ride.currentRide;
     final driverLoc = ride.driverLocation;
 
@@ -86,9 +90,9 @@ class _TripScreenState extends State<TripScreen> {
                     BoxShadow(color: AppColors.success.withOpacity(0.4), blurRadius: 8),
                   ],
                 ),
-                child: Row(
+                child: const Row(
                   mainAxisSize: MainAxisSize.min,
-                  children: const [
+                  children: [
                     Icon(Icons.directions_bike, color: Colors.white, size: 18),
                     SizedBox(width: 8),
                     Text(
@@ -121,7 +125,6 @@ class _TripScreenState extends State<TripScreen> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Destination
                   if (currentRide != null) ...[
                     Row(
                       children: [
@@ -142,8 +145,6 @@ class _TripScreenState extends State<TripScreen> {
                     const SizedBox(height: 12),
                     const Divider(),
                     const SizedBox(height: 12),
-
-                    // Trip stats
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
@@ -178,9 +179,9 @@ class _TripScreenState extends State<TripScreen> {
               child: Container(
                 padding: const EdgeInsets.fromLTRB(20, 24, 20, 40),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF0D1525),
+                  color: Colors.white,
                   borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-                  boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.4), blurRadius: 20)],
+                  boxShadow: AppColors.cardShadow,
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -207,7 +208,8 @@ class _TripScreenState extends State<TripScreen> {
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                         ),
                         onPressed: () async {
-                          final ok = await context.read<RideProvider>().passengerConfirmRide();
+                          HapticFeedback.mediumImpact();
+                          final ok = await ref.read(rideProvider).passengerConfirmRide();
                           if (!ok && mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(content: Text('Failed to confirm. Try again.')),

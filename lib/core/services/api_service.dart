@@ -2,11 +2,11 @@ import 'package:dio/dio.dart';
 import 'storage_service.dart';
 
 class ApiService {
-  // Emulator: 10.0.2.2 | Physical device: your machine's LAN IP (run `ip a` or `ifconfig`)
-  static const String _host = 'https://kubochain-backend.onrender.com';
+  // Android emulator  → 10.0.2.2
+  // Physical device   → your machine's LAN IP (run `ip a` / `ipconfig`)
+  static const String _host   = 'http://10.0.2.2:8000';
   static const String baseUrl = '$_host/api';
 
-  /// Use this to build image URLs: ApiService.imageUrl('/uploads/profile_xxx.jpg')
   static String imageUrl(String path) => '$_host$path';
 
   static final Dio _dio = Dio(
@@ -18,6 +18,8 @@ class ApiService {
     ),
   );
 
+  static bool _isRefreshing = false;
+
   static void init() {
     _dio.interceptors.add(
       InterceptorsWrapper(
@@ -28,29 +30,81 @@ class ApiService {
           }
           handler.next(options);
         },
-        onResponse: (response, handler) => handler.next(response),
-        onError: (error, handler) => handler.next(error),
+        onError: (error, handler) async {
+          // ── Auto-refresh on 401 ──────────────────────────────────────────
+          if (error.response?.statusCode == 401 && !_isRefreshing) {
+            final refreshToken = StorageService.getRefreshToken();
+            if (refreshToken != null) {
+              _isRefreshing = true;
+              try {
+                final res = await _dio.post(
+                  '/auth/refresh',
+                  data: {'refresh_token': refreshToken},
+                  options: Options(extra: {'skipAuth': true}),
+                );
+                final newAccess  = res.data['access_token']  as String;
+                final newRefresh = res.data['refresh_token'] as String;
+                await StorageService.saveToken(newAccess);
+                await StorageService.saveRefreshToken(newRefresh);
+                _isRefreshing = false;
+
+                // Retry original request with new token
+                final opts = error.requestOptions;
+                opts.headers['Authorization'] = 'Bearer $newAccess';
+                final retried = await _dio.fetch(opts);
+                return handler.resolve(retried);
+              } catch (_) {
+                _isRefreshing = false;
+                await StorageService.clearAll();
+              }
+            }
+          }
+
+          // ── Retry on connection / timeout errors (handles cold starts) ───
+          final extra   = error.requestOptions.extra;
+          final retries = (extra['retries'] as int?) ?? 0;
+          final isRetryable = error.type == DioExceptionType.connectionError ||
+              error.type == DioExceptionType.connectionTimeout ||
+              error.type == DioExceptionType.receiveTimeout;
+          if (isRetryable && retries < 3) {
+            await Future.delayed(Duration(seconds: retries + 1));
+            final opts = error.requestOptions;
+            opts.extra['retries'] = retries + 1;
+            try {
+              return handler.resolve(await _dio.fetch(opts));
+            } catch (_) {}
+          }
+
+          handler.next(error);
+        },
       ),
     );
   }
 
-  // Auth
+  // ── Auth ───────────────────────────────────────────────────────────────────
+
   static Future<Response> login(String email, String password) =>
       _dio.post('/auth/login', data: {'email': email, 'password': password});
 
+  // FastAPI RegisterIn uses snake_case field names.
   static Future<Response> register(Map<String, dynamic> data) =>
       _dio.post('/auth/register', data: data);
 
+  static Future<Response> refreshTokens(String refreshToken) =>
+      _dio.post('/auth/refresh', data: {'refresh_token': refreshToken});
+
   static Future<Response> getMe() => _dio.get('/auth/me');
 
-  // OTP
+  // ── OTP ─────────────────────────────────────────────────────────────────────
+
   static Future<Response> sendOtp(String phone) =>
       _dio.post('/auth/send-otp', data: {'phone': phone});
 
   static Future<Response> verifyOtp(String phone, String code) =>
       _dio.post('/auth/verify-otp', data: {'phone': phone, 'code': code});
 
-  // Profile
+  // ── Profile ──────────────────────────────────────────────────────────────────
+
   static Future<Response> uploadProfileImage(String filePath) async {
     final formData = FormData.fromMap({
       'image': await MultipartFile.fromFile(filePath, filename: 'profile.jpg'),
@@ -70,18 +124,17 @@ class ApiService {
   }
 
   static Future<Response> updateFcmToken(String token) =>
-      _dio.put('/auth/fcm-token', data: {'fcmToken': token});
+      _dio.put('/auth/fcm-token', data: {'fcm_token': token});
 
+  // FastAPI UpdateProfileIn uses snake_case.
   static Future<Response> updateProfile(Map<String, dynamic> data) =>
       _dio.put('/auth/profile', data: data);
 
   static Future<Response> updateVehicle(Map<String, String> data) =>
       _dio.put('/driver/vehicle', data: data);
 
-  static Future<Response> passengerConfirmRide(String rideId) =>
-      _dio.put('/rides/$rideId/passenger-confirm');
+  // ── Rides ─────────────────────────────────────────────────────────────────
 
-  // Rides
   static Future<Response> createRide(Map<String, dynamic> data) =>
       _dio.post('/rides', data: data);
 
@@ -99,29 +152,8 @@ class ApiService {
       _dio.post('/rides/$rideId/rate',
           data: {'rating': rating, 'comment': comment, 'tags': tags});
 
-  static Future<Response> getTopRatedDrivers() =>
-      _dio.get('/drivers/top-rated');
-
-  // Chat
-  static Future<Response> getConversations() => _dio.get('/chat/conversations');
-
-  static Future<Response> getMessages(String rideId) =>
-      _dio.get('/chat/$rideId');
-
-  static Future<Response> sendMessage(
-          String rideId, String receiverId, String content) =>
-      _dio.post('/chat/$rideId',
-          data: {'receiverId': receiverId, 'content': content});
-
-  // Drivers
-  static Future<Response> getNearbyDrivers({required double lat, required double lng}) =>
-      _dio.get('/drivers/nearby', queryParameters: {'lat': lat, 'lng': lng});
-
-  static Future<Response> updateDriverLocation(double lat, double lng) =>
-      _dio.put('/drivers/location', data: {'lat': lat, 'lng': lng});
-
-  static Future<Response> toggleAvailability(bool isOnline) =>
-      _dio.put('/drivers/availability', data: {'isOnline': isOnline});
+  static Future<Response> passengerConfirmRide(String rideId) =>
+      _dio.put('/rides/$rideId/passenger-confirm');
 
   static Future<Response> acceptRide(String rideId) =>
       _dio.put('/rides/$rideId/accept');
@@ -132,10 +164,40 @@ class ApiService {
   static Future<Response> completeRide(String rideId) =>
       _dio.put('/rides/$rideId/complete');
 
+  // ── Drivers ───────────────────────────────────────────────────────────────
+
+  static Future<Response> getTopRatedDrivers() =>
+      _dio.get('/drivers/top-rated');
+
+  static Future<Response> getNearbyDrivers({
+    required double lat,
+    required double lng,
+  }) =>
+      _dio.get('/drivers/nearby', queryParameters: {'lat': lat, 'lng': lng});
+
+  static Future<Response> updateDriverLocation(double lat, double lng) =>
+      _dio.put('/drivers/location', data: {'lat': lat, 'lng': lng});
+
+  static Future<Response> toggleAvailability(bool isOnline) =>
+      _dio.put('/drivers/availability', data: {'is_online': isOnline});
+
   static Future<Response> getDriverEarnings() =>
       _dio.get('/drivers/earnings');
 
-  // Admin
+  // ── Chat ─────────────────────────────────────────────────────────────────
+
+  static Future<Response> getConversations() => _dio.get('/chat/conversations');
+
+  static Future<Response> getMessages(String rideId) =>
+      _dio.get('/chat/$rideId');
+
+  static Future<Response> sendMessage(
+          String rideId, String receiverId, String content) =>
+      _dio.post('/chat/$rideId',
+          data: {'receiver_id': receiverId, 'content': content});
+
+  // ── Admin ─────────────────────────────────────────────────────────────────
+
   static Future<Response> getAdminStats() => _dio.get('/admin/stats');
 
   static Future<Response> getAllRides({Map<String, dynamic>? params}) =>

@@ -1,32 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/services/notification_service.dart';
-import '../../providers/auth_provider.dart';
-import '../../providers/driver_provider.dart';
-import '../../providers/location_provider.dart';
+import '../../providers/providers.dart';
 import '../../widgets/map/live_map_widget.dart';
 import 'ride_request_screen.dart';
 import 'trip_navigation_screen.dart';
 
-class RiderHomeScreen extends StatefulWidget {
+class RiderHomeScreen extends ConsumerStatefulWidget {
   const RiderHomeScreen({super.key});
 
   @override
-  State<RiderHomeScreen> createState() => _RiderHomeScreenState();
+  ConsumerState<RiderHomeScreen> createState() => _RiderHomeScreenState();
 }
 
-class _RiderHomeScreenState extends State<RiderHomeScreen>
+class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen>
     with TickerProviderStateMixin {
   final MapController _mapController = MapController();
   static const LatLng _defaultCenter = AppConstants.defaultLocation;
 
   late AnimationController _onlineGlowCtrl;
+  late AnimationController _cardEntryCtrl;
   late Animation<double> _onlineGlow;
+  late Animation<double> _cardEntry;
+  late Animation<Offset> _cardSlide;
 
   @override
   void initState() {
@@ -34,29 +36,37 @@ class _RiderHomeScreenState extends State<RiderHomeScreen>
 
     _onlineGlowCtrl = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1500),
+      duration: const Duration(milliseconds: 1600),
     )..repeat(reverse: true);
+
+    _cardEntryCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    )..forward();
+
     _onlineGlow = Tween<double>(begin: 0.3, end: 0.8).animate(
       CurvedAnimation(parent: _onlineGlowCtrl, curve: Curves.easeInOut),
     );
+    _cardEntry = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _cardEntryCtrl, curve: Curves.easeOutCubic),
+    );
+    _cardSlide = Tween<Offset>(begin: const Offset(0, 0.3), end: Offset.zero)
+        .animate(CurvedAnimation(parent: _cardEntryCtrl, curve: Curves.easeOutCubic));
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<LocationProvider>().init();
-      context.read<DriverProvider>().addListener(_onDriverStateChange);
+      ref.read(locationProvider).init();
+      ref.read(driverProvider).addListener(_onDriverStateChange);
 
-      // If the app was opened via a ride request notification, load that ride
       final pending = NotificationService.consumePendingNotification();
       if (pending != null && pending['type'] == 'new_ride_request') {
         final rideId = pending['rideId'] as String?;
-        if (rideId != null) {
-          context.read<DriverProvider>().loadRideFromNotification(rideId);
-        }
+        if (rideId != null) ref.read(driverProvider).loadRideFromNotification(rideId);
       }
     });
   }
 
   void _onDriverStateChange() {
-    final driver = context.read<DriverProvider>();
+    final driver = ref.read(driverProvider);
     if (driver.pendingRequest != null && mounted) {
       showModalBottomSheet(
         context: context,
@@ -72,8 +82,7 @@ class _RiderHomeScreenState extends State<RiderHomeScreen>
             if (ok && mounted) {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                    builder: (_) => const TripNavigationScreen()),
+                MaterialPageRoute(builder: (_) => const TripNavigationScreen()),
               );
             }
           },
@@ -95,81 +104,89 @@ class _RiderHomeScreenState extends State<RiderHomeScreen>
   @override
   void dispose() {
     _onlineGlowCtrl.dispose();
-    context.read<DriverProvider>().removeListener(_onDriverStateChange);
+    _cardEntryCtrl.dispose();
+    ref.read(driverProvider).removeListener(_onDriverStateChange);
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final auth = context.watch<AuthProvider>();
-    final driver = context.watch<DriverProvider>();
-    final location = context.watch<LocationProvider>();
+    final auth = ref.watch(authProvider);
+    final driver = ref.watch(driverProvider);
+    final location = ref.watch(locationProvider);
     final center = location.currentLocation ?? _defaultCenter;
     final firstName = auth.user?.firstName ?? 'Driver';
 
     return Scaffold(
       body: Stack(
         children: [
-          // Map
+          // ── Map ────────────────────────────────────────────────────────────
           LiveMapWidget(
             center: center,
             pickupLocation: location.currentLocation,
             mapController: _mapController,
-            isDark: true,
           ),
 
-          // Top controls
+          // ── Top overlay bar ────────────────────────────────────────────────
           Positioned(
             top: 0,
             left: 0,
             right: 0,
             child: SafeArea(
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 16, vertical: 12),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 child: Row(
                   children: [
-                    // Online/Offline toggle
+                    // Online/Offline pill toggle
                     GestureDetector(
-                      onTap: () => driver.toggleOnline(!driver.isOnline),
+                      onTap: () {
+                        HapticFeedback.mediumImpact();
+                        driver.toggleOnline(!driver.isOnline);
+                      },
                       child: AnimatedBuilder(
                         animation: _onlineGlow,
                         builder: (_, __) => AnimatedContainer(
                           duration: const Duration(milliseconds: 300),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 12),
+                          curve: Curves.easeOutCubic,
+                          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 11),
                           decoration: BoxDecoration(
-                            color: driver.isOnline
-                                ? AppColors.success
-                                : AppColors.cardDark,
+                            color: driver.isOnline ? AppColors.success : Colors.white,
                             borderRadius: BorderRadius.circular(50),
                             border: Border.all(
                               color: driver.isOnline
-                                  ? AppColors.success.withOpacity(0.5)
+                                  ? AppColors.success
                                   : AppColors.borderDark,
+                              width: 1.5,
                             ),
                             boxShadow: driver.isOnline
                                 ? [
                                     BoxShadow(
-                                      color: AppColors.success
-                                          .withOpacity(_onlineGlow.value * 0.5),
+                                      color: AppColors.success.withOpacity(_onlineGlow.value * 0.5),
                                       blurRadius: 20,
                                       spreadRadius: 2,
                                     ),
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.08),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 3),
+                                    ),
                                   ]
-                                : [],
+                                : [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.08),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 3),
+                                    ),
+                                  ],
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              AnimatedContainer(
-                                duration: const Duration(milliseconds: 300),
-                                width: 10,
-                                height: 10,
+                              Container(
+                                width: 9,
+                                height: 9,
                                 decoration: BoxDecoration(
-                                  color: driver.isOnline
-                                      ? Colors.white
-                                      : AppColors.textSecondary,
+                                  color: driver.isOnline ? Colors.white : AppColors.textMuted,
                                   shape: BoxShape.circle,
                                 ),
                               ),
@@ -177,9 +194,7 @@ class _RiderHomeScreenState extends State<RiderHomeScreen>
                               Text(
                                 driver.isOnline ? 'Online' : 'Offline',
                                 style: GoogleFonts.sora(
-                                  color: driver.isOnline
-                                      ? Colors.white
-                                      : AppColors.textSecondary,
+                                  color: driver.isOnline ? Colors.white : AppColors.textSecondary,
                                   fontWeight: FontWeight.w700,
                                   fontSize: 14,
                                 ),
@@ -189,29 +204,29 @@ class _RiderHomeScreenState extends State<RiderHomeScreen>
                         ),
                       ),
                     ),
+
                     const Spacer(),
-                    // Avatar pill
+
+                    // Driver avatar pill
                     Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 8),
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                       decoration: BoxDecoration(
-                        color: AppColors.cardDark.withOpacity(0.9),
+                        color: Colors.white,
                         borderRadius: BorderRadius.circular(50),
-                        border: Border.all(color: AppColors.borderDark),
+                        boxShadow: AppColors.softShadow,
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           CircleAvatar(
-                            radius: 14,
-                            backgroundColor:
-                                AppColors.success.withOpacity(0.2),
+                            radius: 15,
+                            backgroundColor: AppColors.success.withOpacity(0.15),
                             child: Text(
                               firstName[0].toUpperCase(),
                               style: GoogleFonts.sora(
                                 color: AppColors.success,
-                                fontWeight: FontWeight.w700,
-                                fontSize: 12,
+                                fontWeight: FontWeight.w800,
+                                fontSize: 13,
                               ),
                             ),
                           ),
@@ -233,175 +248,181 @@ class _RiderHomeScreenState extends State<RiderHomeScreen>
             ),
           ),
 
-          // Go Online FAB (when offline)
-          if (!driver.isOnline)
-            Positioned(
-              bottom: 220,
-              right: 16,
-              child: GestureDetector(
-                onTap: () => driver.toggleOnline(true),
+          // ── Bottom info card ───────────────────────────────────────────────
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: SlideTransition(
+              position: _cardSlide,
+              child: FadeTransition(
+                opacity: _cardEntry,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 20, vertical: 12),
                   decoration: BoxDecoration(
-                    gradient: AppColors.successGradient,
-                    borderRadius: BorderRadius.circular(50),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.success.withOpacity(0.4),
-                        blurRadius: 16,
-                        spreadRadius: 2,
-                      ),
-                    ],
+                    color: Colors.white,
+                    borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+                    boxShadow: AppColors.cardShadow,
                   ),
-                  child: Row(
+                  child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.power_settings_new_rounded,
-                          color: Colors.white, size: 18),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Go Online',
-                        style: GoogleFonts.sora(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 14,
+                      // Handle bar
+                      Center(
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(vertical: 10),
+                          width: 36,
+                          height: 4,
+                          decoration: BoxDecoration(
+                            color: AppColors.borderDark,
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                        ),
+                      ),
+
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(
+                          20, 4, 20,
+                          MediaQuery.of(context).padding.bottom + 90,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Greeting + status row
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Hello, $firstName!',
+                                        style: GoogleFonts.sora(
+                                          color: AppColors.textOnDark,
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.w800,
+                                          letterSpacing: -0.5,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Row(
+                                        children: [
+                                          AnimatedBuilder(
+                                            animation: _onlineGlow,
+                                            builder: (_, __) => Container(
+                                              width: 8,
+                                              height: 8,
+                                              decoration: BoxDecoration(
+                                                color: driver.isOnline
+                                                    ? AppColors.success
+                                                    : AppColors.textMuted,
+                                                shape: BoxShape.circle,
+                                                boxShadow: driver.isOnline
+                                                    ? [
+                                                        BoxShadow(
+                                                          color: AppColors.success.withOpacity(_onlineGlow.value * 0.7),
+                                                          blurRadius: 6,
+                                                          spreadRadius: 1,
+                                                        ),
+                                                      ]
+                                                    : [],
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 6),
+                                          Text(
+                                            driver.isOnline
+                                                ? 'Waiting for ride requests…'
+                                                : 'Go online to start earning',
+                                            style: GoogleFonts.sora(
+                                              color: AppColors.textSecondary,
+                                              fontSize: 13,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                // Quick go-online CTA if offline
+                                if (!driver.isOnline)
+                                  GestureDetector(
+                                    onTap: () {
+                                      HapticFeedback.mediumImpact();
+                                      driver.toggleOnline(true);
+                                    },
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                                      decoration: BoxDecoration(
+                                        gradient: const LinearGradient(
+                                          colors: [Color(0xFF10B981), Color(0xFF059669)],
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
+                                        ),
+                                        borderRadius: BorderRadius.circular(50),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: AppColors.success.withOpacity(0.4),
+                                            blurRadius: 14,
+                                            offset: const Offset(0, 4),
+                                          ),
+                                        ],
+                                      ),
+                                      child: Text(
+                                        'Go Online',
+                                        style: GoogleFonts.sora(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 13,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+
+                            const SizedBox(height: 20),
+
+                            // Stats row — huge icons
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: _StatTile(
+                                    icon: Icons.account_balance_wallet_rounded,
+                                    label: "Today's Earn",
+                                    value: 'FC ${driver.todayEarnings.toStringAsFixed(0)}',
+                                    color: AppColors.success,
+                                    bgColor: const Color(0xFFECFDF5),
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: _StatTile(
+                                    icon: Icons.electric_moped_rounded,
+                                    label: 'Trips Today',
+                                    value: '${driver.completedRides.length}',
+                                    color: AppColors.primary,
+                                    bgColor: const Color(0xFFEFF6FF),
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: _StatTile(
+                                    icon: Icons.star_rounded,
+                                    label: 'Rating',
+                                    value: '5.0',
+                                    color: AppColors.gold,
+                                    bgColor: const Color(0xFFFFFBEB),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                       ),
                     ],
                   ),
                 ),
-              ),
-            ),
-
-          // Bottom card
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              decoration: const BoxDecoration(
-                color: AppColors.surfaceDark,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-                boxShadow: [
-                  BoxShadow(color: Colors.black54, blurRadius: 20),
-                ],
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Handle
-                  Center(
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(vertical: 10),
-                      width: 40,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: AppColors.borderDark,
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                  ),
-
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(
-                        20, 4, 20,
-                        MediaQuery.of(context).padding.bottom + 16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Greeting + status line
-                        Row(
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Hello, $firstName!',
-                                  style: GoogleFonts.sora(
-                                    color: AppColors.textOnDark,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  driver.isOnline
-                                      ? 'Waiting for ride requests...'
-                                      : 'Go online to start earning',
-                                  style: GoogleFonts.sora(
-                                    color: AppColors.textSecondary,
-                                    fontSize: 13,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const Spacer(),
-                            // Status dot
-                            AnimatedBuilder(
-                              animation: _onlineGlow,
-                              builder: (_, __) => Container(
-                                width: 12,
-                                height: 12,
-                                decoration: BoxDecoration(
-                                  color: driver.isOnline
-                                      ? AppColors.success
-                                      : AppColors.textSecondary,
-                                  shape: BoxShape.circle,
-                                  boxShadow: driver.isOnline
-                                      ? [
-                                          BoxShadow(
-                                            color: AppColors.success
-                                                .withOpacity(_onlineGlow.value),
-                                            blurRadius: 8,
-                                            spreadRadius: 2,
-                                          ),
-                                        ]
-                                      : [],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-
-                        // Stats row
-                        Row(
-                          children: [
-                            Expanded(
-                              child: _StatTile(
-                                icon: Icons.account_balance_wallet_rounded,
-                                label: "Today's Earnings",
-                                value:
-                                    'FC ${driver.todayEarnings.toStringAsFixed(0)}',
-                                color: AppColors.success,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: _StatTile(
-                                icon: Icons.electric_moped_rounded,
-                                label: 'Trips Today',
-                                value:
-                                    '${driver.completedRides.length}',
-                                color: AppColors.primary,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: _StatTile(
-                                icon: Icons.star_rounded,
-                                label: 'Rating',
-                                value: '5.0',
-                                color: AppColors.gold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
               ),
             ),
           ),
@@ -417,43 +438,63 @@ class _StatTile extends StatelessWidget {
   final String label;
   final String value;
   final Color color;
+  final Color bgColor;
 
   const _StatTile({
     required this.icon,
     required this.label,
     required this.value,
     required this.color,
+    required this.bgColor,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AppColors.cardDark,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.borderDark),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withOpacity(0.12), width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: color.withOpacity(0.08),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: color, size: 20),
-          const SizedBox(height: 8),
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: bgColor,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, color: color, size: 26),
+          ),
+          const SizedBox(height: 10),
           Text(
             value,
             style: GoogleFonts.sora(
               color: AppColors.textOnDark,
-              fontWeight: FontWeight.w700,
+              fontWeight: FontWeight.w800,
               fontSize: 16,
+              letterSpacing: -0.3,
             ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
+          const SizedBox(height: 2),
           Text(
             label,
             style: GoogleFonts.sora(
               color: AppColors.textSecondary,
               fontSize: 10,
+              fontWeight: FontWeight.w500,
             ),
           ),
         ],

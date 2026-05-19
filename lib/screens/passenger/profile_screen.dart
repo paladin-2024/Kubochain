@@ -1,24 +1,26 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:provider/provider.dart';
+import 'package:hugeicons/hugeicons.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/services/api_service.dart';
-import '../../providers/auth_provider.dart';
-import '../../providers/ride_provider.dart';
+import '../../providers/providers.dart';
 import '../../screens/onboarding.dart';
 import '../common/about_screen.dart';
 import '../common/help_support_screen.dart';
 
-class PassengerProfileScreen extends StatefulWidget {
+class PassengerProfileScreen extends ConsumerStatefulWidget {
   const PassengerProfileScreen({super.key});
 
   @override
-  State<PassengerProfileScreen> createState() => _PassengerProfileScreenState();
+  ConsumerState<PassengerProfileScreen> createState() =>
+      _PassengerProfileScreenState();
 }
 
-class _PassengerProfileScreenState extends State<PassengerProfileScreen>
+class _PassengerProfileScreenState
+    extends ConsumerState<PassengerProfileScreen>
     with SingleTickerProviderStateMixin {
   bool _uploading = false;
   late AnimationController _fadeCtrl;
@@ -28,7 +30,7 @@ class _PassengerProfileScreenState extends State<PassengerProfileScreen>
     super.initState();
     _fadeCtrl = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 600),
+      duration: const Duration(milliseconds: 500),
     )..forward();
   }
 
@@ -43,7 +45,7 @@ class _PassengerProfileScreenState extends State<PassengerProfileScreen>
     final source = await showModalBottomSheet<ImageSource>(
       context: context,
       backgroundColor: Colors.transparent,
-      builder: (_) => _PhotoSourceSheet(),
+      builder: (_) => const _PhotoSourceSheet(),
     );
     if (source == null) return;
 
@@ -53,7 +55,7 @@ class _PassengerProfileScreenState extends State<PassengerProfileScreen>
     setState(() => _uploading = true);
     if (!mounted) return;
     try {
-      final ok = await context.read<AuthProvider>().updateProfileImage(file.path);
+      final ok = await ref.read(authProvider).updateProfileImage(file.path);
       if (mounted) {
         setState(() => _uploading = false);
         if (!ok) {
@@ -77,122 +79,43 @@ class _PassengerProfileScreenState extends State<PassengerProfileScreen>
     final controller = TextEditingController(text: currentValue);
     final result = await showDialog<String>(
       context: context,
-      builder: (ctx) => Dialog(
-        backgroundColor: AppColors.surfaceDark,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Edit $label',
-                style: GoogleFonts.sora(
-                  color: AppColors.textOnDark,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: controller,
-                autofocus: true,
-                style: GoogleFonts.sora(color: AppColors.textOnDark),
-                decoration: InputDecoration(
-                  hintText: label,
-                  hintStyle:
-                      GoogleFonts.sora(color: AppColors.textSecondary),
-                  filled: true,
-                  fillColor: AppColors.cardDark,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: AppColors.borderDark),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: AppColors.borderDark),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: AppColors.primary),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextButton(
-                      onPressed: () => Navigator.pop(ctx),
-                      child: Text('Cancel',
-                          style: GoogleFonts.sora(
-                              color: AppColors.textSecondary)),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        gradient: AppColors.primaryGradient,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: TextButton(
-                        onPressed: () =>
-                            Navigator.pop(ctx, controller.text.trim()),
-                        child: Text(
-                          'Save',
-                          style: GoogleFonts.sora(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
+      builder: (ctx) => _EditDialog(
+        label: label,
+        controller: controller,
+        onSave: (val) => Navigator.pop(ctx, val),
+        onCancel: () => Navigator.pop(ctx),
       ),
     );
 
     if (result == null || result == currentValue || !mounted) return;
 
-    final user = context.read<AuthProvider>().user;
+    final auth = ref.read(authProvider);
+    final user = auth.user;
     if (user == null) return;
 
-    final data = <String, dynamic>{
-      'firstName': user.firstName,
-      'lastName': user.lastName,
-      'email': user.email,
-      'phone': user.phone,
-    };
-    data[field] = result;
+    final ok = await auth.updateProfile(
+      firstName: field == 'firstName' ? result : user.firstName,
+      lastName: field == 'lastName' ? result : user.lastName,
+      email: field == 'email' ? result : user.email,
+      phone: field == 'phone' ? result : user.phone,
+    );
 
-    try {
-      await ApiService.updateProfile(data);
-      if (!mounted) return;
-      await context.read<AuthProvider>().checkAuth();
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Profile updated')),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to update: $e')),
-        );
-      }
-    }
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(ok ? 'Profile updated' : 'Failed to update',
+            style: GoogleFonts.dmSans()),
+        backgroundColor: ok ? AppColors.success : AppColors.error,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final auth = context.watch<AuthProvider>();
-    final ride = context.watch<RideProvider>();
+    final auth = ref.watch(authProvider);
+    final ride = ref.watch(rideProvider);
     final user = auth.user;
     final completedRides =
         ride.rideHistory.where((r) => r.isCompleted).length;
@@ -208,7 +131,7 @@ class _PassengerProfileScreenState extends State<PassengerProfileScreen>
           bottom: false,
           child: CustomScrollView(
             slivers: [
-              // Header
+              // Page title
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
@@ -217,7 +140,7 @@ class _PassengerProfileScreenState extends State<PassengerProfileScreen>
                     style: GoogleFonts.sora(
                       fontSize: 28,
                       fontWeight: FontWeight.w700,
-                      color: AppColors.textOnDark,
+                      color: AppColors.textPrimary,
                       letterSpacing: -0.5,
                     ),
                   ),
@@ -227,20 +150,21 @@ class _PassengerProfileScreenState extends State<PassengerProfileScreen>
               // Avatar hero card
               SliverToBoxAdapter(
                 child: Container(
-                  margin: const EdgeInsets.fromLTRB(24, 20, 24, 0),
+                  margin: const EdgeInsets.fromLTRB(24, 16, 24, 0),
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        AppColors.primary.withOpacity(0.15),
-                        AppColors.cardElevated,
+                        AppColors.primary.withOpacity(0.08),
+                        Colors.white,
                       ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
                     borderRadius: BorderRadius.circular(24),
                     border: Border.all(
-                        color: AppColors.primary.withOpacity(0.2)),
+                        color: AppColors.primary.withOpacity(0.15)),
+                    boxShadow: AppColors.cardShadow,
                   ),
                   child: Row(
                     children: [
@@ -257,7 +181,8 @@ class _PassengerProfileScreenState extends State<PassengerProfileScreen>
                                 gradient: AppColors.primaryGradient,
                                 boxShadow: [
                                   BoxShadow(
-                                    color: AppColors.primary.withOpacity(0.4),
+                                    color:
+                                        AppColors.primary.withOpacity(0.35),
                                     blurRadius: 20,
                                   )
                                 ],
@@ -271,9 +196,9 @@ class _PassengerProfileScreenState extends State<PassengerProfileScreen>
                                         placeholder: (_, __) =>
                                             const SizedBox(),
                                         errorWidget: (_, __, ___) =>
-                                            _avatarFallback(user),
+                                            _AvatarFallback(user: user),
                                       )
-                                    : _avatarFallback(user),
+                                    : _AvatarFallback(user: user),
                               ),
                             ),
                             Positioned(
@@ -282,9 +207,10 @@ class _PassengerProfileScreenState extends State<PassengerProfileScreen>
                               child: Container(
                                 width: 26,
                                 height: 26,
-                                decoration: const BoxDecoration(
-                                  color: AppColors.surfaceDark,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
                                   shape: BoxShape.circle,
+                                  boxShadow: AppColors.softShadow,
                                 ),
                                 child: _uploading
                                     ? const Padding(
@@ -294,8 +220,9 @@ class _PassengerProfileScreenState extends State<PassengerProfileScreen>
                                           color: AppColors.primary,
                                         ),
                                       )
-                                    : const Icon(Icons.camera_alt_rounded,
-                                        size: 14, color: AppColors.primary),
+                                    : const Icon(HugeIcons.strokeRoundedCamera01,
+                                        size: 14,
+                                        color: AppColors.primary),
                               ),
                             ),
                           ],
@@ -309,7 +236,7 @@ class _PassengerProfileScreenState extends State<PassengerProfileScreen>
                             Text(
                               user?.fullName ?? 'User',
                               style: GoogleFonts.sora(
-                                color: AppColors.textOnDark,
+                                color: AppColors.textPrimary,
                                 fontSize: 20,
                                 fontWeight: FontWeight.w700,
                               ),
@@ -317,7 +244,7 @@ class _PassengerProfileScreenState extends State<PassengerProfileScreen>
                             const SizedBox(height: 4),
                             Text(
                               user?.phone ?? '',
-                              style: GoogleFonts.sora(
+                              style: GoogleFonts.dmSans(
                                 color: AppColors.textSecondary,
                                 fontSize: 13,
                               ),
@@ -327,23 +254,23 @@ class _PassengerProfileScreenState extends State<PassengerProfileScreen>
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 10, vertical: 4),
                               decoration: BoxDecoration(
-                                color: AppColors.success.withOpacity(0.1),
+                                color: AppColors.success.withOpacity(0.08),
                                 borderRadius: BorderRadius.circular(50),
                                 border: Border.all(
                                     color:
-                                        AppColors.success.withOpacity(0.25)),
+                                        AppColors.success.withOpacity(0.2)),
                               ),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  const Icon(Icons.verified_rounded,
+                                  const Icon(HugeIcons.strokeRoundedShieldUser01,
                                       color: AppColors.success, size: 12),
                                   const SizedBox(width: 4),
                                   Text(
                                     'Verified Passenger',
-                                    style: GoogleFonts.sora(
+                                    style: GoogleFonts.dmSans(
                                       color: AppColors.success,
-                                      fontSize: 10,
+                                      fontSize: 11,
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
@@ -358,36 +285,39 @@ class _PassengerProfileScreenState extends State<PassengerProfileScreen>
                 ),
               ),
 
-              // Stats grid
+              // Stats row
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
+                  padding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
                   child: Row(
                     children: [
                       Expanded(
                         child: _StatCard(
-                          icon: Icons.electric_moped_rounded,
+                          icon: HugeIcons.strokeRoundedMotorbike01,
                           label: 'Total Trips',
                           value: '$completedRides',
                           color: AppColors.primary,
+                          bgColor: AppColors.primary.withOpacity(0.07),
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      const SizedBox(width: 10),
                       Expanded(
                         child: _StatCard(
-                          icon: Icons.account_balance_wallet_rounded,
+                          icon: HugeIcons.strokeRoundedWallet01,
                           label: 'Total Spent',
                           value: 'FC ${totalSpent.toStringAsFixed(0)}',
                           color: AppColors.success,
+                          bgColor: AppColors.success.withOpacity(0.07),
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      const SizedBox(width: 10),
                       Expanded(
                         child: _StatCard(
-                          icon: Icons.shield_rounded,
+                          icon: HugeIcons.strokeRoundedShield01,
                           label: 'Safety Score',
                           value: '100%',
                           color: AppColors.safetyGold,
+                          bgColor: AppColors.safetyGold.withOpacity(0.07),
                         ),
                       ),
                     ],
@@ -395,65 +325,46 @@ class _PassengerProfileScreenState extends State<PassengerProfileScreen>
                 ),
               ),
 
-              // Info fields
+              // Personal info
               SliverToBoxAdapter(
-                child: _DarkCard(
+                child: _SectionCard(
                   margin: const EdgeInsets.fromLTRB(24, 16, 24, 0),
                   title: 'Personal Info',
                   child: Column(
                     children: [
-                      _DarkInfoTile(
-                        icon: Icons.person_rounded,
+                      _InfoTile(
+                        icon: HugeIcons.strokeRoundedUser01,
                         label: 'First name',
                         value: user?.firstName ?? '',
                         onTap: () => _showEditDialog(
-                            'First name', user?.firstName ?? '', 'firstName'),
+                            'First name',
+                            user?.firstName ?? '',
+                            'firstName'),
                       ),
-                      const _Separator(),
-                      _DarkInfoTile(
-                        icon: Icons.person_outline_rounded,
+                      const _TileDivider(),
+                      _InfoTile(
+                        icon: HugeIcons.strokeRoundedUser01,
                         label: 'Last name',
                         value: user?.lastName ?? '',
                         onTap: () => _showEditDialog(
-                            'Last name', user?.lastName ?? '', 'lastName'),
+                            'Last name',
+                            user?.lastName ?? '',
+                            'lastName'),
                       ),
-                      const _Separator(),
-                      _DarkInfoTile(
-                        icon: Icons.email_rounded,
+                      const _TileDivider(),
+                      _InfoTile(
+                        icon: HugeIcons.strokeRoundedMail01,
                         label: 'Email',
                         value: user?.email ?? '',
                         onTap: () => _showEditDialog(
                             'Email', user?.email ?? '', 'email'),
                       ),
-                      const _Separator(),
-                      _DarkInfoTile(
-                        icon: Icons.phone_rounded,
+                      const _TileDivider(),
+                      _InfoTile(
+                        icon: HugeIcons.strokeRoundedSmartPhone01,
                         label: 'Phone',
                         value: user?.phone ?? '',
-                        trailing: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 3),
-                          decoration: BoxDecoration(
-                            color: AppColors.success.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(50),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(Icons.check_circle_rounded,
-                                  size: 11, color: AppColors.success),
-                              const SizedBox(width: 4),
-                              Text(
-                                'Verified',
-                                style: GoogleFonts.sora(
-                                  color: AppColors.success,
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                        trailing: _VerifiedBadge(),
                       ),
                     ],
                   ),
@@ -462,25 +373,25 @@ class _PassengerProfileScreenState extends State<PassengerProfileScreen>
 
               // Safety & Trust
               SliverToBoxAdapter(
-                child: _DarkCard(
+                child: _SectionCard(
                   margin: const EdgeInsets.fromLTRB(24, 12, 24, 0),
                   title: 'Safety & Trust',
                   child: Column(
-                    children: [
-                      _ShieldRow(
-                        icon: Icons.verified_user_rounded,
+                    children: const [
+                      _TrustRow(
+                        icon: HugeIcons.strokeRoundedShieldUser01,
                         label: 'Phone Verified',
                         active: true,
                       ),
-                      const _Separator(),
-                      _ShieldRow(
-                        icon: Icons.lock_rounded,
+                      _TileDivider(),
+                      _TrustRow(
+                        icon: HugeIcons.strokeRoundedLock01,
                         label: 'Account Secured',
                         active: true,
                       ),
-                      const _Separator(),
-                      _ShieldRow(
-                        icon: Icons.location_on_rounded,
+                      _TileDivider(),
+                      _TrustRow(
+                        icon: HugeIcons.strokeRoundedLocation01,
                         label: 'Location Services',
                         active: true,
                       ),
@@ -489,15 +400,15 @@ class _PassengerProfileScreenState extends State<PassengerProfileScreen>
                 ),
               ),
 
-              // Actions
+              // More
               SliverToBoxAdapter(
-                child: _DarkCard(
+                child: _SectionCard(
                   margin: const EdgeInsets.fromLTRB(24, 12, 24, 0),
                   title: 'More',
                   child: Column(
                     children: [
-                      _DarkActionTile(
-                        icon: Icons.help_outline_rounded,
+                      _ActionTile(
+                        icon: HugeIcons.strokeRoundedHelpCircle01,
                         label: 'Help & Support',
                         onTap: () => Navigator.push(
                           context,
@@ -505,9 +416,9 @@ class _PassengerProfileScreenState extends State<PassengerProfileScreen>
                               builder: (_) => const HelpSupportScreen()),
                         ),
                       ),
-                      const _Separator(),
-                      _DarkActionTile(
-                        icon: Icons.info_outline_rounded,
+                      const _TileDivider(),
+                      _ActionTile(
+                        icon: HugeIcons.strokeRoundedInformationCircle01,
                         label: 'About KuboChain',
                         onTap: () => Navigator.push(
                           context,
@@ -515,15 +426,15 @@ class _PassengerProfileScreenState extends State<PassengerProfileScreen>
                               builder: (_) => const AboutScreen()),
                         ),
                       ),
-                      const _Separator(),
-                      _DarkActionTile(
-                        icon: Icons.logout_rounded,
+                      const _TileDivider(),
+                      _ActionTile(
+                        icon: HugeIcons.strokeRoundedLogoutSquare01,
                         label: 'Log Out',
                         iconColor: AppColors.error,
                         textColor: AppColors.error,
                         showChevron: false,
                         onTap: () async {
-                          await auth.logout();
+                          await ref.read(authProvider).logout();
                           if (!context.mounted) return;
                           Navigator.pushAndRemoveUntil(
                             context,
@@ -538,15 +449,133 @@ class _PassengerProfileScreenState extends State<PassengerProfileScreen>
                 ),
               ),
 
-              const SliverToBoxAdapter(child: SizedBox(height: 100)),
+              const SliverToBoxAdapter(child: SizedBox(height: 110)),
             ],
           ),
         ),
       ),
     );
   }
+}
 
-  Widget _avatarFallback(dynamic user) {
+// ── Edit Dialog ────────────────────────────────────────────────────────────────
+class _EditDialog extends StatelessWidget {
+  final String label;
+  final TextEditingController controller;
+  final ValueChanged<String> onSave;
+  final VoidCallback onCancel;
+
+  const _EditDialog({
+    required this.label,
+    required this.controller,
+    required this.onSave,
+    required this.onCancel,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      backgroundColor: Colors.white,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Edit $label',
+              style: GoogleFonts.sora(
+                color: AppColors.textPrimary,
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              decoration: BoxDecoration(
+                color: AppColors.backgroundDark,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: AppColors.border),
+              ),
+              child: TextField(
+                controller: controller,
+                autofocus: true,
+                style: GoogleFonts.dmSans(
+                    color: AppColors.textPrimary, fontSize: 15),
+                decoration: InputDecoration(
+                  hintText: label,
+                  hintStyle: GoogleFonts.dmSans(
+                      color: AppColors.textSecondary),
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16, vertical: 14),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                Expanded(
+                  child: GestureDetector(
+                    onTap: onCancel,
+                    child: Container(
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: AppColors.backgroundDark,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: AppColors.border),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'Cancel',
+                          style: GoogleFonts.sora(
+                            color: AppColors.textSecondary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () => onSave(controller.text.trim()),
+                    child: Container(
+                      height: 48,
+                      decoration: BoxDecoration(
+                        gradient: AppColors.primaryGradient,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'Save',
+                          style: GoogleFonts.sora(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ── Avatar Fallback ────────────────────────────────────────────────────────────
+class _AvatarFallback extends StatelessWidget {
+  final dynamic user;
+  const _AvatarFallback({required this.user});
+
+  @override
+  Widget build(BuildContext context) {
     return Center(
       child: Text(
         (user?.firstName ?? 'U')[0].toUpperCase(),
@@ -560,18 +589,51 @@ class _PassengerProfileScreenState extends State<PassengerProfileScreen>
   }
 }
 
+// ── Verified Badge ─────────────────────────────────────────────────────────────
+class _VerifiedBadge extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: AppColors.success.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(50),
+        border: Border.all(color: AppColors.success.withOpacity(0.2)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(HugeIcons.strokeRoundedCheckmarkCircle01,
+              size: 11, color: AppColors.success),
+          const SizedBox(width: 4),
+          Text(
+            'Verified',
+            style: GoogleFonts.dmSans(
+              color: AppColors.success,
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 // ── Stat Card ──────────────────────────────────────────────────────────────────
 class _StatCard extends StatelessWidget {
   final IconData icon;
   final String label;
   final String value;
   final Color color;
+  final Color bgColor;
 
   const _StatCard({
     required this.icon,
     required this.label,
     required this.value,
     required this.color,
+    required this.bgColor,
   });
 
   @override
@@ -579,20 +641,29 @@ class _StatCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AppColors.cardDark,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.borderDark),
+        border: Border.all(color: AppColors.border),
+        boxShadow: AppColors.softShadow,
       ),
       child: Column(
         children: [
-          Icon(icon, color: color, size: 22),
+          Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: bgColor,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(icon, color: color, size: 18),
+          ),
           const SizedBox(height: 8),
           Text(
             value,
             style: GoogleFonts.sora(
-              fontSize: 14,
+              fontSize: 13,
               fontWeight: FontWeight.w700,
-              color: AppColors.textOnDark,
+              color: AppColors.textPrimary,
             ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
@@ -600,7 +671,7 @@ class _StatCard extends StatelessWidget {
           const SizedBox(height: 2),
           Text(
             label,
-            style: GoogleFonts.sora(
+            style: GoogleFonts.dmSans(
               fontSize: 10,
               color: AppColors.textSecondary,
             ),
@@ -612,13 +683,13 @@ class _StatCard extends StatelessWidget {
   }
 }
 
-// ── Dark Card ──────────────────────────────────────────────────────────────────
-class _DarkCard extends StatelessWidget {
+// ── Section Card ───────────────────────────────────────────────────────────────
+class _SectionCard extends StatelessWidget {
   final EdgeInsets margin;
   final String title;
   final Widget child;
 
-  const _DarkCard(
+  const _SectionCard(
       {required this.margin, required this.title, required this.child});
 
   @override
@@ -626,9 +697,10 @@ class _DarkCard extends StatelessWidget {
     return Container(
       margin: margin,
       decoration: BoxDecoration(
-        color: AppColors.cardDark,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.borderDark),
+        border: Border.all(color: AppColors.border),
+        boxShadow: AppColors.softShadow,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -637,15 +709,15 @@ class _DarkCard extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
             child: Text(
               title.toUpperCase(),
-              style: GoogleFonts.sora(
+              style: GoogleFonts.dmSans(
                 fontSize: 10,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w700,
                 color: AppColors.textSecondary,
                 letterSpacing: 1.2,
               ),
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 2),
           child,
           const SizedBox(height: 4),
         ],
@@ -654,9 +726,9 @@ class _DarkCard extends StatelessWidget {
   }
 }
 
-// ── Separator ─────────────────────────────────────────────────────────────────
-class _Separator extends StatelessWidget {
-  const _Separator();
+// ── Tile Divider ───────────────────────────────────────────────────────────────
+class _TileDivider extends StatelessWidget {
+  const _TileDivider();
 
   @override
   Widget build(BuildContext context) {
@@ -669,14 +741,14 @@ class _Separator extends StatelessWidget {
 }
 
 // ── Info Tile ──────────────────────────────────────────────────────────────────
-class _DarkInfoTile extends StatelessWidget {
+class _InfoTile extends StatelessWidget {
   final IconData icon;
   final String label;
   final String value;
   final Widget? trailing;
   final VoidCallback? onTap;
 
-  const _DarkInfoTile({
+  const _InfoTile({
     required this.icon,
     required this.label,
     required this.value,
@@ -697,7 +769,7 @@ class _DarkInfoTile extends StatelessWidget {
               width: 36,
               height: 36,
               decoration: BoxDecoration(
-                color: AppColors.surfaceDark,
+                color: AppColors.backgroundDark,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Icon(icon, size: 18, color: AppColors.textSecondary),
@@ -707,24 +779,26 @@ class _DarkInfoTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(label,
-                      style: GoogleFonts.sora(
-                          fontSize: 10, color: AppColors.textSecondary)),
+                  Text(
+                    label,
+                    style: GoogleFonts.dmSans(
+                        fontSize: 11, color: AppColors.textSecondary),
+                  ),
                   const SizedBox(height: 2),
                   Text(
                     value.isEmpty ? '—' : value,
                     style: GoogleFonts.sora(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
-                      color: AppColors.textOnDark,
+                      color: AppColors.textPrimary,
                     ),
                   ),
                 ],
               ),
             ),
             if (trailing != null) trailing!,
-            if (trailing == null)
-              const Icon(Icons.edit_rounded,
+            if (trailing == null && onTap != null)
+              const Icon(HugeIcons.strokeRoundedEdit01,
                   size: 15, color: AppColors.textSecondary),
           ],
         ),
@@ -733,13 +807,13 @@ class _DarkInfoTile extends StatelessWidget {
   }
 }
 
-// ── Shield Row ─────────────────────────────────────────────────────────────────
-class _ShieldRow extends StatelessWidget {
+// ── Trust Row ──────────────────────────────────────────────────────────────────
+class _TrustRow extends StatelessWidget {
   final IconData icon;
   final String label;
   final bool active;
 
-  const _ShieldRow(
+  const _TrustRow(
       {required this.icon, required this.label, required this.active});
 
   @override
@@ -753,8 +827,8 @@ class _ShieldRow extends StatelessWidget {
             height: 36,
             decoration: BoxDecoration(
               color: active
-                  ? AppColors.success.withOpacity(0.1)
-                  : AppColors.surfaceDark,
+                  ? AppColors.success.withOpacity(0.08)
+                  : AppColors.backgroundDark,
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(icon,
@@ -768,21 +842,27 @@ class _ShieldRow extends StatelessWidget {
               style: GoogleFonts.sora(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
-                color: AppColors.textOnDark,
+                color: AppColors.textPrimary,
               ),
             ),
           ),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
               color: active
-                  ? AppColors.success.withOpacity(0.1)
-                  : AppColors.surfaceDark,
+                  ? AppColors.success.withOpacity(0.08)
+                  : AppColors.backgroundDark,
               borderRadius: BorderRadius.circular(50),
+              border: Border.all(
+                color: active
+                    ? AppColors.success.withOpacity(0.2)
+                    : AppColors.border,
+              ),
             ),
             child: Text(
               active ? 'Active' : 'Inactive',
-              style: GoogleFonts.sora(
+              style: GoogleFonts.dmSans(
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
                 color: active ? AppColors.success : AppColors.textSecondary,
@@ -796,7 +876,7 @@ class _ShieldRow extends StatelessWidget {
 }
 
 // ── Action Tile ────────────────────────────────────────────────────────────────
-class _DarkActionTile extends StatelessWidget {
+class _ActionTile extends StatelessWidget {
   final IconData icon;
   final String label;
   final VoidCallback onTap;
@@ -804,12 +884,12 @@ class _DarkActionTile extends StatelessWidget {
   final Color textColor;
   final bool showChevron;
 
-  const _DarkActionTile({
+  const _ActionTile({
     required this.icon,
     required this.label,
     required this.onTap,
     this.iconColor = AppColors.textSecondary,
-    this.textColor = AppColors.textOnDark,
+    this.textColor = AppColors.textPrimary,
     this.showChevron = true,
   });
 
@@ -826,7 +906,7 @@ class _DarkActionTile extends StatelessWidget {
               width: 36,
               height: 36,
               decoration: BoxDecoration(
-                color: AppColors.surfaceDark,
+                color: AppColors.backgroundDark,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Icon(icon, size: 18, color: iconColor),
@@ -843,7 +923,7 @@ class _DarkActionTile extends StatelessWidget {
               ),
             ),
             if (showChevron)
-              const Icon(Icons.chevron_right_rounded,
+              const Icon(HugeIcons.strokeRoundedArrowRight01,
                   color: AppColors.textSecondary, size: 20),
           ],
         ),
@@ -854,11 +934,13 @@ class _DarkActionTile extends StatelessWidget {
 
 // ── Photo Source Sheet ─────────────────────────────────────────────────────────
 class _PhotoSourceSheet extends StatelessWidget {
+  const _PhotoSourceSheet();
+
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
-        color: AppColors.surfaceDark,
+        color: Colors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: SafeArea(
@@ -871,31 +953,33 @@ class _PhotoSourceSheet extends StatelessWidget {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: AppColors.borderDark,
+                  color: AppColors.border,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 4, 20, 8),
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
               child: Text(
                 'Update Photo',
                 style: GoogleFonts.sora(
-                  color: AppColors.textOnDark,
+                  color: AppColors.textPrimary,
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                 ),
               ),
             ),
-            _SheetOption(
-              icon: Icons.camera_alt_rounded,
+            _SourceOption(
+              icon: HugeIcons.strokeRoundedCamera01,
               label: 'Take Photo',
               onTap: () => Navigator.pop(context, ImageSource.camera),
             ),
-            Container(height: 1, color: AppColors.borderDark,
+            Container(
+                height: 1,
+                color: AppColors.border,
                 margin: const EdgeInsets.only(left: 56)),
-            _SheetOption(
-              icon: Icons.photo_library_rounded,
+            _SourceOption(
+              icon: HugeIcons.strokeRoundedImage01,
               label: 'Choose from Gallery',
               onTap: () => Navigator.pop(context, ImageSource.gallery),
             ),
@@ -907,12 +991,12 @@ class _PhotoSourceSheet extends StatelessWidget {
   }
 }
 
-class _SheetOption extends StatelessWidget {
+class _SourceOption extends StatelessWidget {
   final IconData icon;
   final String label;
   final VoidCallback onTap;
 
-  const _SheetOption(
+  const _SourceOption(
       {required this.icon, required this.label, required this.onTap});
 
   @override
@@ -928,7 +1012,7 @@ class _SheetOption extends StatelessWidget {
               width: 36,
               height: 36,
               decoration: BoxDecoration(
-                color: AppColors.cardDark,
+                color: AppColors.primary.withOpacity(0.07),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Icon(icon, size: 18, color: AppColors.primary),
@@ -937,7 +1021,7 @@ class _SheetOption extends StatelessWidget {
             Text(
               label,
               style: GoogleFonts.sora(
-                color: AppColors.textOnDark,
+                color: AppColors.textPrimary,
                 fontSize: 15,
                 fontWeight: FontWeight.w500,
               ),

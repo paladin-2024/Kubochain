@@ -38,7 +38,8 @@ class LiveMapWidget extends StatelessWidget {
       ),
       children: [
         TileLayer(
-          urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+          urlTemplate: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png',
+          subdomains: const ['a', 'b', 'c', 'd'],
           userAgentPackageName: 'com.kubochain.app',
         ),
         if (routePoints.length > 1)
@@ -47,40 +48,37 @@ class LiveMapWidget extends StatelessWidget {
               Polyline(
                 points: routePoints,
                 color: AppColors.primary,
-                strokeWidth: 4,
+                strokeWidth: 5,
               ),
             ],
           ),
         MarkerLayer(
           markers: [
-            // Current/pickup location
             if (pickupLocation != null)
               Marker(
                 point: pickupLocation!,
-                width: 40,
-                height: 40,
+                width: 48,
+                height: 48,
                 child: _LocationMarker(
                   color: AppColors.primary,
-                  icon: Icons.my_location,
+                  icon: Icons.my_location_rounded,
                 ),
               ),
-            // Destination
             if (destinationLocation != null)
               Marker(
                 point: destinationLocation!,
-                width: 40,
-                height: 40,
+                width: 48,
+                height: 48,
                 child: _LocationMarker(
                   color: AppColors.error,
-                  icon: Icons.location_on,
+                  icon: Icons.location_on_rounded,
                 ),
               ),
-            // Driver
             if (driverLocation != null)
               Marker(
                 point: driverLocation!,
-                width: 44,
-                height: 44,
+                width: 52,
+                height: 52,
                 child: _DriverMarker(),
               ),
           ],
@@ -103,10 +101,10 @@ class _LocationMarker extends StatelessWidget {
         color: color,
         shape: BoxShape.circle,
         boxShadow: [
-          BoxShadow(color: color.withOpacity(0.4), blurRadius: 8, spreadRadius: 2),
+          BoxShadow(color: color.withOpacity(0.45), blurRadius: 12, spreadRadius: 2),
         ],
       ),
-      child: Icon(icon, color: Colors.white, size: 22),
+      child: Icon(icon, color: Colors.white, size: 26),
     );
   }
 }
@@ -115,15 +113,15 @@ class _DriverMarker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(6),
+      padding: const EdgeInsets.all(7),
       decoration: BoxDecoration(
         color: Colors.white,
         shape: BoxShape.circle,
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 8),
+          BoxShadow(color: AppColors.primary.withOpacity(0.25), blurRadius: 12, spreadRadius: 2),
         ],
       ),
-      child: const Icon(Icons.directions_bike, color: AppColors.primary, size: 24),
+      child: const Icon(Icons.directions_bike_rounded, color: AppColors.primary, size: 28),
     );
   }
 }

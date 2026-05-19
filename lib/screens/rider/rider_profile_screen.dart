@@ -1,22 +1,22 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/services/api_service.dart';
-import '../../providers/auth_provider.dart';
+import '../../providers/providers.dart';
 import '../../screens/onboarding.dart';
 import '../common/notifications_screen.dart';
 
-class RiderProfileScreen extends StatefulWidget {
+class RiderProfileScreen extends ConsumerStatefulWidget {
   const RiderProfileScreen({super.key});
 
   @override
-  State<RiderProfileScreen> createState() => _RiderProfileScreenState();
+  ConsumerState<RiderProfileScreen> createState() => _RiderProfileScreenState();
 }
 
-class _RiderProfileScreenState extends State<RiderProfileScreen> {
+class _RiderProfileScreenState extends ConsumerState<RiderProfileScreen> {
   bool _uploading = false;
 
   Future<void> _pickAndUploadPhoto() async {
@@ -47,7 +47,7 @@ class _RiderProfileScreenState extends State<RiderProfileScreen> {
     if (file == null) return;
     setState(() => _uploading = true);
     if (!mounted) return;
-    final ok = await context.read<AuthProvider>().updateProfileImage(file.path);
+    final ok = await ref.read(authProvider).updateProfileImage(file.path);
     if (mounted) {
       setState(() => _uploading = false);
       if (!ok) {
@@ -59,7 +59,7 @@ class _RiderProfileScreenState extends State<RiderProfileScreen> {
   }
 
   void _showEditProfile() {
-    final auth = context.read<AuthProvider>();
+    final auth = ref.read(authProvider);
     final user = auth.user;
     final firstCtrl = TextEditingController(text: user?.firstName ?? '');
     final lastCtrl = TextEditingController(text: user?.lastName ?? '');
@@ -106,7 +106,7 @@ class _RiderProfileScreenState extends State<RiderProfileScreen> {
                     ),
                     onPressed: saving ? null : () async {
                       setModalState(() => saving = true);
-                      final ok = await context.read<AuthProvider>().updateProfile(
+                      final ok = await ref.read(authProvider).updateProfile(
                         firstName: firstCtrl.text.trim(),
                         lastName: lastCtrl.text.trim(),
                         email: emailCtrl.text.trim(),
@@ -231,7 +231,7 @@ class _RiderProfileScreenState extends State<RiderProfileScreen> {
                     ),
                     onPressed: saving ? null : () async {
                       setModalState(() => saving = true);
-                      final ok = await context.read<AuthProvider>().updateVehicle({
+                      final ok = await ref.read(authProvider).updateVehicle({
                         'vehicleMake': makeCtrl.text.trim(),
                         'vehicleModel': modelCtrl.text.trim(),
                         'vehiclePlate': plateCtrl.text.trim(),
@@ -374,7 +374,7 @@ class _RiderProfileScreenState extends State<RiderProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final auth = context.watch<AuthProvider>();
+    final auth = ref.watch(authProvider);
     final user = auth.user;
 
     return Scaffold(
@@ -391,7 +391,7 @@ class _RiderProfileScreenState extends State<RiderProfileScreen> {
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    colors: [Color(0xFF1A2A3A), AppColors.backgroundDark],
+                    colors: [Color(0xFFEFF6FF), Color(0xFFF5F8FF)],
                   ),
                 ),
                 child: SafeArea(
@@ -427,7 +427,7 @@ class _RiderProfileScreenState extends State<RiderProfileScreen> {
                                 decoration: BoxDecoration(
                                   color: AppColors.primary,
                                   shape: BoxShape.circle,
-                                  border: Border.all(color: AppColors.backgroundDark, width: 2),
+                                  border: Border.all(color: Colors.white, width: 2),
                                 ),
                                 child: _uploading
                                     ? const Padding(

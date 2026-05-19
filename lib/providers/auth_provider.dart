@@ -34,14 +34,14 @@ class AuthProvider extends ChangeNotifier {
       notifyListeners();
       SocketService.connect();
     }
-    // Refresh from server
+    // Refresh user from server (FastAPI /me returns UserOut directly)
     try {
       final res = await ApiService.getMe();
-      _user = UserModel.fromJson(res.data['user']);
+      _user = UserModel.fromJson(res.data as Map<String, dynamic>);
       await StorageService.saveUser(jsonEncode(_user!.toJson()));
       _status = AuthStatus.authenticated;
     } catch (_) {
-      // Keep local user if refresh fails
+      // Keep the locally cached user if network call fails
     }
     notifyListeners();
   }
@@ -52,11 +52,8 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
     try {
       final res = await ApiService.login(email, password);
-      final token = res.data['token'];
-      _user = UserModel.fromJson(res.data['user']);
-      await StorageService.saveToken(token);
-      await StorageService.saveUser(jsonEncode(_user!.toJson()));
-      await StorageService.saveRole(_user!.role);
+      final data = res.data as Map<String, dynamic>;
+      await _saveSession(data);
       _status = AuthStatus.authenticated;
       SocketService.connect();
       notifyListeners();
@@ -84,26 +81,31 @@ class AuthProvider extends ChangeNotifier {
     _error = null;
     notifyListeners();
     try {
+      // FastAPI RegisterIn uses snake_case field names
       final body = <String, dynamic>{
-        'firstName': firstName,
-        'lastName': lastName,
-        'email': email,
-        'phone': phone,
-        'password': password,
-        'role': role,
-        'otpCode': otpCode,
+        'first_name': firstName,
+        'last_name':  lastName,
+        'email':      email,
+        'phone':      phone,
+        'password':   password,
+        'role':       role,
+        'otp_code':   otpCode,
       };
-      if (vehicle != null) body['vehicle'] = vehicle;
+      if (vehicle != null) {
+        body['vehicle'] = {
+          'make':         vehicle['make'] ?? 'Unknown',
+          'model':        vehicle['model'] ?? 'Unknown',
+          'color':        vehicle['color'] ?? 'Black',
+          'plate_number': vehicle['plateNumber'] ?? vehicle['plate_number'] ?? '',
+          'type':         vehicle['type'] ?? 'motorcycle',
+        };
+      }
       final res = await ApiService.register(body);
-      final token = res.data['token'];
-      _user = UserModel.fromJson(res.data['user']);
-      await StorageService.saveToken(token);
-      await StorageService.saveUser(jsonEncode(_user!.toJson()));
-      await StorageService.saveRole(_user!.role);
+      final data = res.data as Map<String, dynamic>;
+      await _saveSession(data);
       _status = AuthStatus.authenticated;
       SocketService.connect();
       notifyListeners();
-      // Upload driver documents in the background after registration
       if (role == 'rider' && documentPaths != null && documentPaths.isNotEmpty) {
         ApiService.uploadDriverDocuments(documentPaths).catchError((_) {});
       }
@@ -127,10 +129,14 @@ class AuthProvider extends ChangeNotifier {
   Future<bool> updateProfileImage(String filePath) async {
     try {
       final res = await ApiService.uploadProfileImage(filePath);
-      final imageUrl = res.data['imageUrl'] as String;
-      _user = _user?.copyWith(profileImage: imageUrl);
-      if (_user != null) {
-        await StorageService.saveUser(jsonEncode(_user!.toJson()));
+      // FastAPI returns UserOut directly — profile_image field
+      final data = res.data as Map<String, dynamic>;
+      final imageUrl = data['profile_image'] as String?;
+      if (imageUrl != null) {
+        _user = _user?.copyWith(profileImage: imageUrl);
+        if (_user != null) {
+          await StorageService.saveUser(jsonEncode(_user!.toJson()));
+        }
       }
       notifyListeners();
       return true;
@@ -148,17 +154,18 @@ class AuthProvider extends ChangeNotifier {
     required String phone,
   }) async {
     try {
-      final res = await ApiService.updateProfile({
-        'firstName': firstName,
-        'lastName': lastName,
-        'email': email,
-        'phone': phone,
+      // FastAPI UpdateProfileIn uses snake_case
+      await ApiService.updateProfile({
+        'first_name': firstName,
+        'last_name':  lastName,
+        'email':      email,
+        'phone':      phone,
       });
       _user = _user?.copyWith(
         firstName: firstName,
-        lastName: lastName,
-        email: email,
-        phone: phone,
+        lastName:  lastName,
+        email:     email,
+        phone:     phone,
       );
       if (_user != null) {
         await StorageService.saveUser(jsonEncode(_user!.toJson()));
@@ -188,13 +195,26 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // ── Helpers ────────────────────────────────────────────────────────────────
+
+  Future<void> _saveSession(Map<String, dynamic> data) async {
+    final accessToken  = data['access_token']  as String;
+    final refreshToken = data['refresh_token'] as String;
+    _user = UserModel.fromJson(data['user'] as Map<String, dynamic>);
+    await StorageService.saveToken(accessToken);
+    await StorageService.saveRefreshToken(refreshToken);
+    await StorageService.saveUser(jsonEncode(_user!.toJson()));
+    await StorageService.saveRole(_user!.role);
+  }
+
   String _parseError(dynamic e) {
     if (e is DioException) {
       final code = e.response?.statusCode;
-      final msg = e.response?.data?['message'];
+      final body = e.response?.data;
+      final msg = body is Map ? (body['detail'] ?? body['message']) : null;
       if (code == 401) return 'Invalid email or password';
       if (code == 409) return 'Email already in use';
-      if (code == 400 && msg != null) return msg;
+      if (code == 400 && msg != null) return msg.toString();
       if (e.type == DioExceptionType.connectionTimeout ||
           e.type == DioExceptionType.receiveTimeout) {
         return 'Connection timed out. Check your internet.';
@@ -202,7 +222,7 @@ class AuthProvider extends ChangeNotifier {
       if (e.type == DioExceptionType.connectionError) {
         return 'Cannot reach server. Make sure the backend is running.';
       }
-      if (msg != null) return msg;
+      if (msg != null) return msg.toString();
     }
     return 'Something went wrong. Please try again.';
   }

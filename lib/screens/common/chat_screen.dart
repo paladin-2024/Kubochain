@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import '../../core/constants/app_colors.dart';
 import '../../core/services/api_service.dart';
 import '../../core/services/storage_service.dart';
 import '../../models/message_model.dart';
-import '../../providers/auth_provider.dart';
+import '../../providers/providers.dart';
 
-class ChatScreen extends StatefulWidget {
+class ChatScreen extends ConsumerStatefulWidget {
   final String rideId;
   final String otherUserId;
   final String otherUserName;
@@ -24,10 +24,10 @@ class ChatScreen extends StatefulWidget {
   });
 
   @override
-  State<ChatScreen> createState() => _ChatScreenState();
+  ConsumerState<ChatScreen> createState() => _ChatScreenState();
 }
 
-class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
+class _ChatScreenState extends ConsumerState<ChatScreen> with TickerProviderStateMixin {
   final _ctrl = TextEditingController();
   final _scroll = ScrollController();
   List<MessageModel> _messages = [];
@@ -128,8 +128,8 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final myId = context.read<AuthProvider>().user?.id ?? '';
-    final myRole = context.read<AuthProvider>().user?.role ?? 'passenger';
+    final myId = ref.read(authProvider).user?.id ?? '';
+    final myRole = ref.read(authProvider).user?.role ?? 'passenger';
     final counterpartLabel = myRole == 'rider' ? 'passenger' : 'driver';
 
     return Scaffold(

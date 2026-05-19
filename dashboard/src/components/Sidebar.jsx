@@ -1,35 +1,80 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
-  LayoutDashboard, Bike, UserCheck, Users, BarChart3,
-  FileText, Bell, Settings, LogOut, ChevronLeft, ChevronRight,
-  TrendingUp, Activity, Trophy,
-} from 'lucide-react';
+  DashboardSquare01Icon, ChartLineData01Icon, FileDownloadIcon, Award01Icon,
+  Motorbike01Icon, UserCheck01Icon, UserGroupIcon, MapsIcon, Notification01Icon,
+  Settings01Icon, LogoutSquare01Icon, ArrowLeft01Icon, ArrowRight01Icon,
+  UserAdd01Icon, Wallet01Icon, Invoice01Icon, Coins01Icon, AlertDiamondIcon,
+  StarCircleIcon, DangerIcon, Megaphone01Icon, GiftIcon, Image01Icon,
+  ToggleOnIcon, CloudServerIcon, SmartPhone01Icon, FlashIcon, Route01Icon,
+  Audit01Icon, UserEdit01Icon, BankIcon, PromotionIcon, Shield01Icon, CustomerSupportIcon,
+} from 'hugeicons-react';
 import { cn } from '../lib/utils';
+import Avatar from './Avatar';
 
 const NAV_GROUPS = [
   {
     label: 'Overview',
     items: [
-      { path: '/', icon: LayoutDashboard, label: 'Dashboard', exact: true },
-      { path: '/analytics', icon: BarChart3, label: 'Analytics' },
-      { path: '/reports', icon: TrendingUp, label: 'Reports' },
-      { path: '/top-riders', icon: Trophy, label: 'Top Riders' },
+      { path: '/', icon: DashboardSquare01Icon, label: 'Dashboard', exact: true },
+      { path: '/analytics', icon: ChartLineData01Icon, label: 'Analytics' },
+      { path: '/reports', icon: FileDownloadIcon, label: 'Reports' },
+      { path: '/top-riders', icon: Award01Icon, label: 'Top Riders' },
     ],
   },
   {
-    label: 'Management',
+    label: 'Operations',
     items: [
-      { path: '/rides', icon: Bike, label: 'Rides' },
-      { path: '/drivers', icon: UserCheck, label: 'Drivers' },
-      { path: '/users', icon: Users, label: 'Users' },
+      { path: '/rides', icon: Motorbike01Icon, label: 'Rides' },
+      { path: '/dispatch', icon: MapsIcon, label: 'Dispatch Map' },
+      { path: '/surge', icon: FlashIcon, label: 'Surge Pricing' },
+      { path: '/zones', icon: Route01Icon, label: 'Zones' },
+    ],
+  },
+  {
+    label: 'People',
+    items: [
+      { path: '/drivers', icon: UserCheck01Icon, label: 'Drivers' },
+      { path: '/onboarding', icon: UserAdd01Icon, label: 'Onboarding Queue' },
+      { path: '/users', icon: UserGroupIcon, label: 'Users' },
+      { path: '/staff', icon: UserEdit01Icon, label: 'Admin Staff' },
+      { path: '/support', icon: CustomerSupportIcon, label: 'Support Tickets' },
+    ],
+  },
+  {
+    label: 'Finance',
+    items: [
+      { path: '/finance', icon: Wallet01Icon, label: 'Finance Dashboard' },
+      { path: '/payouts', icon: BankIcon, label: 'Payouts' },
+      { path: '/transactions', icon: Invoice01Icon, label: 'Transactions' },
+    ],
+  },
+  {
+    label: 'Safety',
+    items: [
+      { path: '/incidents', icon: AlertDiamondIcon, label: 'Incidents' },
+      { path: '/ratings', icon: StarCircleIcon, label: 'Ratings Monitor' },
+      { path: '/sos', icon: DangerIcon, label: 'SOS Emergency' },
+    ],
+  },
+  {
+    label: 'Growth',
+    items: [
+      { path: '/campaigns', icon: Megaphone01Icon, label: 'Campaigns' },
+      { path: '/referrals', icon: GiftIcon, label: 'Referrals' },
+      { path: '/promotions', icon: PromotionIcon, label: 'Promotions' },
+      { path: '/banners', icon: Image01Icon, label: 'App Banners' },
     ],
   },
   {
     label: 'System',
     items: [
-      { path: '/notifications', icon: Bell, label: 'Notifications' },
-      { path: '/settings', icon: Settings, label: 'Settings' },
+      { path: '/notifications', icon: Notification01Icon, label: 'Notifications' },
+      { path: '/features', icon: ToggleOnIcon, label: 'Feature Flags' },
+      { path: '/health', icon: CloudServerIcon, label: 'API Health' },
+      { path: '/versions', icon: SmartPhone01Icon, label: 'App Versions' },
+      { path: '/audit', icon: Audit01Icon, label: 'Audit Log' },
+      { path: '/settings', icon: Settings01Icon, label: 'Settings' },
     ],
   },
 ];
@@ -38,15 +83,20 @@ export default function Sidebar() {
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
 
+  const adminUser = useMemo(() => {
+    try { return JSON.parse(localStorage.getItem('admin_user') || '{}'); } catch { return {}; }
+  }, []);
+
   const logout = () => {
     localStorage.removeItem('admin_token');
+    localStorage.removeItem('admin_user');
     navigate('/login');
   };
 
   return (
     <aside
       className={cn(
-        'relative flex flex-col h-screen bg-dark-card border-r border-dark-border transition-all duration-300',
+        'relative flex flex-col h-screen bg-white border-r border-dark-border transition-all duration-300 flex-shrink-0',
         collapsed ? 'w-[68px]' : 'w-64'
       )}
     >
@@ -58,12 +108,12 @@ export default function Sidebar() {
         <img
           src="/logo.png"
           alt="KuboChain"
-          className={cn('object-contain flex-shrink-0', collapsed ? 'w-9 h-9' : 'w-9 h-9')}
+          className="w-9 h-9 object-contain flex-shrink-0"
         />
         {!collapsed && (
           <div>
-            <div className="font-black text-white text-lg leading-none tracking-tight">KuboChain</div>
-            <div className="text-[10px] text-gray-500 font-medium mt-0.5">Admin Dashboard</div>
+            <div className="font-heading font-black text-slate-900 text-lg leading-none tracking-tight">KuboChain</div>
+            <div className="text-[10px] text-slate-400 font-medium mt-0.5 uppercase tracking-widest">Command Center</div>
           </div>
         )}
       </div>
@@ -71,19 +121,20 @@ export default function Sidebar() {
       {/* Collapse toggle */}
       <button
         onClick={() => setCollapsed((c) => !c)}
-        className="absolute -right-3 top-[62px] z-10 w-6 h-6 rounded-full bg-dark-card border border-dark-border flex items-center justify-center text-gray-400 hover:text-white hover:border-primary/50 transition-all shadow-md"
+        className="absolute -right-3 top-[62px] z-10 w-6 h-6 rounded-full bg-white border border-dark-border flex items-center justify-center text-slate-500 hover:border-primary/60 transition-all shadow-sm"
+        title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
       >
         {collapsed
-          ? <ChevronRight size={12} strokeWidth={2.5} />
-          : <ChevronLeft size={12} strokeWidth={2.5} />}
+          ? <ArrowRight01Icon size={10} />
+          : <ArrowLeft01Icon size={10} />}
       </button>
 
       {/* Nav groups */}
-      <nav className="flex-1 overflow-y-auto py-4 px-2 space-y-1">
+      <nav className="flex-1 overflow-y-auto py-3 px-2 space-y-0.5">
         {NAV_GROUPS.map((group) => (
-          <div key={group.label} className="mb-2">
+          <div key={group.label} className="mb-1">
             {!collapsed && (
-              <p className="px-3 mb-1 text-[10px] font-semibold uppercase tracking-widest text-gray-600 select-none">
+              <p className="px-3 pt-3 pb-1 text-[10px] font-semibold uppercase tracking-widest text-slate-400 select-none">
                 {group.label}
               </p>
             )}
@@ -98,25 +149,24 @@ export default function Sidebar() {
                   className={({ isActive }) =>
                     cn(
                       'group flex items-center gap-3 rounded-xl text-sm font-medium transition-all duration-150',
-                      collapsed ? 'justify-center p-2.5' : 'px-3 py-2.5',
+                      collapsed ? 'justify-center p-2.5' : 'px-3 py-2',
                       isActive
                         ? 'bg-primary/10 text-primary'
-                        : 'text-gray-400 hover:bg-white/5 hover:text-white'
+                        : 'text-slate-500 hover:bg-slate-100 hover:text-slate-800'
                     )
                   }
                 >
                   {({ isActive }) => (
                     <>
                       <item.icon
-                        size={18}
-                        strokeWidth={isActive ? 2.5 : 1.8}
+                        size={17}
                         className={cn(
                           'flex-shrink-0 transition-all',
-                          isActive ? 'text-primary' : 'text-gray-500 group-hover:text-white'
+                          isActive ? 'text-primary' : 'text-slate-400 group-hover:text-slate-700'
                         )}
                       />
                       {!collapsed && (
-                        <span className="truncate">{item.label}</span>
+                        <span className="truncate text-[13px]">{item.label}</span>
                       )}
                       {!collapsed && isActive && (
                         <span className="ml-auto w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0" />
@@ -132,16 +182,30 @@ export default function Sidebar() {
 
       {/* Footer */}
       <div className={cn('border-t border-dark-border p-2', collapsed ? '' : 'px-2')}>
+        {!collapsed && adminUser.name && (
+          <div className="flex items-center gap-2.5 px-3 py-2 mb-1">
+            <Avatar name={adminUser.name} size={30} />
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-semibold text-slate-700 truncate">{adminUser.name}</p>
+              <p className="text-[10px] text-slate-400 truncate">{adminUser.email}</p>
+            </div>
+          </div>
+        )}
+        {collapsed && adminUser.name && (
+          <div className="flex justify-center py-2 mb-1">
+            <Avatar name={adminUser.name} size={30} />
+          </div>
+        )}
         <button
           onClick={logout}
           title={collapsed ? 'Log Out' : undefined}
           className={cn(
-            'group w-full flex items-center gap-3 rounded-xl text-sm font-medium text-gray-500 hover:bg-danger/10 hover:text-danger transition-all duration-150',
+            'group w-full flex items-center gap-3 rounded-xl text-sm font-medium text-slate-500 hover:bg-red-50 hover:text-danger transition-all duration-150',
             collapsed ? 'justify-center p-2.5' : 'px-3 py-2.5'
           )}
         >
-          <LogOut size={18} strokeWidth={1.8} className="flex-shrink-0 group-hover:text-danger transition-colors" />
-          {!collapsed && <span>Log Out</span>}
+          <LogoutSquare01Icon size={17} className="flex-shrink-0 group-hover:text-danger transition-colors" />
+          {!collapsed && <span className="text-[13px]">Log Out</span>}
         </button>
       </div>
     </aside>

@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../core/constants/app_colors.dart';
 import '../../models/ride_model.dart';
-import '../../widgets/common/app_button.dart';
 
 class RideRequestSheet extends StatefulWidget {
   final RideModel ride;
@@ -25,14 +26,18 @@ class _RideRequestSheetState extends State<RideRequestSheet>
   late Timer _timer;
   int _secondsLeft = 30;
   late AnimationController _progressController;
+  late Animation<double> _entryAnim;
 
   @override
   void initState() {
     super.initState();
+    HapticFeedback.heavyImpact();
+
     _progressController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 30),
     )..forward();
+    _entryAnim = CurvedAnimation(parent: _progressController, curve: const Interval(0, 0.05, curve: Curves.easeOut));
 
     _timer = Timer.periodic(const Duration(seconds: 1), (t) {
       setState(() => _secondsLeft--);
@@ -50,18 +55,27 @@ class _RideRequestSheetState extends State<RideRequestSheet>
     super.dispose();
   }
 
+  Color get _timerColor => _secondsLeft > 10 ? AppColors.primary : AppColors.error;
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.all(16),
+      margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),
       decoration: BoxDecoration(
-        color: AppColors.surfaceDark,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(28),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.15),
+            blurRadius: 40,
+            offset: const Offset(0, -4),
+          ),
+        ],
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Countdown bar
+          // ── Countdown progress bar ─────────────────────────────────────
           ClipRRect(
             borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
             child: AnimatedBuilder(
@@ -69,141 +83,212 @@ class _RideRequestSheetState extends State<RideRequestSheet>
               builder: (_, __) => LinearProgressIndicator(
                 value: _progressController.value,
                 backgroundColor: AppColors.borderDark,
-                valueColor: AlwaysStoppedAnimation<Color>(
-                  _secondsLeft > 10 ? AppColors.primary : AppColors.error,
-                ),
-                minHeight: 4,
+                valueColor: AlwaysStoppedAnimation<Color>(_timerColor),
+                minHeight: 5,
               ),
             ),
           ),
 
           Padding(
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header
+                // ── Header ─────────────────────────────────────────────
                 Row(
                   children: [
-                    const Text(
-                      'New Ride Request!',
-                      style: TextStyle(
-                        color: AppColors.textOnDark,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                    Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: AppColors.success.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: const Icon(
+                        Icons.notifications_active_rounded,
+                        color: AppColors.success,
+                        size: 28,
                       ),
                     ),
-                    const Spacer(),
-                    Container(
-                      width: 44,
-                      height: 44,
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'New Ride Request!',
+                            style: GoogleFonts.sora(
+                              color: AppColors.textOnDark,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: -0.3,
+                            ),
+                          ),
+                          Text(
+                            'Respond quickly',
+                            style: GoogleFonts.sora(
+                              color: AppColors.textSecondary,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // Countdown circle
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      width: 52,
+                      height: 52,
                       decoration: BoxDecoration(
-                        color: _secondsLeft > 10
-                            ? AppColors.primary.withOpacity(0.2)
-                            : AppColors.error.withOpacity(0.2),
+                        color: _timerColor.withOpacity(0.1),
                         shape: BoxShape.circle,
+                        border: Border.all(color: _timerColor.withOpacity(0.3), width: 2),
                       ),
                       child: Center(
                         child: Text(
                           '$_secondsLeft',
-                          style: TextStyle(
-                            color: _secondsLeft > 10 ? AppColors.primary : AppColors.error,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                          style: GoogleFonts.sora(
+                            color: _timerColor,
+                            fontWeight: FontWeight.w800,
+                            fontSize: 18,
                           ),
                         ),
                       ),
                     ),
                   ],
                 ),
+
+                const SizedBox(height: 20),
+                Divider(color: AppColors.borderDark, height: 1),
                 const SizedBox(height: 20),
 
-                // Passenger info
+                // ── Passenger info ──────────────────────────────────────
                 if (widget.ride.passenger != null)
                   Row(
                     children: [
                       CircleAvatar(
-                        radius: 24,
-                        backgroundColor: AppColors.primary.withOpacity(0.2),
+                        radius: 26,
+                        backgroundColor: AppColors.primary.withOpacity(0.12),
                         child: Text(
                           (widget.ride.passenger!['firstName'] ?? 'P')[0].toUpperCase(),
-                          style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold),
+                          style: GoogleFonts.sora(
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.w800,
+                            fontSize: 18,
+                          ),
                         ),
                       ),
-                      const SizedBox(width: 12),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '${widget.ride.passenger!['firstName'] ?? ''} ${widget.ride.passenger!['lastName'] ?? ''}',
-                            style: const TextStyle(color: AppColors.textOnDark, fontWeight: FontWeight.w600),
-                          ),
-                          Row(
-                            children: [
-                              const Icon(Icons.star, color: Colors.amber, size: 14),
-                              const SizedBox(width: 4),
-                              Text(
-                                '${widget.ride.passenger!['rating'] ?? 5.0}',
-                                style: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${widget.ride.passenger!['firstName'] ?? ''} ${widget.ride.passenger!['lastName'] ?? ''}',
+                              style: GoogleFonts.sora(
+                                color: AppColors.textOnDark,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 16,
                               ),
-                            ],
-                          ),
-                        ],
+                            ),
+                            Row(
+                              children: [
+                                const Icon(Icons.star_rounded, color: AppColors.gold, size: 15),
+                                const SizedBox(width: 3),
+                                Text(
+                                  '${widget.ride.passenger!['rating'] ?? '5.0'}',
+                                  style: GoogleFonts.sora(
+                                    color: AppColors.textSecondary,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.success.withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(50),
+                                  ),
+                                  child: Text(
+                                    'Verified',
+                                    style: GoogleFonts.sora(
+                                      color: AppColors.success,
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
-                const SizedBox(height: 20),
 
-                // Route
+                const SizedBox(height: 16),
+
+                // ── Route card ──────────────────────────────────────────
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: AppColors.cardDark,
+                    color: const Color(0xFFF5F8FF),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(color: AppColors.borderDark),
                   ),
                   child: Column(
                     children: [
                       _RouteRow(
-                        icon: Icons.my_location,
+                        icon: Icons.radio_button_checked_rounded,
                         iconColor: AppColors.primary,
-                        label: 'Pickup',
+                        label: 'PICKUP',
                         address: widget.ride.pickup.address.split(',').first,
                       ),
-                      const Padding(
-                        padding: EdgeInsets.only(left: 9, top: 4, bottom: 4),
-                        child: SizedBox(
-                          width: 2,
-                          height: 16,
-                          child: DecoratedBox(decoration: BoxDecoration(color: AppColors.borderDark)),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 10, top: 4, bottom: 4),
+                        child: Row(
+                          children: List.generate(
+                            4,
+                            (_) => Container(
+                              width: 2,
+                              height: 5,
+                              margin: const EdgeInsets.only(bottom: 4),
+                              decoration: BoxDecoration(
+                                color: AppColors.textMuted,
+                                borderRadius: BorderRadius.circular(1),
+                              ),
+                            ),
+                          ),
                         ),
                       ),
                       _RouteRow(
-                        icon: Icons.location_on,
+                        icon: Icons.location_on_rounded,
                         iconColor: AppColors.error,
-                        label: 'Destination',
+                        label: 'DESTINATION',
                         address: widget.ride.destination.address.split(',').first,
                       ),
                     ],
                   ),
                 ),
+
                 const SizedBox(height: 12),
 
-                // GPS coordinates — rider can confirm exact pickup point
+                // ── GPS indicator ───────────────────────────────────────
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.06),
+                    color: AppColors.primary.withOpacity(0.05),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppColors.primary.withOpacity(0.2)),
+                    border: Border.all(color: AppColors.primary.withOpacity(0.15)),
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.gps_fixed, color: AppColors.primary, size: 15),
+                      const Icon(Icons.gps_fixed_rounded, color: AppColors.primary, size: 15),
                       const SizedBox(width: 8),
                       Text(
-                        'GPS ',
-                        style: TextStyle(
+                        'GPS  ',
+                        style: GoogleFonts.sora(
                           color: AppColors.primary,
                           fontWeight: FontWeight.w700,
                           fontSize: 11,
@@ -226,13 +311,13 @@ class _RideRequestSheetState extends State<RideRequestSheet>
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
                         decoration: BoxDecoration(
-                          color: AppColors.primary.withOpacity(0.15),
+                          color: AppColors.success.withOpacity(0.12),
                           borderRadius: BorderRadius.circular(6),
                         ),
-                        child: const Text(
+                        child: Text(
                           'LIVE',
-                          style: TextStyle(
-                            color: AppColors.primary,
+                          style: GoogleFonts.sora(
+                            color: AppColors.success,
                             fontSize: 9,
                             fontWeight: FontWeight.w800,
                             letterSpacing: 1,
@@ -242,49 +327,118 @@ class _RideRequestSheetState extends State<RideRequestSheet>
                     ],
                   ),
                 ),
+
                 const SizedBox(height: 16),
 
-                // Stats
+                // ── Stat badges ─────────────────────────────────────────
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    _StatBadge(
-                      icon: Icons.route,
-                      value: '${widget.ride.distance.toStringAsFixed(1)} km',
-                      color: AppColors.primary,
+                    Expanded(
+                      child: _StatBadge(
+                        icon: Icons.route_rounded,
+                        value: '${widget.ride.distance.toStringAsFixed(1)} km',
+                        label: 'Distance',
+                        color: AppColors.primary,
+                      ),
                     ),
-                    _StatBadge(
-                      icon: Icons.monetization_on_outlined,
-                      value: 'FC ${widget.ride.price.toStringAsFixed(0)}',
-                      color: AppColors.success,
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: _StatBadge(
+                        icon: Icons.payments_rounded,
+                        value: 'FC ${widget.ride.price.toStringAsFixed(0)}',
+                        label: 'Fare',
+                        color: AppColors.success,
+                      ),
                     ),
-                    _StatBadge(
-                      icon: Icons.directions_bike,
-                      value: widget.ride.rideType ?? 'Economy',
-                      color: AppColors.orange,
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: _StatBadge(
+                        icon: Icons.electric_moped_rounded,
+                        value: widget.ride.rideType ?? 'Economy',
+                        label: 'Type',
+                        color: AppColors.orange,
+                      ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 24),
 
-                // Buttons
+                const SizedBox(height: 20),
+
+                // ── Action buttons ──────────────────────────────────────
                 Row(
                   children: [
                     Expanded(
-                      child: AppButton(
-                        label: 'Decline',
-                        onPressed: widget.onDecline,
-                        isOutlined: true,
-                        backgroundColor: AppColors.error,
-                        textColor: AppColors.error,
+                      child: GestureDetector(
+                        onTap: () {
+                          HapticFeedback.lightImpact();
+                          widget.onDecline();
+                        },
+                        child: Container(
+                          height: 56,
+                          decoration: BoxDecoration(
+                            color: AppColors.error.withOpacity(0.08),
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(color: AppColors.error.withOpacity(0.25)),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.close_rounded, color: AppColors.error, size: 22),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Decline',
+                                style: GoogleFonts.sora(
+                                  color: AppColors.error,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 15,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 10),
                     Expanded(
-                      child: AppButton(
-                        label: 'Accept',
-                        onPressed: widget.onAccept,
-                        backgroundColor: AppColors.success,
+                      flex: 2,
+                      child: GestureDetector(
+                        onTap: () {
+                          HapticFeedback.heavyImpact();
+                          widget.onAccept();
+                        },
+                        child: Container(
+                          height: 56,
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [Color(0xFF10B981), Color(0xFF059669)],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppColors.success.withOpacity(0.4),
+                                blurRadius: 16,
+                                offset: const Offset(0, 6),
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.check_rounded, color: Colors.white, size: 24),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Accept Ride',
+                                style: GoogleFonts.sora(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w800,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
                   ],
@@ -304,20 +458,41 @@ class _RouteRow extends StatelessWidget {
   final String label;
   final String address;
 
-  const _RouteRow({required this.icon, required this.iconColor, required this.label, required this.address});
+  const _RouteRow({
+    required this.icon,
+    required this.iconColor,
+    required this.label,
+    required this.address,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, color: iconColor, size: 20),
+        Icon(icon, color: iconColor, size: 22),
         const SizedBox(width: 12),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label, style: const TextStyle(color: AppColors.textSecondary, fontSize: 10)),
-              Text(address, style: const TextStyle(color: AppColors.textOnDark, fontWeight: FontWeight.w500, fontSize: 13)),
+              Text(
+                label,
+                style: GoogleFonts.sora(
+                  color: AppColors.textMuted,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.8,
+                ),
+              ),
+              Text(
+                address,
+                style: GoogleFonts.sora(
+                  color: AppColors.textOnDark,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
             ],
           ),
         ),
@@ -329,25 +504,45 @@ class _RouteRow extends StatelessWidget {
 class _StatBadge extends StatelessWidget {
   final IconData icon;
   final String value;
+  final String label;
   final Color color;
 
-  const _StatBadge({required this.icon, required this.value, required this.color});
+  const _StatBadge({
+    required this.icon,
+    required this.value,
+    required this.label,
+    required this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: color.withOpacity(0.3)),
+        color: color.withOpacity(0.07),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: color.withOpacity(0.2)),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
+      child: Column(
         children: [
-          Icon(icon, color: color, size: 14),
-          const SizedBox(width: 6),
-          Text(value, style: TextStyle(color: color, fontWeight: FontWeight.w600, fontSize: 12)),
+          Icon(icon, color: color, size: 22),
+          const SizedBox(height: 5),
+          Text(
+            value,
+            style: GoogleFonts.sora(
+              color: AppColors.textOnDark,
+              fontWeight: FontWeight.w700,
+              fontSize: 12,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          Text(
+            label,
+            style: GoogleFonts.sora(
+              color: AppColors.textSecondary,
+              fontSize: 10,
+            ),
+          ),
         ],
       ),
     );

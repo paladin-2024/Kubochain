@@ -1,13 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   AreaChart, Area, BarChart, Bar, LineChart, Line,
   XAxis, YAxis, CartesianGrid, PieChart, Pie, Cell,
-  RadialBarChart, RadialBar, Legend,
+  Legend,
 } from 'recharts';
 import {
-  CheckCircle, DollarSign, Zap, XCircle,
-  TrendingUp, Users, Trophy, Clock,
-} from 'lucide-react';
+  CheckmarkCircle01Icon,
+  Money01Icon,
+  Activity01Icon,
+  CancelCircleIcon,
+  UserGroupIcon,
+  Award01Icon,
+  Clock01Icon,
+  Calendar01Icon,
+  Refresh01Icon,
+} from 'hugeicons-react';
 import api from '../config/api';
 import StatsCard from '../components/StatsCard';
 import {
@@ -15,24 +22,32 @@ import {
   ChartLegend, ChartLegendContent,
 } from '../components/ui/chart';
 
-const PIE_COLORS = ['#27AE60', '#EB5757', '#2F80ED', '#E2B93B'];
+const PIE_COLORS = ['#16A34A', '#EB5757', '#2563EB', '#E2B93B'];
 
 export default function Analytics() {
   const [stats, setStats] = useState(null);
   const [reports, setReports] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [from, setFrom] = useState(() => new Date(Date.now() - 29 * 86400000).toISOString().slice(0, 10));
+  const [to, setTo] = useState(() => new Date().toISOString().slice(0, 10));
 
-  useEffect(() => {
-    Promise.all([api.get('/admin/stats'), api.get('/admin/reports')])
+  const fetchAll = useCallback(() => {
+    setLoading(true);
+    Promise.all([
+      api.get('/admin/stats'),
+      api.get(`/admin/reports?from=${from}&to=${to}`),
+    ])
       .then(([s, r]) => { setStats(s.data); setReports(r.data); })
       .catch(() => {})
       .finally(() => setLoading(false));
-  }, []);
+  }, [from, to]);
+
+  useEffect(() => { fetchAll(); }, [fetchAll]);
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-full">
-        <div className="flex items-center gap-3 text-gray-400">
+        <div className="flex items-center gap-3 text-slate-500">
           <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
           Loading analytics…
         </div>
@@ -64,67 +79,84 @@ export default function Analytics() {
   const hourlyData = reports?.hourly || [];
   const topDrivers = (reports?.topDrivers || []).slice(0, 5);
 
-  const revenueConfig = {
-    revenue: { label: 'Revenue (FC)', color: '#2F80ED' },
+  const revenueConfig = { revenue: { label: 'Revenue (FC)', color: '#2563EB' } };
+  const tripsConfig   = { count:   { label: 'Trips',        color: '#16A34A' } };
+  const growthConfig  = {
+    passenger: { label: 'Passengers', color: '#2563EB' },
+    rider:     { label: 'Riders',     color: '#16A34A' },
   };
-  const tripsConfig = {
-    count: { label: 'Trips', color: '#27AE60' },
-  };
-  const growthConfig = {
-    passenger: { label: 'Passengers', color: '#2F80ED' },
-    rider: { label: 'Riders', color: '#27AE60' },
-  };
-  const hourlyConfig = {
-    count: { label: 'Trips', color: '#E2B93B' },
-  };
+  const hourlyConfig = { count: { label: 'Trips', color: '#E2B93B' } };
 
   return (
     <div className="p-6 space-y-6">
-      <div>
-        <h1 className="text-white text-2xl font-bold">Analytics</h1>
-        <p className="text-gray-400 text-sm">Performance metrics and platform insights</p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="font-heading text-slate-900 text-2xl font-bold">Analytics</h1>
+          <p className="text-slate-500 text-sm">Performance metrics and platform insights</p>
+        </div>
+        <div className="flex items-center gap-2 flex-wrap">
+          <button onClick={() => { setFrom(new Date(Date.now()-6*86400000).toISOString().slice(0,10)); setTo(new Date().toISOString().slice(0,10)); }}
+            className="px-3 py-1.5 bg-dark-card border border-dark-border rounded-lg text-slate-500 text-xs hover:border-primary/50 hover:text-slate-800 transition-colors">
+            7 days
+          </button>
+          <button onClick={() => { setFrom(new Date(Date.now()-29*86400000).toISOString().slice(0,10)); setTo(new Date().toISOString().slice(0,10)); }}
+            className="px-3 py-1.5 bg-dark-card border border-dark-border rounded-lg text-slate-500 text-xs hover:border-primary/50 hover:text-slate-800 transition-colors">
+            30 days
+          </button>
+          <Calendar01Icon size={14} className="text-slate-500" />
+          <input type="date" value={from} onChange={(e) => setFrom(e.target.value)}
+            className="bg-dark-card border border-dark-border rounded-lg px-2 py-1.5 text-xs text-slate-600 focus:outline-none focus:border-primary" />
+          <span className="text-slate-500 text-xs">→</span>
+          <input type="date" value={to} onChange={(e) => setTo(e.target.value)}
+            className="bg-dark-card border border-dark-border rounded-lg px-2 py-1.5 text-xs text-slate-600 focus:outline-none focus:border-primary" />
+          <button onClick={fetchAll} disabled={loading}
+            className="flex items-center gap-1 px-3 py-1.5 bg-primary text-slate-800 rounded-lg text-xs font-semibold hover:bg-primary-dark transition-colors disabled:opacity-50">
+            <Refresh01Icon size={12} className={loading ? 'animate-spin' : ''} />
+            Apply
+          </button>
+        </div>
       </div>
 
       {/* KPI cards */}
       <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
-        <StatsCard label="Completion Rate" value={`${completionRate}%`} icon={CheckCircle} color="success" />
-        <StatsCard label="Avg Fare (FC)" value={avgFare.toLocaleString()} icon={DollarSign} color="orange" />
-        <StatsCard label="Driver Utilization" value={`${driverUtil}%`} icon={Zap} color="primary" />
-        <StatsCard label="Cancelled Rides" value={stats?.cancelledRides || 0} icon={XCircle} color="danger" />
+        <StatsCard label="Completion Rate"     value={`${completionRate}%`}        icon={CheckmarkCircle01Icon} color="success" />
+        <StatsCard label="Avg Fare (FC)"       value={avgFare.toLocaleString()}     icon={Money01Icon}           color="orange"  />
+        <StatsCard label="Driver Utilization"  value={`${driverUtil}%`}             icon={Activity01Icon}        color="primary" />
+        <StatsCard label="Cancelled Rides"     value={stats?.cancelledRides || 0}   icon={CancelCircleIcon}      color="danger"  />
       </div>
 
       {/* Revenue area + Ride status pie */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         <div className="xl:col-span-2 bg-dark-card border border-dark-border rounded-2xl p-5">
           <div className="mb-5">
-            <h2 className="text-white font-semibold text-lg">Revenue — Last 7 Days</h2>
-            <p className="text-gray-500 text-xs mt-0.5">Completed ride earnings</p>
+            <h2 className="font-heading text-slate-900 font-semibold text-lg">Revenue — Last 7 Days</h2>
+            <p className="text-slate-500 text-xs mt-0.5">Completed ride earnings</p>
           </div>
           {dailyRevenue.length > 0 ? (
             <ChartContainer config={revenueConfig} className="h-[240px]">
               <AreaChart data={dailyRevenue} margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
                 <defs>
                   <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#2F80ED" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#2F80ED" stopOpacity={0} />
+                    <stop offset="5%" stopColor="#2563EB" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#2563EB" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
                 <XAxis dataKey="_id" axisLine={false} tickLine={false} />
                 <YAxis axisLine={false} tickLine={false} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
                 <ChartTooltip content={<ChartTooltipContent formatter={(v) => [`FC ${Number(v).toLocaleString()}`, '']} />} />
-                <Area type="monotone" dataKey="revenue" stroke="#2F80ED" fill="url(#revGrad)" />
+                <Area type="monotone" dataKey="revenue" stroke="#2563EB" fill="url(#revGrad)" />
               </AreaChart>
             </ChartContainer>
           ) : (
-            <div className="flex items-center justify-center h-[240px] text-gray-600 text-sm">No revenue data yet</div>
+            <div className="flex items-center justify-center h-[240px] text-slate-500 text-sm">No revenue data yet</div>
           )}
         </div>
 
         <div className="bg-dark-card border border-dark-border rounded-2xl p-5">
           <div className="mb-5">
-            <h2 className="text-white font-semibold text-lg">Ride Status</h2>
-            <p className="text-gray-500 text-xs mt-0.5">All-time distribution</p>
+            <h2 className="font-heading text-slate-900 font-semibold text-lg">Ride Status</h2>
+            <p className="text-slate-500 text-xs mt-0.5">All-time distribution</p>
           </div>
           <ChartContainer config={{}} className="h-[240px]">
             <PieChart>
@@ -132,7 +164,7 @@ export default function Analytics() {
                 {statusData.map((_, i) => <Cell key={i} fill={PIE_COLORS[i]} />)}
               </Pie>
               <ChartTooltip content={<ChartTooltipContent />} />
-              <Legend formatter={(v) => <span style={{ color: '#9E9E9E', fontSize: 11 }}>{v}</span>} />
+              <Legend formatter={(v) => <span style={{ color: '#94A3B8', fontSize: 11 }}>{v}</span>} />
             </PieChart>
           </ChartContainer>
         </div>
@@ -142,8 +174,8 @@ export default function Analytics() {
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         <div className="xl:col-span-2 bg-dark-card border border-dark-border rounded-2xl p-5">
           <div className="mb-5">
-            <h2 className="text-white font-semibold text-lg">Trips Per Day</h2>
-            <p className="text-gray-500 text-xs mt-0.5">Last 7 days</p>
+            <h2 className="font-heading text-slate-900 font-semibold text-lg">Trips Per Day</h2>
+            <p className="text-slate-500 text-xs mt-0.5">Last 7 days</p>
           </div>
           {dailyRevenue.length > 0 ? (
             <ChartContainer config={tripsConfig} className="h-[220px]">
@@ -152,33 +184,33 @@ export default function Analytics() {
                 <XAxis dataKey="_id" axisLine={false} tickLine={false} />
                 <YAxis axisLine={false} tickLine={false} />
                 <ChartTooltip content={<ChartTooltipContent />} />
-                <Bar dataKey="count" fill="#2F80ED" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="count" fill="#2563EB" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ChartContainer>
           ) : (
-            <div className="flex items-center justify-center h-[220px] text-gray-600 text-sm">No data yet</div>
+            <div className="flex items-center justify-center h-[220px] text-slate-500 text-sm">No data yet</div>
           )}
         </div>
 
         {/* KPI gauges */}
         <div className="bg-dark-card border border-dark-border rounded-2xl p-5">
           <div className="mb-5">
-            <h2 className="text-white font-semibold text-lg">Platform Health</h2>
-            <p className="text-gray-500 text-xs mt-0.5">Current metrics</p>
+            <h2 className="font-heading text-slate-900 font-semibold text-lg">Platform Health</h2>
+            <p className="text-slate-500 text-xs mt-0.5">Current metrics</p>
           </div>
           <div className="space-y-5 mt-2">
             {[
-              { label: 'Completion Rate', value: completionRate, color: '#27AE60', icon: CheckCircle },
-              { label: 'Driver Utilization', value: driverUtil, color: '#2F80ED', icon: Zap },
-              { label: 'Cancellation Rate', value: stats?.totalRides ? Math.round((stats.cancelledRides / stats.totalRides) * 100) : 0, color: '#EB5757', icon: XCircle },
+              { label: 'Completion Rate',   value: completionRate, color: '#16A34A', Icon: CheckmarkCircle01Icon },
+              { label: 'Driver Utilization', value: driverUtil,    color: '#2563EB', Icon: Activity01Icon },
+              { label: 'Cancellation Rate', value: stats?.totalRides ? Math.round((stats.cancelledRides / stats.totalRides) * 100) : 0, color: '#EB5757', Icon: CancelCircleIcon },
             ].map((m) => (
               <div key={m.label}>
                 <div className="flex items-center justify-between text-sm mb-1.5">
-                  <span className="flex items-center gap-1.5 text-gray-400">
-                    <m.icon size={13} style={{ color: m.color }} />
+                  <span className="flex items-center gap-1.5 text-slate-500">
+                    <m.Icon size={13} color={m.color} />
                     {m.label}
                   </span>
-                  <span className="text-white font-bold">{m.value}%</span>
+                  <span className="text-slate-900 font-bold">{m.value}%</span>
                 </div>
                 <div className="h-2 bg-dark-bg rounded-full overflow-hidden">
                   <div
@@ -191,12 +223,12 @@ export default function Analytics() {
           </div>
           <div className="mt-6 pt-4 border-t border-dark-border grid grid-cols-2 gap-3">
             <div className="bg-dark-bg border border-dark-border rounded-xl p-3 text-center">
-              <div className="text-success text-xl font-bold">{completionRate}%</div>
-              <div className="text-gray-500 text-xs mt-0.5">Completion</div>
+              <div className="font-heading text-success text-xl font-bold">{completionRate}%</div>
+              <div className="text-slate-500 text-xs mt-0.5">Completion</div>
             </div>
             <div className="bg-dark-bg border border-dark-border rounded-xl p-3 text-center">
-              <div className="text-primary text-xl font-bold">{driverUtil}%</div>
-              <div className="text-gray-500 text-xs mt-0.5">Driver Util.</div>
+              <div className="font-heading text-primary text-xl font-bold">{driverUtil}%</div>
+              <div className="text-slate-500 text-xs mt-0.5">Driver Util.</div>
             </div>
           </div>
         </div>
@@ -205,10 +237,10 @@ export default function Analytics() {
       {/* User growth */}
       <div className="bg-dark-card border border-dark-border rounded-2xl p-5">
         <div className="flex items-center gap-2 mb-5">
-          <Users size={18} className="text-primary" />
+          <UserGroupIcon size={18} className="text-primary" />
           <div>
-            <h2 className="text-white font-semibold text-lg">User Growth</h2>
-            <p className="text-gray-500 text-xs">New signups over last 30 days</p>
+            <h2 className="font-heading text-slate-900 font-semibold text-lg">User Growth</h2>
+            <p className="text-slate-500 text-xs">New signups over last 30 days</p>
           </div>
         </div>
         {userGrowthData.length > 0 ? (
@@ -219,12 +251,12 @@ export default function Analytics() {
               <YAxis axisLine={false} tickLine={false} />
               <ChartTooltip content={<ChartTooltipContent />} />
               <ChartLegend content={<ChartLegendContent />} />
-              <Line type="monotone" dataKey="passenger" stroke="#2F80ED" strokeWidth={2} dot={false} />
-              <Line type="monotone" dataKey="rider" stroke="#27AE60" strokeWidth={2} dot={false} />
+              <Line type="monotone" dataKey="passenger" stroke="#2563EB" strokeWidth={2} dot={false} />
+              <Line type="monotone" dataKey="rider" stroke="#16A34A" strokeWidth={2} dot={false} />
             </LineChart>
           </ChartContainer>
         ) : (
-          <div className="flex items-center justify-center h-[220px] text-gray-600 text-sm">No growth data available</div>
+          <div className="flex items-center justify-center h-[220px] text-slate-500 text-sm">No growth data available</div>
         )}
       </div>
 
@@ -232,10 +264,10 @@ export default function Analytics() {
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         <div className="bg-dark-card border border-dark-border rounded-2xl p-5">
           <div className="flex items-center gap-2 mb-5">
-            <Clock size={18} className="text-warning" />
+            <Clock01Icon size={18} className="text-warning" />
             <div>
-              <h2 className="text-white font-semibold text-lg">Hourly Distribution</h2>
-              <p className="text-gray-500 text-xs">Trips by hour of day</p>
+              <h2 className="font-heading text-slate-900 font-semibold text-lg">Hourly Distribution</h2>
+              <p className="text-slate-500 text-xs">Trips by hour of day</p>
             </div>
           </div>
           {hourlyData.length > 0 ? (
@@ -255,16 +287,16 @@ export default function Analytics() {
               </BarChart>
             </ChartContainer>
           ) : (
-            <div className="flex items-center justify-center h-[180px] text-gray-600 text-sm">No hourly data</div>
+            <div className="flex items-center justify-center h-[180px] text-slate-500 text-sm">No hourly data</div>
           )}
         </div>
 
         <div className="bg-dark-card border border-dark-border rounded-2xl p-5">
           <div className="flex items-center gap-2 mb-5">
-            <Trophy size={18} className="text-warning" />
+            <Award01Icon size={18} className="text-warning" />
             <div>
-              <h2 className="text-white font-semibold text-lg">Top Performers</h2>
-              <p className="text-gray-500 text-xs">Drivers by earnings</p>
+              <h2 className="font-heading text-slate-900 font-semibold text-lg">Top Performers</h2>
+              <p className="text-slate-500 text-xs">Drivers by earnings</p>
             </div>
           </div>
           {topDrivers.length > 0 ? (
@@ -272,30 +304,34 @@ export default function Analytics() {
               {topDrivers.map((d, i) => {
                 const maxE = topDrivers[0]?.earnings || 1;
                 const pct = (d.earnings / maxE) * 100;
-                const medals = ['🥇', '🥈', '🥉'];
-                const barColors = ['#E2B93B', '#9E9E9E', '#F2994A', '#2F80ED', '#27AE60'];
+                const rankColors = ['#E2B93B', '#94A3B8', '#F2994A', '#2563EB', '#16A34A'];
                 return (
                   <div key={d.id}>
                     <div className="flex items-center justify-between text-sm mb-1">
-                      <span className="text-gray-300 flex items-center gap-2">
-                        <span className="text-base">{medals[i] || `#${d.rank}`}</span>
+                      <span className="text-slate-600 flex items-center gap-2">
+                        <span
+                          className="inline-flex items-center justify-center w-5 h-5 rounded-md text-xs font-bold font-heading"
+                          style={{ background: `${rankColors[i]}20`, color: rankColors[i], border: `1px solid ${rankColors[i]}40` }}
+                        >
+                          {i + 1}
+                        </span>
                         <span className="truncate max-w-[120px]">{d.name}</span>
                       </span>
-                      <span className="text-white font-semibold text-xs">FC {d.earnings.toLocaleString()}</span>
+                      <span className="text-slate-900 font-semibold text-xs">FC {d.earnings.toLocaleString()}</span>
                     </div>
                     <div className="h-1.5 bg-dark-bg rounded-full overflow-hidden">
                       <div
                         className="h-full rounded-full transition-all duration-500"
-                        style={{ width: `${pct}%`, backgroundColor: barColors[i] }}
+                        style={{ width: `${pct}%`, backgroundColor: rankColors[i] }}
                       />
                     </div>
-                    <div className="text-gray-600 text-xs mt-0.5">{d.trips} trips · ★ {d.rating.toFixed(1)}</div>
+                    <div className="text-slate-500 text-xs mt-0.5">{d.trips} trips · {d.rating.toFixed(1)} avg</div>
                   </div>
                 );
               })}
             </div>
           ) : (
-            <div className="flex items-center justify-center h-[180px] text-gray-600 text-sm">No driver data</div>
+            <div className="flex items-center justify-center h-[180px] text-slate-500 text-sm">No driver data</div>
           )}
         </div>
       </div>

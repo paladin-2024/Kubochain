@@ -4,7 +4,7 @@ class UserModel {
   final String lastName;
   final String email;
   final String phone;
-  final String role; // 'passenger' | 'rider' | 'admin'
+  final String role;
   final String? profileImage;
   final double rating;
   final int totalRides;
@@ -50,37 +50,40 @@ class UserModel {
     );
   }
 
+  // Handles both FastAPI snake_case and legacy camelCase field names.
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      id: json['_id'] ?? json['id'] ?? '',
-      firstName: json['firstName'] ?? '',
-      lastName: json['lastName'] ?? '',
-      email: json['email'] ?? '',
-      phone: json['phone'] ?? '',
-      role: json['role'] ?? 'passenger',
-      profileImage: json['profileImage'],
-      rating: (json['rating'] ?? 5.0).toDouble(),
-      totalRides: json['totalRides'] ?? 0,
-      createdAt: json['createdAt'] != null
-          ? DateTime.parse(json['createdAt'])
-          : DateTime.now(),
-      isVerified: json['isVerified'] ?? json['isActive'] ?? true,
+      id: json['id']?.toString() ?? json['_id']?.toString() ?? '',
+      firstName: json['first_name'] ?? json['firstName'] ?? '',
+      lastName:  json['last_name']  ?? json['lastName']  ?? '',
+      email:     json['email'] ?? '',
+      phone:     json['phone'] ?? '',
+      role:      json['role']  ?? 'passenger',
+      profileImage: json['profile_image'] ?? json['profileImage'],
+      rating:    (json['rating'] ?? 5.0).toDouble(),
+      totalRides: json['total_rides'] ?? json['totalRides'] ?? 0,
+      createdAt: json['created_at'] != null
+          ? DateTime.parse(json['created_at'])
+          : json['createdAt'] != null
+              ? DateTime.parse(json['createdAt'])
+              : DateTime.now(),
+      isVerified: json['is_active'] ?? json['isVerified'] ?? json['isActive'] ?? true,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      '_id': id,
-      'firstName': firstName,
-      'lastName': lastName,
-      'email': email,
-      'phone': phone,
-      'role': role,
-      'profileImage': profileImage,
-      'rating': rating,
-      'totalRides': totalRides,
-      'createdAt': createdAt.toIso8601String(),
-      'isVerified': isVerified,
+      'id':           id,
+      'first_name':   firstName,
+      'last_name':    lastName,
+      'email':        email,
+      'phone':        phone,
+      'role':         role,
+      'profile_image': profileImage,
+      'rating':       rating,
+      'total_rides':  totalRides,
+      'created_at':   createdAt.toIso8601String(),
+      'is_active':    isVerified,
     };
   }
 }

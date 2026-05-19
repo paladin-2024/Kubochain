@@ -1,19 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/routes/app_routes.dart';
 import 'core/services/api_service.dart';
 import 'core/services/navigation_service.dart';
 import 'core/services/notification_service.dart';
 import 'core/services/storage_service.dart';
 import 'core/theme/app_theme.dart';
-import 'providers/auth_provider.dart';
-import 'providers/ride_provider.dart';
-import 'providers/location_provider.dart';
-import 'providers/driver_provider.dart';
 import 'screens/splash_screen.dart';
+import 'widgets/connectivity_banner.dart';
 
-// Firebase — only imported when configured
 import 'package:firebase_core/firebase_core.dart';
 
 void main() async {
@@ -21,18 +17,13 @@ void main() async {
   await StorageService.init();
   ApiService.init();
 
-  // Initialize Firebase (requires google-services.json)
   try {
     await Firebase.initializeApp();
-  } catch (_) {
-    // Firebase not configured yet — push notifications will be unavailable
-  }
+  } catch (_) {}
 
   await NotificationService.init();
 
-  // Handle notification taps — store data + navigate to the right screen
   NotificationService.setNotificationTapHandler((data) {
-    // Store so the target screen can consume it and act
     NotificationService.storePendingNotification(data);
     final type = data['type'] as String?;
     if (type == 'new_ride_request') {
@@ -50,7 +41,7 @@ void main() async {
   ));
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
-  runApp(const KuboChainApp());
+  runApp(const ProviderScope(child: KuboChainApp()));
 }
 
 class KuboChainApp extends StatelessWidget {
@@ -58,22 +49,15 @@ class KuboChainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => AuthProvider()),
-        ChangeNotifierProvider(create: (_) => RideProvider()),
-        ChangeNotifierProvider(create: (_) => LocationProvider()),
-        ChangeNotifierProvider(create: (_) => DriverProvider()),
-      ],
-      child: MaterialApp(
-        title: 'KuboChain',
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.lightTheme,
-        navigatorKey: NavigationService.navigatorKey,
-        initialRoute: AppRoutes.splash,
-        onGenerateRoute: AppRoutes.generateRoute,
-        home: const SplashScreen(),
-      ),
+    return MaterialApp(
+      title: 'KuboChain',
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.lightTheme,
+      navigatorKey: NavigationService.navigatorKey,
+      initialRoute: AppRoutes.splash,
+      onGenerateRoute: AppRoutes.generateRoute,
+      home: const ConnectivityBanner(child: SplashScreen()),
+      builder: (context, child) => ConnectivityBanner(child: child ?? const SizedBox()),
     );
   }
 }

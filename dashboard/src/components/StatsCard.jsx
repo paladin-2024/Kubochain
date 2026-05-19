@@ -1,5 +1,5 @@
 import React from 'react';
-import { TrendingUp, TrendingDown } from 'lucide-react';
+import { ChartUpIcon, ChartDownIcon } from 'hugeicons-react';
 import { cn } from '../lib/utils';
 
 const VARIANTS = {
@@ -57,14 +57,14 @@ export default function StatsCard({
         'w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 border',
         v.bg, v.border
       )}>
-        {Icon && <Icon size={20} strokeWidth={2} className={v.text} />}
+        {Icon && <Icon size={20} className={v.text} />}
       </div>
 
       {/* Content */}
       <div className="flex-1 min-w-0">
-        <p className="text-gray-500 text-xs font-medium uppercase tracking-wide truncate">{label}</p>
-        <p className="text-white text-2xl font-bold mt-0.5 truncate">{value ?? '—'}</p>
-        {sub && <p className="text-gray-600 text-xs mt-0.5 truncate">{sub}</p>}
+        <p className="text-slate-500 text-xs font-medium uppercase tracking-wide truncate">{label}</p>
+        <p className="text-slate-900 text-2xl font-bold mt-0.5 truncate">{value ?? '—'}</p>
+        {sub && <p className="text-slate-500 text-xs mt-0.5 truncate">{sub}</p>}
       </div>
 
       {/* Trend badge */}
@@ -74,8 +74,8 @@ export default function StatsCard({
           trend >= 0 ? 'bg-success/10 text-success' : 'bg-danger/10 text-danger'
         )}>
           {trend >= 0
-            ? <TrendingUp size={12} />
-            : <TrendingDown size={12} />}
+            ? <ChartUpIcon size={12} />
+            : <ChartDownIcon size={12} />}
           {Math.abs(trend)}%
         </div>
       )}

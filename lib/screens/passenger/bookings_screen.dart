@@ -1,20 +1,20 @@
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../../models/ride_model.dart';
-import '../../providers/ride_provider.dart';
+import '../../providers/providers.dart';
 import 'book_ride_screen.dart';
 
-class BookingsScreen extends StatefulWidget {
+class BookingsScreen extends ConsumerStatefulWidget {
   const BookingsScreen({super.key});
 
   @override
-  State<BookingsScreen> createState() => _BookingsScreenState();
+  ConsumerState<BookingsScreen> createState() => _BookingsScreenState();
 }
 
-class _BookingsScreenState extends State<BookingsScreen>
+class _BookingsScreenState extends ConsumerState<BookingsScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _fadeCtrl;
   int _filterIdx = 0; // 0=All, 1=Completed, 2=Cancelled
@@ -28,7 +28,7 @@ class _BookingsScreenState extends State<BookingsScreen>
       duration: const Duration(milliseconds: 600),
     )..forward();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<RideProvider>().fetchRideHistory();
+      ref.read(rideProvider).fetchRideHistory();
     });
   }
 
@@ -46,7 +46,7 @@ class _BookingsScreenState extends State<BookingsScreen>
 
   @override
   Widget build(BuildContext context) {
-    final ride = context.watch<RideProvider>();
+    final ride = ref.watch(rideProvider);
     final filtered = _filtered(ride.rideHistory);
 
     return Scaffold(
@@ -182,7 +182,7 @@ class _BookingsScreenState extends State<BookingsScreen>
                             color: AppColors.primary,
                             backgroundColor: AppColors.cardDark,
                             onRefresh: () =>
-                                context.read<RideProvider>().fetchRideHistory(),
+                                ref.read(rideProvider).fetchRideHistory(),
                             child: ListView.separated(
                               padding:
                                   const EdgeInsets.fromLTRB(24, 0, 24, 120),

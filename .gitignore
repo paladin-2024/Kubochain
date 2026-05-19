@@ -49,5 +49,7 @@ app.*.map.json
 # FVM Version Cache
 .fvm/
 /backend/server/.env
+dashboard/.env.local
+dashboard/.env
 # Firebase service account key — never commit this
 backend/server/src/config/*.json

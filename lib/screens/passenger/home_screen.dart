@@ -1,28 +1,26 @@
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/services/notification_service.dart';
-import '../../providers/auth_provider.dart';
-import '../../providers/location_provider.dart';
-import '../../providers/ride_provider.dart';
+import '../../providers/providers.dart';
 import '../../models/ride_model.dart';
 import '../common/notifications_screen.dart';
 import 'book_ride_screen.dart';
 import 'top_riders_screen.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
+class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStateMixin {
   final MapController _mapController = MapController();
   int _unreadCount = 0;
   late AnimationController _fadeController;
@@ -38,8 +36,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     _fadeAnim = CurvedAnimation(parent: _fadeController, curve: Curves.easeOut);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<LocationProvider>().init();
-      context.read<RideProvider>().fetchRideHistory();
+      ref.read(locationProvider).init();
+      ref.read(rideProvider).fetchRideHistory();
     });
     NotificationService.addListener(_onNotificationsChanged);
     _unreadCount = NotificationService.unreadCount;
@@ -58,9 +56,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final auth   = context.watch<AuthProvider>();
-    final loc    = context.watch<LocationProvider>();
-    final ride   = context.watch<RideProvider>();
+    final auth   = ref.watch(authProvider);
+    final loc    = ref.watch(locationProvider);
+    final ride   = ref.watch(rideProvider);
     final center = loc.currentLocation ?? AppConstants.defaultLocation;
     final hour   = DateTime.now().hour;
     final greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
@@ -123,7 +121,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: [Color(0xFF0D1828), Color(0xFF080D18)],
+          colors: [Color(0xFFEFF6FF), Color(0xFFF5F8FF)],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),
@@ -233,11 +231,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [Color(0xFF141F33), Color(0xFF1A2740)],
-            ),
+            color: Colors.white,
             borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: AppColors.borderDark, width: 0.5),
+            border: Border.all(color: AppColors.borderDark),
             boxShadow: AppColors.cardShadow,
           ),
           child: Row(
@@ -470,7 +466,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     options: MapOptions(initialCenter: center, initialZoom: 14.5),
                     children: [
                       TileLayer(
-                        urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                        urlTemplate: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png',
+                        subdomains: const ['a', 'b', 'c', 'd'],
                         userAgentPackageName: 'com.kubochain.app',
                       ),
                       if (loc.currentLocation != null)

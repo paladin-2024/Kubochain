@@ -1,23 +1,24 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_constants.dart';
 import '../../providers/ride_provider.dart';
+import '../../providers/providers.dart';
 import '../../widgets/map/live_map_widget.dart';
 import '../common/chat_screen.dart';
 import 'trip_screen.dart';
 
-class DriverArrivingScreen extends StatefulWidget {
+class DriverArrivingScreen extends ConsumerStatefulWidget {
   const DriverArrivingScreen({super.key});
 
   @override
-  State<DriverArrivingScreen> createState() => _DriverArrivingScreenState();
+  ConsumerState<DriverArrivingScreen> createState() => _DriverArrivingScreenState();
 }
 
-class _DriverArrivingScreenState extends State<DriverArrivingScreen>
+class _DriverArrivingScreenState extends ConsumerState<DriverArrivingScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _pulseCtrl;
   late Animation<double> _pulseAnim;
@@ -32,11 +33,11 @@ class _DriverArrivingScreenState extends State<DriverArrivingScreen>
     _pulseAnim = Tween<double>(begin: 0.8, end: 1.0).animate(
       CurvedAnimation(parent: _pulseCtrl, curve: Curves.easeInOut),
     );
-    context.read<RideProvider>().addListener(_onStatusChange);
+    ref.read(rideProvider).addListener(_onStatusChange);
   }
 
   void _onStatusChange() {
-    final ride = context.read<RideProvider>();
+    final ride = ref.read(rideProvider);
     if (ride.rideStatus == RideStatus.inProgress && mounted) {
       Navigator.pushReplacement(
         context,
@@ -48,7 +49,7 @@ class _DriverArrivingScreenState extends State<DriverArrivingScreen>
   @override
   void dispose() {
     _pulseCtrl.dispose();
-    context.read<RideProvider>().removeListener(_onStatusChange);
+    ref.read(rideProvider).removeListener(_onStatusChange);
     super.dispose();
   }
 
@@ -68,7 +69,7 @@ class _DriverArrivingScreenState extends State<DriverArrivingScreen>
 
   @override
   Widget build(BuildContext context) {
-    final ride = context.watch<RideProvider>();
+    final ride = ref.watch(rideProvider);
     final currentRide = ride.currentRide;
     final driverLocation = ride.driverLocation;
     final center = driverLocation ??
@@ -434,7 +435,7 @@ class _DriverArrivingScreenState extends State<DriverArrivingScreen>
                               ),
                             );
                             if (confirm == true && mounted) {
-                              await context.read<RideProvider>().cancelRide('Cancelled by passenger');
+                              await ref.read(rideProvider).cancelRide('Cancelled by passenger');
                               if (mounted) Navigator.of(context).popUntil((r) => r.isFirst);
                             }
                           },

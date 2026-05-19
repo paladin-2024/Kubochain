@@ -7,29 +7,39 @@ class StorageService {
     _prefs = await SharedPreferences.getInstance();
   }
 
-  // Auth
-  static const _tokenKey = 'auth_token';
-  static const _userKey = 'user_data';
-  static const _roleKey = 'user_role';
-  static const _onboardedKey = 'onboarded';
+  // Auth keys
+  static const _accessTokenKey  = 'auth_token';
+  static const _refreshTokenKey = 'refresh_token';
+  static const _userKey         = 'user_data';
+  static const _roleKey         = 'user_role';
+  static const _onboardedKey    = 'onboarded';
 
+  // Access token
   static Future<void> saveToken(String token) =>
-      _prefs.setString(_tokenKey, token);
+      _prefs.setString(_accessTokenKey, token);
 
-  static String? getToken() => _prefs.getString(_tokenKey);
+  static String? getToken() => _prefs.getString(_accessTokenKey);
 
+  // Refresh token
+  static Future<void> saveRefreshToken(String token) =>
+      _prefs.setString(_refreshTokenKey, token);
+
+  static String? getRefreshToken() => _prefs.getString(_refreshTokenKey);
+
+  // User
   static Future<void> saveUser(String userJson) =>
       _prefs.setString(_userKey, userJson);
 
   static String? getUser() => _prefs.getString(_userKey);
 
+  // Role
   static Future<void> saveRole(String role) =>
       _prefs.setString(_roleKey, role);
 
   static String? getRole() => _prefs.getString(_roleKey);
 
+  // Onboarding
   static Future<void> setOnboarded() => _prefs.setBool(_onboardedKey, true);
-
   static bool isOnboarded() => _prefs.getBool(_onboardedKey) ?? false;
 
   static Future<void> clearAll() => _prefs.clear();

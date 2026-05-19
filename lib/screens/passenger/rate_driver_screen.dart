@@ -1,20 +1,20 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
 import '../../core/constants/app_colors.dart';
-import '../../providers/ride_provider.dart';
+import '../../providers/providers.dart';
 import 'passenger_main.dart';
 import 'top_riders_screen.dart';
 
-class RateDriverScreen extends StatefulWidget {
+class RateDriverScreen extends ConsumerStatefulWidget {
   const RateDriverScreen({super.key});
 
   @override
-  State<RateDriverScreen> createState() => _RateDriverScreenState();
+  ConsumerState<RateDriverScreen> createState() => _RateDriverScreenState();
 }
 
-class _RateDriverScreenState extends State<RateDriverScreen>
+class _RateDriverScreenState extends ConsumerState<RateDriverScreen>
     with TickerProviderStateMixin {
   int _rating = 5;
   final _commentCtrl = TextEditingController();
@@ -72,7 +72,7 @@ class _RateDriverScreenState extends State<RateDriverScreen>
 
   Future<void> _submit() async {
     setState(() => _isLoading = true);
-    final ride = context.read<RideProvider>();
+    final ride = ref.read(rideProvider);
     await ride.rateRide(
       _rating,
       _commentCtrl.text.trim(),
@@ -88,7 +88,7 @@ class _RateDriverScreenState extends State<RateDriverScreen>
   }
 
   void _skipRating() {
-    context.read<RideProvider>().resetRide();
+    ref.read(rideProvider).resetRide();
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (_) => const PassengerMain()),
@@ -98,7 +98,7 @@ class _RateDriverScreenState extends State<RateDriverScreen>
 
   @override
   Widget build(BuildContext context) {
-    final ride = context.watch<RideProvider>();
+    final ride = ref.watch(rideProvider);
     final currentRide = ride.currentRide;
     final driver = currentRide?.driver;
     final driverName =

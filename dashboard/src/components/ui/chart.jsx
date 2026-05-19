@@ -26,8 +26,8 @@ export function ChartContainer({ config = {}, children, className }) {
         data-chart={id}
       >
         <style>{`
-          [data-chart="${id}"] .recharts-cartesian-grid line { stroke: #2D3D50; }
-          [data-chart="${id}"] .recharts-cartesian-axis-tick-value { fill: #828282; font-size: 11px; }
+          [data-chart="${id}"] .recharts-cartesian-grid line { stroke: #E2E8F0; }
+          [data-chart="${id}"] .recharts-cartesian-axis-tick-value { fill: #94A3B8; font-size: 11px; }
           [data-chart="${id}"] .recharts-curve { stroke-width: 2.5; }
           [data-chart="${id}"] .recharts-dot { r: 3; }
         `}</style>
@@ -53,14 +53,14 @@ export function ChartTooltipContent({
       className
     )}>
       {!hideLabel && label && (
-        <p className="mb-2 font-semibold text-gray-400">
+        <p className="mb-2 font-semibold text-slate-500">
           {labelFormatter ? labelFormatter(label, payload) : label}
         </p>
       )}
       <div className="space-y-1.5">
         {payload.map((item, i) => {
           const cfg = config[item.dataKey] || {};
-          const color = item.color || cfg.color || '#2F80ED';
+          const color = item.color || cfg.color || '#2563EB';
           const name = cfg.label || item.name;
           const val = formatter
             ? formatter(item.value, item.dataKey, item, i, payload)
@@ -68,7 +68,7 @@ export function ChartTooltipContent({
 
           return (
             <div key={i} className="flex items-center justify-between gap-4">
-              <span className="flex items-center gap-1.5 text-gray-400">
+              <span className="flex items-center gap-1.5 text-slate-500">
                 {indicator === 'dot' && (
                   <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: color }} />
                 )}
@@ -77,7 +77,7 @@ export function ChartTooltipContent({
                 )}
                 {name}
               </span>
-              <span className="font-bold text-white">{val}</span>
+              <span className="font-bold text-slate-900">{val}</span>
             </div>
           );
         })}
@@ -98,7 +98,7 @@ export function ChartLegendContent({ payload, className }) {
         const color = item.color || cfg.color;
         const label = cfg.label || item.value;
         return (
-          <span key={i} className="flex items-center gap-1.5 text-xs text-gray-400">
+          <span key={i} className="flex items-center gap-1.5 text-xs text-slate-500">
             <span className="w-2.5 h-2.5 rounded-sm flex-shrink-0" style={{ backgroundColor: color }} />
             {label}
           </span>

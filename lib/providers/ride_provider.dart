@@ -79,14 +79,14 @@ class RideProvider extends ChangeNotifier {
       );
     });
 
-    SocketService.socket?.on('ride:awaitingConfirmation', (data) {
+    SocketService.on('ride:awaitingConfirmation', (data) {
       _rideStatus = RideStatus.awaitingConfirmation;
       if (data['ride'] != null) {
-        _currentRide = RideModel.fromJson(data['ride']);
+        _currentRide = RideModel.fromJson(data['ride'] as Map<String, dynamic>);
       }
       notifyListeners();
       NotificationService.show(
-        title: '🏁 Trip Complete!',
+        title: 'Trip Complete!',
         body: 'Driver has ended the trip. Please confirm to complete.',
         type: 'trip_confirmation_needed',
       );
