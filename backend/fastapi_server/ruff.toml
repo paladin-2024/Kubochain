@@ -1,0 +1,5 @@
+target-version = "py313"
+
+[lint]
+# F821: false positive — SQLAlchemy uses string forward references in relationships
+ignore = ["F821"]

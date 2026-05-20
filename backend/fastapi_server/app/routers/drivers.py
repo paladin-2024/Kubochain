@@ -1,4 +1,3 @@
-import uuid
 from datetime import date
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -11,10 +10,8 @@ from ..schemas.driver import (
     UpdateLocationIn, ToggleAvailabilityIn, UpdateVehicleIn,
     DriverOut, EarningsOut, TopRiderOut,
 )
-from ..schemas.ride import RideOut, LocationIn, PassengerInfo
 from ..core.dependencies import get_current_user, rider_only
 from ..core.ws_manager import ws_manager
-from ..services.notifications import send_push
 
 router = APIRouter(prefix="/drivers", tags=["drivers"])
 

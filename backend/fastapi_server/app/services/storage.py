@@ -1,5 +1,4 @@
 import uuid
-import os
 import re
 from pathlib import Path
 from fastapi import UploadFile, HTTPException

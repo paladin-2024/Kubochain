@@ -1,10 +1,9 @@
 import json
 import uuid
 from datetime import datetime, timezone
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends
-from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from sqlalchemy import select, update
-from ..database import get_db, AsyncSessionLocal
+from ..database import AsyncSessionLocal
 from ..models.user import User
 from ..models.driver import Driver
 from ..models.ride import Ride

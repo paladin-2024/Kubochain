@@ -1,5 +1,5 @@
-import uuid, json
-from datetime import datetime
+import uuid
+import json
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import text, select, func
@@ -402,10 +402,10 @@ async def get_audit_log(db: AsyncSession = Depends(get_db), _: User = Depends(ad
     return [
         {
             "id": str(l.id), "action": l.action, "admin": l.admin,
-            "target": l.target, "meta": l.meta,
-            "created_at": l.created_at.isoformat(),
+            "target": log.target, "meta": log.meta,
+            "created_at": log.created_at.isoformat(),
         }
-        for l in result.scalars().all()
+        for log in result.scalars().all()
     ]
 
 

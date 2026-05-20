@@ -55,19 +55,7 @@ async def send_otp(phone: str, db: AsyncSession) -> None:
 
 
 async def verify_otp(phone: str, code: str, db: AsyncSession) -> bool:
-    # Count recent failed attempts to prevent brute force
     window_start = datetime.now(timezone.utc) - timedelta(minutes=_OTP_TTL_MINUTES)
-    failed_count = await db.execute(
-        select(func.count(OtpCode.id)).where(
-            OtpCode.phone == phone,
-            OtpCode.used == False,  # noqa: E712
-            OtpCode.created_at > window_start,
-        )
-    )
-    # If more than max_attempts unused OTPs exist (each bad attempt doesn't consume them),
-    # we track attempts via a separate counter stored on the OTP row via the 'used' flag trick:
-    # Instead we count how many times verify was called with wrong codes by checking active OTPs left.
-    # Simpler: count total OTP requests for this phone in last 10 min and cap.
     total_recent = (await db.execute(
         select(func.count(OtpCode.id)).where(
             OtpCode.phone == phone,

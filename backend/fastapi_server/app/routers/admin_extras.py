@@ -2,12 +2,13 @@
 Extra admin endpoints — banners, versions, feature flags, zones, config,
 support tickets, incidents, SOS, payouts, staff, referrals, finance, health.
 """
-import uuid, time
+import uuid
+import time
 from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, text
-from ..database import get_db, engine
+from ..database import get_db
 from ..models.user import User
 from ..models.driver import Driver
 from ..models.ride import Ride
@@ -427,7 +428,6 @@ async def update_staff(user_id: str, body: dict, db: AsyncSession = Depends(get_
 
 @router.get("/referrals/stats")
 async def referral_stats(db: AsyncSession = Depends(get_db), _: User = Depends(admin_only)):
-    total_users = (await db.execute(select(func.count(User.id)))).scalar() or 0
     result = await db.execute(select(PlatformConfig).where(PlatformConfig.key == "referral_config"))
     cfg_row = result.scalar_one_or_none()
     cfg = cfg_row.value if cfg_row else {}
