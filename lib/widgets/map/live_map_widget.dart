@@ -102,7 +102,7 @@ class _LocationMarker extends StatelessWidget {
         color: color,
         shape: BoxShape.circle,
         boxShadow: [
-          BoxShadow(color: color.withOpacity(0.45), blurRadius: 12, spreadRadius: 2),
+          BoxShadow(color: color.withValues(alpha: 0.45), blurRadius: 12, spreadRadius: 2),
         ],
       ),
       child: HugeIcon(icon: icon, color: Colors.white, size: 26),
@@ -119,7 +119,7 @@ class _DriverMarker extends StatelessWidget {
         color: Colors.white,
         shape: BoxShape.circle,
         boxShadow: [
-          BoxShadow(color: AppColors.primary.withOpacity(0.25), blurRadius: 12, spreadRadius: 2),
+          BoxShadow(color: AppColors.primary.withValues(alpha: 0.25), blurRadius: 12, spreadRadius: 2),
         ],
       ),
       child: const HugeIcon(icon: HugeIcons.strokeRoundedMotorbike01, color: AppColors.primary, size: 28),
