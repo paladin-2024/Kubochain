@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_jailbreak_detection/flutter_jailbreak_detection.dart';
+import 'package:safe_device/safe_device.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../providers/providers.dart';
@@ -99,7 +99,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   Future<void> _checkDeviceSecurity() async {
     if (!mounted) return;
     try {
-      final isCompromised = await FlutterJailbreakDetection.jailbroken;
+      final isCompromised = await SafeDevice.isJailBroken;
       if (isCompromised && mounted) {
         await showDialog<void>(
           context: context,
