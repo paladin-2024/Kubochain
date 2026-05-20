@@ -88,9 +88,12 @@ export default function Promotions() {
       try { await api.patch(`/admin/promotions/${modal.id}`, form); } catch {}
       setPromos((prev) => prev.map((p) => (p.id === modal.id ? { ...p, ...form } : p)));
     } else {
-      const np = { ...form, id: `p${Date.now()}`, used: 0, active: true };
-      try { await api.post('/admin/promotions', form); } catch {}
-      setPromos((prev) => [...prev, np]);
+      try {
+        const r = await api.post('/admin/promotions', form);
+        setPromos((prev) => [...prev, r.data]);
+      } catch {
+        setPromos((prev) => [...prev, { ...form, id: `p${Date.now()}`, used: 0, active: true }]);
+      }
     }
     setModal(null);
   };

@@ -103,6 +103,11 @@ export default function SurgePricing() {
   const [globalSurge, setGlobalSurge] = useState(false);
   const [globalMult, setGlobalMult] = useState(1.5);
 
+  useEffect(() => {
+    api.get('/admin/surge/zones').then((r) => { if (r.data?.length) setZones(r.data); }).catch(() => {});
+    api.get('/admin/surge/rules').then((r) => { if (r.data?.length) setRules(r.data); }).catch(() => {});
+  }, []);
+
   const toggleZone = async (id, active) => {
     try {
       await api.patch(`/admin/surge/zones/${id}`, { active });
