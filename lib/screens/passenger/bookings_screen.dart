@@ -1,11 +1,13 @@
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/constants/app_colors.dart';
 import '../../models/ride_model.dart';
 import '../../providers/providers.dart';
 import 'book_ride_screen.dart';
+import '../../widgets/common/user_avatar.dart';
 
 class BookingsScreen extends ConsumerStatefulWidget {
   const BookingsScreen({super.key});
@@ -98,7 +100,7 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen>
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.electric_moped_rounded,
+                          const HugeIcon(icon: HugeIcons.strokeRoundedMotorbike01,
                               color: AppColors.primary, size: 16),
                           const SizedBox(width: 6),
                           Text(
@@ -225,7 +227,7 @@ class _EmptyState extends StatelessWidget {
                 color: AppColors.primary.withOpacity(0.15),
               ),
             ),
-            child: const Icon(Icons.receipt_long_rounded,
+            child: const HugeIcon(icon: HugeIcons.strokeRoundedReceiptDollar,
                 size: 40, color: AppColors.primary),
           ),
           const SizedBox(height: 20),
@@ -390,7 +392,7 @@ class _HistoryCard extends StatelessWidget {
 
                         // Route with timeline dots
                         _TinyRouteRow(
-                          icon: Icons.radio_button_checked,
+                          icon: HugeIcons.strokeRoundedCircle,
                           color: AppColors.primary,
                           address: ride.pickup.address,
                         ),
@@ -410,7 +412,7 @@ class _HistoryCard extends StatelessWidget {
                           ),
                         ),
                         _TinyRouteRow(
-                          icon: Icons.location_on_rounded,
+                          icon: HugeIcons.strokeRoundedMapPin,
                           color: AppColors.error,
                           address: ride.destination.address,
                         ),
@@ -441,7 +443,7 @@ class _HistoryCard extends StatelessWidget {
                     valueColor: AppColors.success,
                     bold: true,
                   ),
-                  const Icon(Icons.chevron_right,
+                  const HugeIcon(icon: HugeIcons.strokeRoundedArrowRight01,
                       color: AppColors.textSecondary, size: 18),
                 ],
               ),
@@ -468,7 +470,7 @@ class _TinyRouteRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, size: 16, color: color),
+        HugeIcon(icon: icon, size: 16, color: color),
         const SizedBox(width: 8),
         Expanded(
           child: Text(
@@ -649,7 +651,7 @@ class _RideDetailSheet extends StatelessWidget {
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.account_balance_wallet_rounded,
+                        const HugeIcon(icon: HugeIcons.strokeRoundedWallet01,
                             color: AppColors.success, size: 28),
                         const SizedBox(width: 16),
                         Column(
@@ -704,14 +706,14 @@ class _RideDetailSheet extends StatelessWidget {
                     child: Column(
                       children: [
                         _DarkDetailRow(
-                          iconWidget: const Icon(Icons.radio_button_checked,
+                          iconWidget: const HugeIcon(icon: HugeIcons.strokeRoundedCircle,
                               color: AppColors.primary, size: 18),
                           label: 'Départ',
                           value: ride.pickup.address,
                         ),
                         const SizedBox(height: 12),
                         _DarkDetailRow(
-                          iconWidget: const Icon(Icons.location_on_rounded,
+                          iconWidget: const HugeIcon(icon: HugeIcons.strokeRoundedMapPin,
                               color: AppColors.error, size: 18),
                           label: 'Destination',
                           value: ride.destination.address,
@@ -752,20 +754,10 @@ class _RideDetailSheet extends StatelessWidget {
                           // Avatar row
                           Row(
                             children: [
-                              CircleAvatar(
+                              UserAvatar(
+                                name: _driverName.isNotEmpty ? _driverName : 'D',
+                                imageUrl: ride.driver?['user']?['photoUrl'] as String?,
                                 radius: 22,
-                                backgroundColor:
-                                    AppColors.primary.withOpacity(0.15),
-                                child: Text(
-                                  (_driverName.isNotEmpty
-                                      ? _driverName[0]
-                                      : 'D'),
-                                  style: GoogleFonts.sora(
-                                    color: AppColors.primary,
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 18,
-                                  ),
-                                ),
                               ),
                               const SizedBox(width: 12),
                               Column(
@@ -783,7 +775,7 @@ class _RideDetailSheet extends StatelessWidget {
                                   ),
                                   Row(
                                     children: [
-                                      const Icon(Icons.star_rounded,
+                                      const HugeIcon(icon: HugeIcons.strokeRoundedStar,
                                           color: AppColors.gold, size: 14),
                                       const SizedBox(width: 4),
                                       Text(
@@ -824,11 +816,9 @@ class _RideDetailSheet extends StatelessWidget {
                           5,
                           (i) => Padding(
                             padding: const EdgeInsets.only(right: 4),
-                            child: Icon(
-                              i < (ride.rating ?? 0)
-                                  ? Icons.star_rounded
-                                  : Icons.star_border_rounded,
-                              color: AppColors.gold,
+                            child: HugeIcon(
+                              icon: HugeIcons.strokeRoundedStar,
+                              color: i < (ride.rating ?? 0) ? AppColors.gold : AppColors.textSecondary,
                               size: 24,
                             ),
                           ),
@@ -855,7 +845,7 @@ class _RideDetailSheet extends StatelessWidget {
                               builder: (_) => const BookRideScreen()),
                         );
                       },
-                      icon: const Icon(Icons.electric_moped_rounded,
+                      icon: const HugeIcon(icon: HugeIcons.strokeRoundedMotorbike01,
                           color: Colors.white, size: 18),
                       label: Text(
                         'Réserver à nouveau',

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hugeicons/hugeicons.dart';
 import '../../core/constants/app_colors.dart';
 import 'home_screen.dart';
 import 'bookings_screen.dart';
@@ -27,23 +28,19 @@ class _PassengerMainState extends State<PassengerMain>
 
   static const List<_NavItem> _navItems = [
     _NavItem(
-      icon: Icons.home_rounded,
-      outlineIcon: Icons.home_outlined,
+      icon: HugeIcons.strokeRoundedHome01,
       label: 'Accueil',
     ),
     _NavItem(
-      icon: Icons.receipt_long_rounded,
-      outlineIcon: Icons.receipt_long_outlined,
+      icon: HugeIcons.strokeRoundedReceiptDollar,
       label: 'Trajets',
     ),
     _NavItem(
-      icon: Icons.chat_bubble_rounded,
-      outlineIcon: Icons.chat_bubble_outline_rounded,
+      icon: HugeIcons.strokeRoundedMessage01,
       label: 'Messages',
     ),
     _NavItem(
-      icon: Icons.person_rounded,
-      outlineIcon: Icons.person_outline_rounded,
+      icon: HugeIcons.strokeRoundedUser,
       label: 'Profil',
     ),
   ];
@@ -142,8 +139,8 @@ class _PremiumNavBar extends StatelessWidget {
                               scale: anim,
                               child: child,
                             ),
-                            child: Icon(
-                              active ? items[i].icon : items[i].outlineIcon,
+                            child: HugeIcon(
+                              icon: items[i].icon,
                               key: ValueKey(active),
                               size: active ? 30 : 26,
                               color: active ? accentColor : AppColors.textMuted,
@@ -190,7 +187,6 @@ class _PremiumNavBar extends StatelessWidget {
 
 class _NavItem {
   final IconData icon;
-  final IconData outlineIcon;
   final String label;
-  const _NavItem({required this.icon, required this.outlineIcon, required this.label});
+  const _NavItem({required this.icon, required this.label});
 }

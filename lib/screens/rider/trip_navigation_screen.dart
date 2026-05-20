@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -7,6 +8,7 @@ import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_constants.dart';
 import '../../providers/providers.dart';
 import '../../widgets/common/app_button.dart';
+import '../../widgets/common/user_avatar.dart';
 import '../../widgets/map/live_map_widget.dart';
 import '../common/chat_screen.dart';
 import 'rider_home_screen.dart';
@@ -163,17 +165,10 @@ class _TripNavigationScreenState extends ConsumerState<TripNavigationScreen>
                           // Passenger info row
                           Row(
                             children: [
-                              CircleAvatar(
+                              UserAvatar(
+                                name: activeRide!.passenger!['firstName'] ?? 'P',
+                                imageUrl: activeRide.passenger!['profileImage'] as String?,
                                 radius: 26,
-                                backgroundColor: AppColors.primary.withOpacity(0.1),
-                                child: Text(
-                                  (activeRide!.passenger!['firstName'] ?? 'P')[0].toUpperCase(),
-                                  style: GoogleFonts.sora(
-                                    color: AppColors.primary,
-                                    fontWeight: FontWeight.w800,
-                                    fontSize: 18,
-                                  ),
-                                ),
                               ),
                               const SizedBox(width: 14),
                               Expanded(
@@ -200,7 +195,7 @@ class _TripNavigationScreenState extends ConsumerState<TripNavigationScreen>
                               ),
                               // Phone icon button
                               _CircleIconBtn(
-                                icon: Icons.phone_rounded,
+                                icon: HugeIcons.strokeRoundedPhoneCheck,
                                 color: AppColors.primary,
                                 onTap: () {},
                               ),
@@ -240,7 +235,7 @@ class _TripNavigationScreenState extends ConsumerState<TripNavigationScreen>
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  const Icon(Icons.chat_bubble_outline_rounded,
+                                  const HugeIcon(icon: HugeIcons.strokeRoundedMessage01,
                                       color: AppColors.primary, size: 18),
                                   const SizedBox(width: 8),
                                   Text(
@@ -373,7 +368,7 @@ class _CircleIconBtn extends StatelessWidget {
           shape: BoxShape.circle,
           border: Border.all(color: color.withOpacity(0.2)),
         ),
-        child: Icon(icon, color: color, size: 22),
+        child: HugeIcon(icon: icon, color: color, size: 22),
       ),
     );
   }

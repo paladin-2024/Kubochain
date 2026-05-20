@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hugeicons/hugeicons.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/services/api_service.dart';
 
@@ -85,7 +86,7 @@ class _TopRidersScreenState extends State<TopRidersScreen>
                   children: [
                     IconButton(
                       onPressed: () => Navigator.pop(context),
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                      icon: const HugeIcon(icon: HugeIcons.strokeRoundedArrowLeft01,
                           color: AppColors.textOnDark, size: 20),
                     ),
                     Expanded(
@@ -119,7 +120,7 @@ class _TopRidersScreenState extends State<TopRidersScreen>
                         border:
                             Border.all(color: AppColors.gold.withOpacity(0.3)),
                       ),
-                      child: const Icon(Icons.emoji_events_rounded,
+                      child: const HugeIcon(icon: HugeIcons.strokeRoundedMedal01,
                           color: AppColors.gold, size: 22),
                     ),
                   ],
@@ -318,7 +319,7 @@ class _Podium extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.star_rounded, color: medals[i], size: 12),
+                    HugeIcon(icon: HugeIcons.strokeRoundedStar, color: medals[i], size: 12),
                     const SizedBox(width: 2),
                     Text(
                       rating,
@@ -512,7 +513,7 @@ class _RiderCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 Row(
                   children: [
-                    const Icon(Icons.star_rounded,
+                    const HugeIcon(icon: HugeIcons.strokeRoundedStar,
                         color: AppColors.gold, size: 13),
                     const SizedBox(width: 3),
                     Text(
@@ -531,7 +532,7 @@ class _RiderCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 10),
-                    const Icon(Icons.electric_moped_rounded,
+                    const HugeIcon(icon: HugeIcons.strokeRoundedMotorbike01,
                         color: AppColors.primary, size: 13),
                     const SizedBox(width: 3),
                     Text(
@@ -587,7 +588,7 @@ class _RiderCard extends StatelessWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.star_rounded,
+                    const HugeIcon(icon: HugeIcons.strokeRoundedStar,
                         color: AppColors.gold, size: 12),
                     const SizedBox(width: 3),
                     Text(
@@ -625,7 +626,7 @@ class _EmptyState extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.emoji_events_outlined,
+          const HugeIcon(icon: HugeIcons.strokeRoundedMedal01,
               color: AppColors.textSecondary, size: 64),
           const SizedBox(height: 16),
           Text(

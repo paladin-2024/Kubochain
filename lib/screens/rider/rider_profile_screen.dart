@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/services/api_service.dart';
@@ -29,12 +30,12 @@ class _RiderProfileScreenState extends ConsumerState<RiderProfileScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: const Icon(Icons.camera_alt_outlined, color: AppColors.textOnDark),
+              leading: const HugeIcon(icon: HugeIcons.strokeRoundedCamera01, color: AppColors.textOnDark, size: 20),
               title: const Text('Camera', style: TextStyle(color: AppColors.textOnDark)),
               onTap: () => Navigator.pop(context, ImageSource.camera),
             ),
             ListTile(
-              leading: const Icon(Icons.photo_library_outlined, color: AppColors.textOnDark),
+              leading: const HugeIcon(icon: HugeIcons.strokeRoundedImageAdd01, color: AppColors.textOnDark, size: 20),
               title: const Text('Gallery', style: TextStyle(color: AppColors.textOnDark)),
               onTap: () => Navigator.pop(context, ImageSource.gallery),
             ),
@@ -88,13 +89,13 @@ class _RiderProfileScreenState extends ConsumerState<RiderProfileScreen> {
                 const Text('Edit Profile',
                     style: TextStyle(color: AppColors.textOnDark, fontSize: 18, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 20),
-                _DarkField(ctrl: firstCtrl, label: 'First Name', icon: Icons.person_outline),
+                _DarkField(ctrl: firstCtrl, label: 'First Name', icon: HugeIcons.strokeRoundedUser),
                 const SizedBox(height: 12),
-                _DarkField(ctrl: lastCtrl, label: 'Last Name', icon: Icons.person_outline),
+                _DarkField(ctrl: lastCtrl, label: 'Last Name', icon: HugeIcons.strokeRoundedUser),
                 const SizedBox(height: 12),
-                _DarkField(ctrl: emailCtrl, label: 'Email', icon: Icons.email_outlined, keyboardType: TextInputType.emailAddress),
+                _DarkField(ctrl: emailCtrl, label: 'Email', icon: HugeIcons.strokeRoundedMail01, keyboardType: TextInputType.emailAddress),
                 const SizedBox(height: 12),
-                _DarkField(ctrl: phoneCtrl, label: 'Phone', icon: Icons.phone_outlined, keyboardType: TextInputType.phone),
+                _DarkField(ctrl: phoneCtrl, label: 'Phone', icon: HugeIcons.strokeRoundedPhoneCheck, keyboardType: TextInputType.phone),
                 const SizedBox(height: 20),
                 SizedBox(
                   width: double.infinity,
@@ -162,13 +163,13 @@ class _RiderProfileScreenState extends ConsumerState<RiderProfileScreen> {
                 const Text('Vehicle Details',
                     style: TextStyle(color: AppColors.textOnDark, fontSize: 18, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 20),
-                _DarkField(ctrl: makeCtrl, label: 'Make (e.g. Honda)', icon: Icons.directions_bike_outlined),
+                _DarkField(ctrl: makeCtrl, label: 'Make (e.g. Honda)', icon: HugeIcons.strokeRoundedMotorbike01),
                 const SizedBox(height: 12),
-                _DarkField(ctrl: modelCtrl, label: 'Model (e.g. CB200)', icon: Icons.two_wheeler),
+                _DarkField(ctrl: modelCtrl, label: 'Model (e.g. CB200)', icon: HugeIcons.strokeRoundedMotorbike02),
                 const SizedBox(height: 12),
-                _DarkField(ctrl: plateCtrl, label: 'Plate Number', icon: Icons.credit_card_outlined),
+                _DarkField(ctrl: plateCtrl, label: 'Plate Number', icon: HugeIcons.strokeRoundedCreditCard),
                 const SizedBox(height: 12),
-                _DarkField(ctrl: colorCtrl, label: 'Color', icon: Icons.color_lens_outlined),
+                _DarkField(ctrl: colorCtrl, label: 'Color', icon: HugeIcons.strokeRoundedColorPicker),
                 const SizedBox(height: 12),
                 // Vehicle type selector
                 Column(
@@ -179,9 +180,9 @@ class _RiderProfileScreenState extends ConsumerState<RiderProfileScreen> {
                     const SizedBox(height: 8),
                     Row(
                       children: [
-                        {'value': 'motorcycle', 'label': 'Moto', 'icon': Icons.two_wheeler},
-                        {'value': 'bicycle', 'label': 'Bicycle', 'icon': Icons.pedal_bike_outlined},
-                        {'value': 'car', 'label': 'Car', 'icon': Icons.directions_car_outlined},
+                        {'value': 'motorcycle', 'label': 'Moto', 'icon': HugeIcons.strokeRoundedMotorbike01},
+                        {'value': 'bicycle', 'label': 'Bicycle', 'icon': HugeIcons.strokeRoundedBicycle01},
+                        {'value': 'car', 'label': 'Car', 'icon': HugeIcons.strokeRoundedCar01},
                       ].map((item) {
                         final selected = vehicleType == item['value'];
                         return Expanded(
@@ -201,7 +202,7 @@ class _RiderProfileScreenState extends ConsumerState<RiderProfileScreen> {
                               ),
                               child: Column(
                                 children: [
-                                  Icon(item['icon'] as IconData,
+                                  HugeIcon(icon: item['icon'] as IconData,
                                       color: selected ? AppColors.primary : AppColors.textSecondary,
                                       size: 22),
                                   const SizedBox(height: 4),
@@ -276,18 +277,18 @@ class _RiderProfileScreenState extends ConsumerState<RiderProfileScreen> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
                 child: Row(children: [
-                  const Icon(Icons.description_outlined, color: AppColors.primary),
+                  const HugeIcon(icon: HugeIcons.strokeRoundedLicense, color: AppColors.primary, size: 20),
                   const SizedBox(width: 12),
                   const Text('Upload Document', style: TextStyle(color: AppColors.textOnDark, fontSize: 16, fontWeight: FontWeight.bold)),
                 ]),
               ),
               ListTile(
-                leading: const Icon(Icons.camera_alt_outlined, color: AppColors.textSecondary),
+                leading: const HugeIcon(icon: HugeIcons.strokeRoundedCamera01, color: AppColors.textSecondary, size: 20),
                 title: const Text('Take Photo', style: TextStyle(color: AppColors.textOnDark)),
                 onTap: () => Navigator.pop(_, 'camera'),
               ),
               ListTile(
-                leading: const Icon(Icons.photo_library_outlined, color: AppColors.textSecondary),
+                leading: const HugeIcon(icon: HugeIcons.strokeRoundedImageAdd01, color: AppColors.textSecondary, size: 20),
                 title: const Text('Choose from Gallery', style: TextStyle(color: AppColors.textOnDark)),
                 onTap: () => Navigator.pop(_, 'gallery'),
               ),
@@ -339,28 +340,28 @@ class _RiderProfileScreenState extends ConsumerState<RiderProfileScreen> {
                   style: TextStyle(color: AppColors.textOnDark, fontSize: 18, fontWeight: FontWeight.bold)),
               const SizedBox(height: 20),
               _SupportTile(
-                icon: Icons.email_outlined,
+                icon: HugeIcons.strokeRoundedMail01,
                 title: 'Email Support',
                 subtitle: 'support@kubochain.com',
                 onTap: () {},
               ),
               const SizedBox(height: 8),
               _SupportTile(
-                icon: Icons.phone_outlined,
+                icon: HugeIcons.strokeRoundedPhoneCheck,
                 title: 'Call Us',
                 subtitle: '+243 XXX XXX XXX',
                 onTap: () {},
               ),
               const SizedBox(height: 8),
               _SupportTile(
-                icon: Icons.chat_bubble_outline,
+                icon: HugeIcons.strokeRoundedMessage01,
                 title: 'Live Chat',
                 subtitle: 'Chat with our support team',
                 onTap: () {},
               ),
               const SizedBox(height: 8),
               _SupportTile(
-                icon: Icons.info_outline,
+                icon: HugeIcons.strokeRoundedInformationCircle,
                 title: 'FAQ',
                 subtitle: 'Frequently asked questions',
                 onTap: () {},
@@ -434,7 +435,7 @@ class _RiderProfileScreenState extends ConsumerState<RiderProfileScreen> {
                                         padding: EdgeInsets.all(5),
                                         child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                                       )
-                                    : const Icon(Icons.camera_alt, size: 14, color: Colors.white),
+                                    : const HugeIcon(icon: HugeIcons.strokeRoundedCamera01, size: 14, color: Colors.white),
                               ),
                             ),
                           ],
@@ -474,17 +475,17 @@ class _RiderProfileScreenState extends ConsumerState<RiderProfileScreen> {
                   title: 'ACCOUNT',
                   items: [
                     _DarkMenuItem(
-                      icon: Icons.person_outline,
+                      icon: HugeIcons.strokeRoundedUser,
                       label: 'Edit Profile',
                       onTap: _showEditProfile,
                     ),
                     _DarkMenuItem(
-                      icon: Icons.directions_bike_outlined,
+                      icon: HugeIcons.strokeRoundedMotorbike01,
                       label: 'Vehicle Details',
                       onTap: _showVehicleDetails,
                     ),
                     _DarkMenuItem(
-                      icon: Icons.description_outlined,
+                      icon: HugeIcons.strokeRoundedLicense,
                       label: 'Documents',
                       onTap: _showDocumentUpload,
                     ),
@@ -496,7 +497,7 @@ class _RiderProfileScreenState extends ConsumerState<RiderProfileScreen> {
                   title: 'SUPPORT',
                   items: [
                     _DarkMenuItem(
-                      icon: Icons.notifications_outlined,
+                      icon: HugeIcons.strokeRoundedNotification01,
                       label: 'Notifications',
                       onTap: () => Navigator.push(
                         context,
@@ -504,12 +505,12 @@ class _RiderProfileScreenState extends ConsumerState<RiderProfileScreen> {
                       ),
                     ),
                     _DarkMenuItem(
-                      icon: Icons.help_outline,
+                      icon: HugeIcons.strokeRoundedInformationCircle,
                       label: 'Help & Support',
                       onTap: _showHelpSupport,
                     ),
                     _DarkMenuItem(
-                      icon: Icons.logout,
+                      icon: HugeIcons.strokeRoundedLogout01,
                       label: 'Log Out',
                       iconColor: AppColors.error,
                       textColor: AppColors.error,
@@ -560,7 +561,7 @@ class _DarkField extends StatelessWidget {
       decoration: InputDecoration(
         labelText: label,
         labelStyle: const TextStyle(color: AppColors.textSecondary),
-        prefixIcon: Icon(icon, color: AppColors.primary, size: 20),
+        prefixIcon: HugeIcon(icon: icon, color: AppColors.primary, size: 20),
         filled: true,
         fillColor: AppColors.backgroundDark,
         border: OutlineInputBorder(
@@ -599,11 +600,11 @@ class _SupportTile extends StatelessWidget {
           color: AppColors.primary.withOpacity(0.15),
           borderRadius: BorderRadius.circular(10),
         ),
-        child: Icon(icon, color: AppColors.primary, size: 20),
+        child: HugeIcon(icon: icon, color: AppColors.primary, size: 20),
       ),
       title: Text(title, style: const TextStyle(color: AppColors.textOnDark, fontSize: 14, fontWeight: FontWeight.w500)),
       subtitle: Text(subtitle, style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
-      trailing: const Icon(Icons.chevron_right, color: AppColors.textSecondary, size: 20),
+      trailing: const HugeIcon(icon: HugeIcons.strokeRoundedArrowRight01, color: AppColors.textSecondary, size: 20),
       onTap: onTap,
     );
   }
@@ -701,10 +702,10 @@ class _DarkMenuItem extends StatelessWidget {
           color: iconColor.withOpacity(0.15),
           borderRadius: BorderRadius.circular(10),
         ),
-        child: Icon(icon, color: iconColor, size: 20),
+        child: HugeIcon(icon: icon, color: iconColor, size: 20),
       ),
       title: Text(label, style: TextStyle(color: textColor, fontSize: 14, fontWeight: FontWeight.w500)),
-      trailing: showArrow ? const Icon(Icons.chevron_right, color: AppColors.textSecondary, size: 20) : null,
+      trailing: showArrow ? const HugeIcon(icon: HugeIcons.strokeRoundedArrowRight01, color: AppColors.textSecondary, size: 20) : null,
       onTap: onTap,
     );
   }

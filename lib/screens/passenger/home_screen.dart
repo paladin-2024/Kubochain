@@ -1,6 +1,7 @@
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:latlong2/latlong.dart';
@@ -185,8 +186,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                         border: Border.all(color: AppColors.borderDark),
                         boxShadow: AppColors.cardShadow,
                       ),
-                      child: const Icon(
-                        Icons.notifications_outlined,
+                      child: const HugeIcon(
+                        icon: HugeIcons.strokeRoundedNotification01,
                         size: 20,
                         color: AppColors.textOnDark,
                       ),
@@ -248,7 +249,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                   shape: BoxShape.circle,
                   boxShadow: AppColors.primaryGlow,
                 ),
-                child: const Icon(Icons.search, color: Colors.white, size: 18),
+                child: const HugeIcon(icon: HugeIcons.strokeRoundedSearch01, color: Colors.white, size: 18),
               ),
               const SizedBox(width: 14),
               Expanded(
@@ -301,10 +302,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
 
   Widget _buildQuickActions() {
     final actions = [
-      _QuickAction(icon: Icons.home_outlined,  label: 'Maison',    color: AppColors.primary,  dest: BookRideScreen()),
-      _QuickAction(icon: Icons.work_outline,   label: 'Travail',    color: AppColors.safetyGold, dest: BookRideScreen()),
-      _QuickAction(icon: Icons.favorite_border, label: 'Favoris',  color: AppColors.error,    dest: BookRideScreen()),
-      _QuickAction(icon: Icons.emoji_events_rounded, label: 'Top Pilotes', color: AppColors.gold, dest: TopRidersScreen()),
+      _QuickAction(icon: HugeIcons.strokeRoundedHome01,      label: 'Maison',      color: AppColors.primary,    dest: BookRideScreen()),
+      _QuickAction(icon: HugeIcons.strokeRoundedBriefcase01, label: 'Travail',     color: AppColors.safetyGold, dest: BookRideScreen()),
+      _QuickAction(icon: HugeIcons.strokeRoundedFavourite,   label: 'Favoris',     color: AppColors.error,      dest: BookRideScreen()),
+      _QuickAction(icon: HugeIcons.strokeRoundedMedal01,     label: 'Top Pilotes', color: AppColors.gold,       dest: TopRidersScreen()),
     ];
 
     return Padding(
@@ -333,7 +334,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                       color: a.color.withOpacity(0.12),
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(a.icon, size: 17, color: a.color),
+                    child: HugeIcon(icon: a.icon, size: 17, color: a.color),
                   ),
                   const SizedBox(height: 6),
                   Text(
@@ -386,7 +387,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                   ),
                 ],
               ),
-              child: const Icon(Icons.verified_user_rounded, size: 20, color: Colors.white),
+              child: const HugeIcon(icon: HugeIcons.strokeRoundedShieldUser, size: 20, color: Colors.white),
             ),
             const SizedBox(width: 14),
             Expanded(
@@ -413,8 +414,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                 ],
               ),
             ),
-            Icon(
-              Icons.chevron_right_rounded,
+            HugeIcon(
+              icon: HugeIcons.strokeRoundedArrowRight01,
               color: AppColors.safetyGold.withOpacity(0.6),
               size: 20,
             ),
@@ -485,7 +486,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                                 border: Border.all(color: Colors.white, width: 2.5),
                                 boxShadow: AppColors.primaryGlow,
                               ),
-                              child: const Icon(Icons.my_location, color: Colors.white, size: 20),
+                              child: const HugeIcon(icon: HugeIcons.strokeRoundedLocation01, color: Colors.white, size: 20),
                             ),
                           ),
                         ]),
@@ -586,7 +587,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                   shape: BoxShape.circle,
                   boxShadow: AppColors.primaryGlow,
                 ),
-                child: const Icon(Icons.local_offer_rounded, color: Colors.white, size: 30),
+                child: const HugeIcon(icon: HugeIcons.strokeRoundedDiscountTag01, color: Colors.white, size: 30),
               ),
             ],
           ),
@@ -649,7 +650,7 @@ class _EmptyRides extends StatelessWidget {
         padding: EdgeInsets.symmetric(vertical: 32),
         child: Column(
           children: [
-            Icon(Icons.directions_bike_outlined,
+            HugeIcon(icon: HugeIcons.strokeRoundedBicycle01,
                 size: 48, color: AppColors.textSecondary),
             SizedBox(height: 12),
             Text(
@@ -945,8 +946,8 @@ class _PromoSheetState extends State<_PromoSheet> {
             const SizedBox(height: 14),
             Row(
               children: [
-                Icon(
-                  _status == 'success' ? Icons.check_circle_rounded : Icons.error_outline_rounded,
+                HugeIcon(
+                  icon: _status == 'success' ? HugeIcons.strokeRoundedCheckmarkCircle01 : HugeIcons.strokeRoundedAlertCircle,
                   color: _status == 'success' ? AppColors.success : AppColors.error,
                   size: 18,
                 ),

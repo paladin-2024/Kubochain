@@ -2,8 +2,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hugeicons/hugeicons.dart';
 import '../../core/constants/app_colors.dart';
 import '../../models/ride_model.dart';
+import '../../widgets/common/user_avatar.dart';
 
 class RideRequestSheet extends StatefulWidget {
   final RideModel ride;
@@ -104,8 +106,8 @@ class _RideRequestSheetState extends State<RideRequestSheet>
                         color: AppColors.success.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(14),
                       ),
-                      child: const Icon(
-                        Icons.notifications_active_rounded,
+                      child: const HugeIcon(
+                        icon: HugeIcons.strokeRoundedNotification01,
                         color: AppColors.success,
                         size: 28,
                       ),
@@ -166,17 +168,10 @@ class _RideRequestSheetState extends State<RideRequestSheet>
                 if (widget.ride.passenger != null)
                   Row(
                     children: [
-                      CircleAvatar(
+                      UserAvatar(
+                        name: widget.ride.passenger!['firstName'] ?? 'P',
+                        imageUrl: widget.ride.passenger!['profileImage'] as String?,
                         radius: 26,
-                        backgroundColor: AppColors.primary.withOpacity(0.12),
-                        child: Text(
-                          (widget.ride.passenger!['firstName'] ?? 'P')[0].toUpperCase(),
-                          style: GoogleFonts.sora(
-                            color: AppColors.primary,
-                            fontWeight: FontWeight.w800,
-                            fontSize: 18,
-                          ),
-                        ),
                       ),
                       const SizedBox(width: 14),
                       Expanded(
@@ -193,7 +188,7 @@ class _RideRequestSheetState extends State<RideRequestSheet>
                             ),
                             Row(
                               children: [
-                                const Icon(Icons.star_rounded, color: AppColors.gold, size: 15),
+                                const HugeIcon(icon: HugeIcons.strokeRoundedStar, color: AppColors.gold, size: 15),
                                 const SizedBox(width: 3),
                                 Text(
                                   '${widget.ride.passenger!['rating'] ?? '5.0'}',
@@ -240,7 +235,7 @@ class _RideRequestSheetState extends State<RideRequestSheet>
                   child: Column(
                     children: [
                       _RouteRow(
-                        icon: Icons.radio_button_checked_rounded,
+                        icon: HugeIcons.strokeRoundedCircle,
                         iconColor: AppColors.primary,
                         label: 'PICKUP',
                         address: widget.ride.pickup.address.split(',').first,
@@ -263,7 +258,7 @@ class _RideRequestSheetState extends State<RideRequestSheet>
                         ),
                       ),
                       _RouteRow(
-                        icon: Icons.location_on_rounded,
+                        icon: HugeIcons.strokeRoundedMapPin,
                         iconColor: AppColors.error,
                         label: 'DESTINATION',
                         address: widget.ride.destination.address.split(',').first,
@@ -284,7 +279,7 @@ class _RideRequestSheetState extends State<RideRequestSheet>
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.gps_fixed_rounded, color: AppColors.primary, size: 15),
+                      const HugeIcon(icon: HugeIcons.strokeRoundedGps01, color: AppColors.primary, size: 15),
                       const SizedBox(width: 8),
                       Text(
                         'GPS  ',
@@ -335,7 +330,7 @@ class _RideRequestSheetState extends State<RideRequestSheet>
                   children: [
                     Expanded(
                       child: _StatBadge(
-                        icon: Icons.route_rounded,
+                        icon: HugeIcons.strokeRoundedRoute01,
                         value: '${widget.ride.distance.toStringAsFixed(1)} km',
                         label: 'Distance',
                         color: AppColors.primary,
@@ -344,7 +339,7 @@ class _RideRequestSheetState extends State<RideRequestSheet>
                     const SizedBox(width: 8),
                     Expanded(
                       child: _StatBadge(
-                        icon: Icons.payments_rounded,
+                        icon: HugeIcons.strokeRoundedMoney01,
                         value: 'FC ${widget.ride.price.toStringAsFixed(0)}',
                         label: 'Fare',
                         color: AppColors.success,
@@ -353,7 +348,7 @@ class _RideRequestSheetState extends State<RideRequestSheet>
                     const SizedBox(width: 8),
                     Expanded(
                       child: _StatBadge(
-                        icon: Icons.electric_moped_rounded,
+                        icon: HugeIcons.strokeRoundedMotorbike01,
                         value: widget.ride.rideType ?? 'Economy',
                         label: 'Type',
                         color: AppColors.orange,
@@ -383,7 +378,7 @@ class _RideRequestSheetState extends State<RideRequestSheet>
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Icon(Icons.close_rounded, color: AppColors.error, size: 22),
+                              const HugeIcon(icon: HugeIcons.strokeRoundedCancel01, color: AppColors.error, size: 22),
                               const SizedBox(width: 8),
                               Text(
                                 'Decline',
@@ -426,7 +421,7 @@ class _RideRequestSheetState extends State<RideRequestSheet>
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Icon(Icons.check_rounded, color: Colors.white, size: 24),
+                              const HugeIcon(icon: HugeIcons.strokeRoundedCheckmarkCircle01, color: Colors.white, size: 24),
                               const SizedBox(width: 8),
                               Text(
                                 'Accept Ride',
@@ -469,7 +464,7 @@ class _RouteRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, color: iconColor, size: 22),
+        HugeIcon(icon: icon, color: iconColor, size: 22),
         const SizedBox(width: 12),
         Expanded(
           child: Column(
@@ -525,7 +520,7 @@ class _StatBadge extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Icon(icon, color: color, size: 22),
+          HugeIcon(icon: icon, color: color, size: 22),
           const SizedBox(height: 5),
           Text(
             value,

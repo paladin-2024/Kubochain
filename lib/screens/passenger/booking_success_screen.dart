@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/constants/app_colors.dart';
@@ -242,7 +243,7 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen>
                         child: Column(
                           children: [
                             _RouteRow(
-                              icon: Icons.radio_button_checked,
+                              icon: HugeIcons.strokeRoundedCircle,
                               color: AppColors.primary,
                               label: 'From',
                               value: widget.pickup,
@@ -259,7 +260,7 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen>
                               ),
                             ),
                             _RouteRow(
-                              icon: Icons.location_on_rounded,
+                              icon: HugeIcons.strokeRoundedMapPin,
                               color: AppColors.orange,
                               label: 'To',
                               value: widget.destination,
@@ -268,13 +269,13 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen>
                             Row(
                               children: [
                                 _InfoChip(
-                                  icon: Icons.tag_rounded,
+                                  icon: HugeIcons.strokeRoundedTag01,
                                   label: 'ID: ${widget.rideId.length > 8 ? widget.rideId.substring(0, 8).toUpperCase() : widget.rideId.toUpperCase()}',
                                   color: AppColors.primary,
                                 ),
                                 const SizedBox(width: 8),
                                 _InfoChip(
-                                  icon: Icons.access_time_rounded,
+                                  icon: HugeIcons.strokeRoundedClock01,
                                   label: 'ETA ~5 min',
                                   color: AppColors.success,
                                 ),
@@ -326,7 +327,7 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen>
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const Icon(Icons.near_me_rounded, color: Colors.white, size: 20),
+                                const HugeIcon(icon: HugeIcons.strokeRoundedNavigation01, color: Colors.white, size: 20),
                                 const SizedBox(width: 10),
                                 Text(
                                   'Track My Driver',
@@ -402,7 +403,7 @@ class _RouteRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Row(
     children: [
-      Icon(icon, color: color, size: 20),
+      HugeIcon(icon: icon, color: color, size: 20),
       const SizedBox(width: 12),
       Expanded(
         child: Column(
@@ -442,7 +443,7 @@ class _InfoChip extends StatelessWidget {
     child: Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, size: 13, color: color),
+        HugeIcon(icon: icon, color: color, size: 13),
         const SizedBox(width: 5),
         Text(
           label,

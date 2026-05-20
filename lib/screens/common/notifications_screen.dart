@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hugeicons/hugeicons.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/services/notification_service.dart';
 
@@ -32,19 +33,19 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   IconData _iconFor(String? type) {
     switch (type) {
       case 'ride_request':
-        return Icons.notifications_active_rounded;
+        return HugeIcons.strokeRoundedNotification01;
       case 'ride_accepted':
-        return Icons.check_circle_rounded;
+        return HugeIcons.strokeRoundedCheckmarkCircle01;
       case 'driver_arrived':
-        return Icons.directions_bike_rounded;
+        return HugeIcons.strokeRoundedMotorbike01;
       case 'trip_started':
-        return Icons.play_circle_rounded;
+        return HugeIcons.strokeRoundedPlayCircle;
       case 'trip_completed':
-        return Icons.flag_rounded;
+        return HugeIcons.strokeRoundedFlag01;
       case 'ride_cancelled':
-        return Icons.cancel_rounded;
+        return HugeIcons.strokeRoundedCancelCircle;
       default:
-        return Icons.notifications_rounded;
+        return HugeIcons.strokeRoundedNotification01;
     }
   }
 
@@ -151,7 +152,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                                   color: color.withOpacity(0.15),
                                   shape: BoxShape.circle,
                                 ),
-                                child: Icon(_iconFor(n.type), color: color, size: 22),
+                                child: HugeIcon(icon: _iconFor(n.type), color: color, size: 22),
                               ),
                               const SizedBox(width: 14),
                               Expanded(
@@ -214,7 +215,7 @@ class _EmptyState extends StatelessWidget {
               shape: BoxShape.circle,
               border: Border.all(color: AppColors.borderDark),
             ),
-            child: const Icon(Icons.notifications_off_rounded,
+            child: const HugeIcon(icon: HugeIcons.strokeRoundedNotificationOff01,
                 color: AppColors.textSecondary, size: 36),
           ),
           const SizedBox(height: 20),

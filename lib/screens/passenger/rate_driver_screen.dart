@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hugeicons/hugeicons.dart';
 import '../../core/constants/app_colors.dart';
 import '../../providers/providers.dart';
 import 'passenger_main.dart';
@@ -155,7 +156,7 @@ class _RateDriverScreenState extends ConsumerState<RateDriverScreen>
                           ),
                         ],
                       ),
-                      child: const Icon(Icons.check_rounded,
+                      child: const HugeIcon(icon: HugeIcons.strokeRoundedCheckmarkCircle01,
                           color: Colors.white, size: 44),
                     ),
                     const SizedBox(height: 20),
@@ -201,7 +202,7 @@ class _RateDriverScreenState extends ConsumerState<RateDriverScreen>
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
                             _TripSummaryItem(
-                              icon: Icons.monetization_on_rounded,
+                              icon: HugeIcons.strokeRoundedMoney01,
                               label: 'Total Fare',
                               value:
                                   'FC ${currentRide.price.toStringAsFixed(0)}',
@@ -212,7 +213,7 @@ class _RateDriverScreenState extends ConsumerState<RateDriverScreen>
                                 height: 40,
                                 color: AppColors.borderDark),
                             _TripSummaryItem(
-                              icon: Icons.route_rounded,
+                              icon: HugeIcons.strokeRoundedRoute01,
                               label: 'Distance',
                               value:
                                   '${currentRide.distance.toStringAsFixed(1)} km',
@@ -223,7 +224,7 @@ class _RateDriverScreenState extends ConsumerState<RateDriverScreen>
                                 height: 40,
                                 color: AppColors.borderDark),
                             _TripSummaryItem(
-                              icon: Icons.directions_bike_rounded,
+                              icon: HugeIcons.strokeRoundedMotorbike01,
                               label: 'Type',
                               value: currentRide.rideType == 'premium'
                                   ? 'Premium'
@@ -300,7 +301,7 @@ class _RateDriverScreenState extends ConsumerState<RateDriverScreen>
                             // Current avg rating
                             Column(
                               children: [
-                                const Icon(Icons.star_rounded,
+                                const HugeIcon(icon: HugeIcons.strokeRoundedStar,
                                     color: AppColors.gold, size: 20),
                                 Text(
                                   '${driver['rating'] ?? '5.0'}',
@@ -360,10 +361,8 @@ class _RateDriverScreenState extends ConsumerState<RateDriverScreen>
                                   const EdgeInsets.symmetric(horizontal: 6),
                               child: AnimatedSwitcher(
                                 duration: const Duration(milliseconds: 200),
-                                child: Icon(
-                                  filled
-                                      ? Icons.star_rounded
-                                      : Icons.star_border_rounded,
+                                child: HugeIcon(
+                                  icon: HugeIcons.strokeRoundedStar,
                                   key: ValueKey('$i$filled'),
                                   size: 48,
                                   color: filled
@@ -518,7 +517,7 @@ class _RateDriverScreenState extends ConsumerState<RateDriverScreen>
                       children: [
                         TextButton.icon(
                           onPressed: _skipRating,
-                          icon: const Icon(Icons.skip_next_rounded,
+                          icon: const HugeIcon(icon: HugeIcons.strokeRoundedArrowRight01,
                               color: AppColors.textSecondary, size: 16),
                           label: Text(
                             'Skip',
@@ -535,7 +534,7 @@ class _RateDriverScreenState extends ConsumerState<RateDriverScreen>
                             MaterialPageRoute(
                                 builder: (_) => const TopRidersScreen()),
                           ),
-                          icon: const Icon(Icons.emoji_events_rounded,
+                          icon: const HugeIcon(icon: HugeIcons.strokeRoundedMedal01,
                               color: AppColors.gold, size: 16),
                           label: Text(
                             'Top Riders',
@@ -594,7 +593,7 @@ class _TripSummaryItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Icon(icon, color: color, size: 20),
+        HugeIcon(icon: icon, color: color, size: 20),
         const SizedBox(height: 6),
         Text(
           value,

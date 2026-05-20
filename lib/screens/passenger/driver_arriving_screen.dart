@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../core/constants/app_colors.dart';
@@ -133,10 +134,10 @@ class _DriverArrivingScreenState extends ConsumerState<DriverArrivingScreen>
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(
-                          isArrived
-                              ? Icons.check_circle_rounded
-                              : Icons.directions_bike_rounded,
+                        HugeIcon(
+                          icon: isArrived
+                              ? HugeIcons.strokeRoundedCheckmarkCircle01
+                              : HugeIcons.strokeRoundedMotorbike01,
                           color: isArrived ? Colors.white : AppColors.primary,
                           size: 18,
                         ),
@@ -246,7 +247,7 @@ class _DriverArrivingScreenState extends ConsumerState<DriverArrivingScreen>
                                     const SizedBox(height: 4),
                                     Row(
                                       children: [
-                                        const Icon(Icons.star_rounded,
+                                        const HugeIcon(icon: HugeIcons.strokeRoundedStar,
                                             color: AppColors.gold, size: 14),
                                         const SizedBox(width: 4),
                                         Text(
@@ -257,7 +258,7 @@ class _DriverArrivingScreenState extends ConsumerState<DriverArrivingScreen>
                                           ),
                                         ),
                                         const SizedBox(width: 12),
-                                        const Icon(Icons.shield_rounded,
+                                        const HugeIcon(icon: HugeIcons.strokeRoundedShield01,
                                             color: AppColors.success, size: 14),
                                         const SizedBox(width: 4),
                                         Text(
@@ -274,7 +275,7 @@ class _DriverArrivingScreenState extends ConsumerState<DriverArrivingScreen>
                               ),
                               // Action buttons
                               _CircleBtn(
-                                icon: Icons.message_rounded,
+                                icon: HugeIcons.strokeRoundedMessage01,
                                 onTap: currentRide != null
                                     ? () => Navigator.push(
                                           context,
@@ -296,7 +297,7 @@ class _DriverArrivingScreenState extends ConsumerState<DriverArrivingScreen>
                               ),
                               const SizedBox(width: 8),
                               _CircleBtn(
-                                icon: Icons.phone_rounded,
+                                icon: HugeIcons.strokeRoundedPhoneCheck,
                                 onTap: () async {
                                   final phone = driver['phone'] as String?;
                                   if (phone == null || phone.isEmpty) return;
@@ -330,8 +331,8 @@ class _DriverArrivingScreenState extends ConsumerState<DriverArrivingScreen>
                                     color: AppColors.primary.withOpacity(0.1),
                                     borderRadius: BorderRadius.circular(12),
                                   ),
-                                  child: const Icon(
-                                      Icons.directions_bike_rounded,
+                                  child: const HugeIcon(
+                                      icon: HugeIcons.strokeRoundedMotorbike01,
                                       color: AppColors.primary,
                                       size: 22),
                                 ),
@@ -401,7 +402,7 @@ class _DriverArrivingScreenState extends ConsumerState<DriverArrivingScreen>
                           ),
                           child: Row(
                             children: [
-                              const Icon(Icons.shield_outlined,
+                              const HugeIcon(icon: HugeIcons.strokeRoundedShield01,
                                   color: AppColors.safetyGold, size: 16),
                               const SizedBox(width: 10),
                               Expanded(
@@ -458,7 +459,7 @@ class _DriverArrivingScreenState extends ConsumerState<DriverArrivingScreen>
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const Icon(Icons.cancel_outlined, color: AppColors.error, size: 18),
+                                const HugeIcon(icon: HugeIcons.strokeRoundedCancelCircle, color: AppColors.error, size: 18),
                                 const SizedBox(width: 8),
                                 Text('Annuler le trajet',
                                     style: GoogleFonts.sora(
@@ -506,7 +507,7 @@ class _DriverArrivingScreenState extends ConsumerState<DriverArrivingScreen>
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  const Icon(Icons.chat_bubble_rounded,
+                                  const HugeIcon(icon: HugeIcons.strokeRoundedMessage01,
                                       color: Colors.white, size: 18),
                                   const SizedBox(width: 10),
                                   Text(
@@ -553,7 +554,7 @@ class _CircleBtn extends StatelessWidget {
           shape: BoxShape.circle,
           border: Border.all(color: AppColors.borderDark),
         ),
-        child: Icon(icon, color: AppColors.primary, size: 20),
+        child: HugeIcon(icon: icon, color: AppColors.primary, size: 20),
       ),
     );
   }

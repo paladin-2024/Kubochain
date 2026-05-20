@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:intl/intl.dart';
 import '../../core/constants/app_colors.dart';
 import '../../models/ride_model.dart';
@@ -80,8 +81,8 @@ class _EarningsScreenState extends ConsumerState<EarningsScreen>
                                   color: Colors.white.withOpacity(0.15),
                                   borderRadius: BorderRadius.circular(14),
                                 ),
-                                child: const Icon(
-                                  Icons.account_balance_wallet_rounded,
+                                child: const HugeIcon(
+                                  icon: HugeIcons.strokeRoundedWallet01,
                                   color: Colors.white,
                                   size: 26,
                                 ),
@@ -108,7 +109,7 @@ class _EarningsScreenState extends ConsumerState<EarningsScreen>
                                 child: _EarningCard(
                                   label: 'Today',
                                   value: 'FC ${driver.todayEarnings.toStringAsFixed(0)}',
-                                  icon: Icons.wb_sunny_rounded,
+                                  icon: HugeIcons.strokeRoundedSun01,
                                   iconBg: Colors.white.withOpacity(0.15),
                                   iconColor: Colors.white,
                                   valueFontSize: driver.todayEarnings >= 10000 ? 16 : 18,
@@ -119,7 +120,7 @@ class _EarningsScreenState extends ConsumerState<EarningsScreen>
                                 child: _EarningCard(
                                   label: 'Total',
                                   value: 'FC ${driver.totalEarnings.toStringAsFixed(0)}',
-                                  icon: Icons.savings_rounded,
+                                  icon: HugeIcons.strokeRoundedSavings,
                                   iconBg: Colors.white.withOpacity(0.15),
                                   iconColor: Colors.white,
                                   valueFontSize: driver.totalEarnings >= 100000 ? 14 : 18,
@@ -130,7 +131,7 @@ class _EarningsScreenState extends ConsumerState<EarningsScreen>
                                 child: _EarningCard(
                                   label: 'Trips',
                                   value: '${driver.completedRides.length}',
-                                  icon: Icons.electric_moped_rounded,
+                                  icon: HugeIcons.strokeRoundedMotorbike01,
                                   iconBg: Colors.white.withOpacity(0.15),
                                   iconColor: Colors.white,
                                   valueFontSize: 22,
@@ -151,8 +152,8 @@ class _EarningsScreenState extends ConsumerState<EarningsScreen>
                   padding: const EdgeInsets.fromLTRB(24, 24, 24, 12),
                   child: Row(
                     children: [
-                      const Icon(
-                        Icons.history_rounded,
+                      const HugeIcon(
+                        icon: HugeIcons.strokeRoundedClock01,
                         color: AppColors.textSecondary,
                         size: 20,
                       ),
@@ -212,8 +213,8 @@ class _EarningsScreenState extends ConsumerState<EarningsScreen>
                                       color: AppColors.primary.withOpacity(0.08),
                                       shape: BoxShape.circle,
                                     ),
-                                    child: const Icon(
-                                      Icons.receipt_long_rounded,
+                                    child: const HugeIcon(
+                                      icon: HugeIcons.strokeRoundedReceiptDollar,
                                       size: 40,
                                       color: AppColors.primary,
                                     ),
@@ -294,7 +295,7 @@ class _EarningCard extends StatelessWidget {
               color: iconBg,
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(icon, color: iconColor, size: 22),
+            child: HugeIcon(icon: icon, color: iconColor, size: 22),
           ),
           const SizedBox(height: 10),
           Text(
@@ -355,8 +356,8 @@ class _TripCard extends StatelessWidget {
               color: AppColors.success.withOpacity(0.1),
               borderRadius: BorderRadius.circular(14),
             ),
-            child: const Icon(
-              Icons.check_circle_rounded,
+            child: const HugeIcon(
+              icon: HugeIcons.strokeRoundedCheckmarkCircle01,
               color: AppColors.success,
               size: 28,
             ),
@@ -380,7 +381,7 @@ class _TripCard extends StatelessWidget {
                 const SizedBox(height: 3),
                 Row(
                   children: [
-                    const Icon(Icons.access_time_rounded, size: 12, color: AppColors.textMuted),
+                    const HugeIcon(icon: HugeIcons.strokeRoundedClock01, size: 12, color: AppColors.textMuted),
                     const SizedBox(width: 4),
                     Text(
                       DateFormat('MMM dd • hh:mm a').format(ride.createdAt),

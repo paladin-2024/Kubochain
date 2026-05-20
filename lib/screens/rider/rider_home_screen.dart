@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:latlong2/latlong.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_constants.dart';
@@ -11,6 +12,7 @@ import '../../providers/providers.dart';
 import '../../widgets/map/live_map_widget.dart';
 import 'ride_request_screen.dart';
 import 'trip_navigation_screen.dart';
+import '../../widgets/common/user_avatar.dart';
 
 class RiderHomeScreen extends ConsumerStatefulWidget {
   const RiderHomeScreen({super.key});
@@ -218,17 +220,11 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen>
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          CircleAvatar(
+                          UserAvatar(
+                            name: firstName,
+                            imageUrl: auth.user?.profileImage,
                             radius: 15,
-                            backgroundColor: AppColors.success.withOpacity(0.15),
-                            child: Text(
-                              firstName[0].toUpperCase(),
-                              style: GoogleFonts.sora(
-                                color: AppColors.success,
-                                fontWeight: FontWeight.w800,
-                                fontSize: 13,
-                              ),
-                            ),
+                            backgroundColor: AppColors.success,
                           ),
                           const SizedBox(width: 8),
                           Text(
@@ -388,7 +384,7 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen>
                               children: [
                                 Expanded(
                                   child: _StatTile(
-                                    icon: Icons.account_balance_wallet_rounded,
+                                    icon: HugeIcons.strokeRoundedWallet01,
                                     label: "Today's Earn",
                                     value: 'FC ${driver.todayEarnings.toStringAsFixed(0)}',
                                     color: AppColors.success,
@@ -398,7 +394,7 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen>
                                 const SizedBox(width: 10),
                                 Expanded(
                                   child: _StatTile(
-                                    icon: Icons.electric_moped_rounded,
+                                    icon: HugeIcons.strokeRoundedMotorbike01,
                                     label: 'Trips Today',
                                     value: '${driver.completedRides.length}',
                                     color: AppColors.primary,
@@ -408,7 +404,7 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen>
                                 const SizedBox(width: 10),
                                 Expanded(
                                   child: _StatTile(
-                                    icon: Icons.star_rounded,
+                                    icon: HugeIcons.strokeRoundedStar,
                                     label: 'Rating',
                                     value: '5.0',
                                     color: AppColors.gold,
@@ -474,7 +470,7 @@ class _StatTile extends StatelessWidget {
               color: bgColor,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(icon, color: color, size: 26),
+            child: HugeIcon(icon: icon, color: color, size: 26),
           ),
           const SizedBox(height: 10),
           Text(

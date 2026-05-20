@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hugeicons/hugeicons.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/services/notification_service.dart';
 import 'rider_home_screen.dart';
@@ -29,11 +30,11 @@ class _RiderMainState extends State<RiderMain> with TickerProviderStateMixin {
   ];
 
   static const List<_NavItem> _navItems = [
-    _NavItem(icon: Icons.map_rounded,                    outlineIcon: Icons.map_outlined,                   label: 'Home'),
-    _NavItem(icon: Icons.account_balance_wallet_rounded, outlineIcon: Icons.account_balance_wallet_outlined, label: 'Earnings'),
-    _NavItem(icon: Icons.chat_bubble_rounded,            outlineIcon: Icons.chat_bubble_outline_rounded,     label: 'Chat'),
-    _NavItem(icon: Icons.notifications_rounded,          outlineIcon: Icons.notifications_outlined,          label: 'Alerts'),
-    _NavItem(icon: Icons.person_rounded,                 outlineIcon: Icons.person_outline_rounded,          label: 'Profile'),
+    _NavItem(icon: HugeIcons.strokeRoundedMaps,           label: 'Accueil'),
+    _NavItem(icon: HugeIcons.strokeRoundedMoney01,        label: 'Revenus'),
+    _NavItem(icon: HugeIcons.strokeRoundedMessage01,      label: 'Messages'),
+    _NavItem(icon: HugeIcons.strokeRoundedNotification01, label: 'Alertes'),
+    _NavItem(icon: HugeIcons.strokeRoundedUser,           label: 'Profil'),
   ];
 
   static const int _notifIndex = 3;
@@ -147,8 +148,8 @@ class _PremiumNavBar extends StatelessWidget {
                               scale: anim,
                               child: child,
                             ),
-                            child: Icon(
-                              active ? items[i].icon : items[i].outlineIcon,
+                            child: HugeIcon(
+                              icon: items[i].icon,
                               key: ValueKey(active),
                               size: active ? 28 : 24,
                               color: active ? accentColor : AppColors.textMuted,
@@ -194,7 +195,6 @@ class _PremiumNavBar extends StatelessWidget {
 
 class _NavItem {
   final IconData icon;
-  final IconData outlineIcon;
   final String label;
-  const _NavItem({required this.icon, required this.outlineIcon, required this.label});
+  const _NavItem({required this.icon, required this.label});
 }

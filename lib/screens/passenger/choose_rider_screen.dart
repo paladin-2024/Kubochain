@@ -4,10 +4,12 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hugeicons/hugeicons.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/services/api_service.dart';
 import '../../models/ride_model.dart';
 import '../../providers/providers.dart';
+import '../../widgets/common/user_avatar.dart';
 import 'booking_success_screen.dart';
 
 class ChooseRiderScreen extends ConsumerStatefulWidget {
@@ -156,7 +158,7 @@ class _ChooseRiderScreenState extends ConsumerState<ChooseRiderScreen>
                             shape: BoxShape.circle,
                             boxShadow: [BoxShadow(color: AppColors.primary.withOpacity(0.4), blurRadius: 12)],
                           ),
-                          child: const Icon(Icons.my_location_rounded, color: Colors.white, size: 18),
+                          child: const HugeIcon(icon: HugeIcons.strokeRoundedLocation01, color: Colors.white, size: 18),
                         ),
                       ),
                       Marker(
@@ -168,7 +170,7 @@ class _ChooseRiderScreenState extends ConsumerState<ChooseRiderScreen>
                             shape: BoxShape.circle,
                             boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.3), blurRadius: 12)],
                           ),
-                          child: const Icon(Icons.location_on_rounded, color: Colors.white, size: 18),
+                          child: const HugeIcon(icon: HugeIcons.strokeRoundedMapPin, color: Colors.white, size: 18),
                         ),
                       ),
                     ]),
@@ -187,7 +189,7 @@ class _ChooseRiderScreenState extends ConsumerState<ChooseRiderScreen>
                           shape: BoxShape.circle,
                           boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 12)],
                         ),
-                        child: const Icon(Icons.arrow_back_rounded, size: 20),
+                        child: const HugeIcon(icon: HugeIcons.strokeRoundedArrowLeft01, size: 20, color: Colors.black),
                       ),
                     ),
                   ),
@@ -248,7 +250,7 @@ class _ChooseRiderScreenState extends ConsumerState<ChooseRiderScreen>
                               type: 'economy',
                               label: 'Économique',
                               subtitle: 'Boda-boda',
-                              icon: Icons.two_wheeler_rounded,
+                              icon: HugeIcons.strokeRoundedMotorbike01,
                               price: widget.estimatedPrice,
                               minutes: (widget.distanceKm * 4).ceil(),
                               isSelected: _selectedType == 'economy',
@@ -262,7 +264,7 @@ class _ChooseRiderScreenState extends ConsumerState<ChooseRiderScreen>
                               type: 'premium',
                               label: 'Premium',
                               subtitle: 'Top noté',
-                              icon: Icons.electric_moped_rounded,
+                              icon: HugeIcons.strokeRoundedScooter01,
                               price: _premiumPrice,
                               minutes: (widget.distanceKm * 3.5).ceil(),
                               isSelected: _selectedType == 'premium',
@@ -276,7 +278,7 @@ class _ChooseRiderScreenState extends ConsumerState<ChooseRiderScreen>
                               type: 'cargo',
                               label: 'Cargo',
                               subtitle: 'Livraison',
-                              icon: Icons.inventory_2_rounded,
+                              icon: HugeIcons.strokeRoundedDeliveryBox01,
                               price: _cargoPrice,
                               minutes: (widget.distanceKm * 4.5).ceil(),
                               isSelected: _selectedType == 'cargo',
@@ -334,17 +336,10 @@ class _ChooseRiderScreenState extends ConsumerState<ChooseRiderScreen>
                                     border: Border.all(color: Colors.white, width: 2),
                                     boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 6)],
                                   ),
-                                  child: CircleAvatar(
-                                    backgroundImage: img != null
-                                        ? NetworkImage(ApiService.imageUrl(img))
-                                        : null,
-                                    backgroundColor: AppColors.primary.withOpacity(0.15),
-                                    child: img == null
-                                        ? Text(name[0].toUpperCase(),
-                                            style: GoogleFonts.sora(
-                                              fontSize: 14, fontWeight: FontWeight.w700,
-                                              color: AppColors.primary))
-                                        : null,
+                                  child: UserAvatar(
+                                    name: name,
+                                    imageUrl: img as String?,
+                                    radius: 22,
                                   ),
                                 );
                               },
@@ -365,7 +360,7 @@ class _ChooseRiderScreenState extends ConsumerState<ChooseRiderScreen>
                             children: [
                               _RouteRow(
                                 color: AppColors.primary,
-                                icon: Icons.radio_button_on_rounded,
+                                icon: HugeIcons.strokeRoundedCircle,
                                 label: widget.pickupAddress.split(',').first,
                               ),
                               Padding(
@@ -378,7 +373,7 @@ class _ChooseRiderScreenState extends ConsumerState<ChooseRiderScreen>
                               ),
                               _RouteRow(
                                 color: const Color(0xFF0D1629),
-                                icon: Icons.location_on_rounded,
+                                icon: HugeIcons.strokeRoundedMapPin,
                                 label: widget.destinationAddress.split(',').first,
                               ),
                             ],
@@ -473,7 +468,7 @@ class _VehicleCard extends StatelessWidget {
                 color: isSelected ? Colors.white.withOpacity(0.2) : AppColors.primary.withOpacity(0.08),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Icon(icon, size: 20,
+              child: HugeIcon(icon: icon, size: 20,
                   color: isSelected ? Colors.white : AppColors.primary),
             ),
             const SizedBox(height: 8),
@@ -510,7 +505,7 @@ class _RouteRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Row(
     children: [
-      Icon(icon, size: 16, color: color),
+      HugeIcon(icon: icon, size: 16, color: color),
       const SizedBox(width: 10),
       Expanded(
         child: Text(

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:hugeicons/hugeicons.dart';
 import '../core/services/connectivity_service.dart';
 import '../core/constants/app_colors.dart';
 
@@ -55,7 +56,7 @@ class _ConnectivityBannerState extends State<ConnectivityBanner> {
                     child: const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.wifi_off_rounded, color: Colors.white, size: 16),
+                        const HugeIcon(icon: HugeIcons.strokeRoundedWifiOff01, color: Colors.white, size: 16),
                         SizedBox(width: 8),
                         Text(
                           'No internet connection',

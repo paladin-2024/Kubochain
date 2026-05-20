@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hugeicons/hugeicons.dart';
 import '../../core/constants/app_colors.dart';
 import '../passenger/passenger_main.dart';
 import 'login.dart';
@@ -25,7 +26,7 @@ class VerifiedScreen extends StatelessWidget {
                       color: AppColors.primary,
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: const Icon(Icons.directions_bike,
+                    child: const HugeIcon(icon: HugeIcons.strokeRoundedMotorbike01,
                         color: Colors.white, size: 20),
                   ),
                   const SizedBox(width: 10),
@@ -74,7 +75,7 @@ class VerifiedScreen extends StatelessWidget {
                           color: Color(0xFF34C759),
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(Icons.check_rounded,
+                        child: const HugeIcon(icon: HugeIcons.strokeRoundedTick01,
                             color: Colors.white, size: 50),
                       ),
                       const SizedBox(height: 24),

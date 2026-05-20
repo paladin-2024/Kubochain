@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/constants/app_colors.dart';
 
@@ -164,11 +165,11 @@ class _IntroPage3State extends State<IntroPage3>
                     opacity: _chipsFade,
                     child: Row(
                       children: [
-                        _TrustChip(icon: Icons.verified_rounded, label: 'Vérifié', color: AppColors.primary),
+                        _TrustChip(icon: HugeIcons.strokeRoundedUserCheck01, label: 'Vérifié', color: AppColors.primary),
                         const SizedBox(width: 10),
-                        _TrustChip(icon: Icons.shield_rounded, label: 'Sécurisé', color: AppColors.success),
+                        _TrustChip(icon: HugeIcons.strokeRoundedShield01, label: 'Sécurisé', color: AppColors.success),
                         const SizedBox(width: 10),
-                        _TrustChip(icon: Icons.bolt_rounded, label: 'Rapide', color: const Color(0xFFF97316)),
+                        _TrustChip(icon: HugeIcons.strokeRoundedFlash, label: 'Rapide', color: const Color(0xFFF97316)),
                       ],
                     ),
                   ),
@@ -213,7 +214,7 @@ class _TrustChip extends StatelessWidget {
     child: Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, size: 14, color: color),
+        HugeIcon(icon: icon, color: color, size: 14),
         const SizedBox(width: 5),
         Text(
           label,

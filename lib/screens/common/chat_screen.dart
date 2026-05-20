@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
@@ -152,8 +153,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with TickerProviderStat
                   children: [
                     IconButton(
                       onPressed: () => Navigator.pop(context),
-                      icon: const Icon(Icons.arrow_back_rounded,
-                          color: AppColors.textOnDark),
+                      icon: const HugeIcon(icon: HugeIcons.strokeRoundedArrowLeft01,
+                          color: AppColors.textOnDark, size: 24),
                     ),
                     // Avatar
                     Container(
@@ -232,7 +233,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with TickerProviderStat
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.verified_user_rounded,
+                          const HugeIcon(icon: HugeIcons.strokeRoundedShieldUser,
                               color: AppColors.success, size: 13),
                           const SizedBox(width: 4),
                           Text(
@@ -351,7 +352,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with TickerProviderStat
                                 child: CircularProgressIndicator(
                                     strokeWidth: 2, color: Colors.white),
                               )
-                            : const Icon(Icons.send_rounded,
+                            : const HugeIcon(icon: HugeIcons.strokeRoundedSent,
                                 color: Colors.white, size: 18),
                       ),
                     ),
@@ -396,7 +397,7 @@ class _EmptyState extends StatelessWidget {
                   ),
                 ],
               ),
-              child: const Icon(Icons.chat_bubble_rounded,
+              child: const HugeIcon(icon: HugeIcons.strokeRoundedMessage01,
                   color: Colors.white, size: 30),
             ),
             const SizedBox(height: 20),
@@ -432,7 +433,7 @@ class _EmptyState extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.shield_outlined,
+                  const HugeIcon(icon: HugeIcons.strokeRoundedShield01,
                       color: AppColors.safetyGold, size: 14),
                   const SizedBox(width: 8),
                   Text(
@@ -560,8 +561,8 @@ class _MessageBubble extends StatelessWidget {
                 ),
                 if (isMe) ...[
                   const SizedBox(width: 4),
-                  Icon(
-                    Icons.done_all_rounded,
+                  HugeIcon(
+                    icon: HugeIcons.strokeRoundedTickDouble01,
                     size: 13,
                     color: Colors.white.withOpacity(0.65),
                   ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/services/api_service.dart';
@@ -125,7 +126,7 @@ class _EmptyState extends StatelessWidget {
               shape: BoxShape.circle,
               border: Border.all(color: AppColors.borderDark),
             ),
-            child: const Icon(Icons.chat_bubble_outline_rounded,
+            child: const HugeIcon(icon: HugeIcons.strokeRoundedMessage01,
                 color: AppColors.textSecondary, size: 36),
           ),
           const SizedBox(height: 20),

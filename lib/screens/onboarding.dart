@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../core/constants/app_colors.dart';
 import 'Auth/login.dart';
@@ -105,9 +106,9 @@ class _OnBoardingPageState extends State<OnBoardingPage>
                         opacity: _ctaFade,
                         child: Row(
                           children: [
-                            _TrustBadge(icon: Icons.shield_rounded, label: 'Pilotes vérifiés'),
+                            _TrustBadge(icon: HugeIcons.strokeRoundedShield01, label: 'Pilotes vérifiés'),
                             const SizedBox(width: 8),
-                            _TrustBadge(icon: Icons.bolt_rounded, label: 'Réservation rapide'),
+                            _TrustBadge(icon: HugeIcons.strokeRoundedFlash, label: 'Réservation rapide'),
                           ],
                         ),
                       ),
@@ -149,7 +150,7 @@ class _OnBoardingPageState extends State<OnBoardingPage>
                             // Create Account — primary CTA
                             _LandingButton(
                               label: 'Créer un compte',
-                              icon: Icons.person_add_rounded,
+                              icon: HugeIcons.strokeRoundedUserAdd01,
                               isPrimary: true,
                               onTap: () {
                                 HapticFeedback.mediumImpact();
@@ -178,7 +179,7 @@ class _OnBoardingPageState extends State<OnBoardingPage>
                             // Log In — secondary
                             _LandingButton(
                               label: 'Se connecter',
-                              icon: Icons.login_rounded,
+                              icon: HugeIcons.strokeRoundedLogin01,
                               isPrimary: false,
                               onTap: () {
                                 HapticFeedback.selectionClick();
@@ -238,7 +239,7 @@ class _TrustBadge extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 13, color: Colors.white),
+            HugeIcon(icon: icon, color: Colors.white, size: 13),
             const SizedBox(width: 6),
             Text(
               label,
@@ -318,7 +319,7 @@ class _LandingButtonState extends State<_LandingButton>
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(widget.icon, color: Colors.white, size: 20),
+                    HugeIcon(icon: widget.icon, color: Colors.white, size: 20),
                     const SizedBox(width: 10),
                     Text(
                       widget.label,
@@ -346,7 +347,7 @@ class _LandingButtonState extends State<_LandingButton>
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(widget.icon, color: Colors.white, size: 20),
+                        HugeIcon(icon: widget.icon, color: Colors.white, size: 20),
                         const SizedBox(width: 10),
                         Text(
                           widget.label,

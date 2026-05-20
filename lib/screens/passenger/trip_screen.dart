@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:latlong2/latlong.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_constants.dart';
@@ -93,7 +94,7 @@ class _TripScreenState extends ConsumerState<TripScreen> {
                 child: const Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.directions_bike, color: Colors.white, size: 18),
+                    HugeIcon(icon: HugeIcons.strokeRoundedMotorbike01, color: Colors.white, size: 18),
                     SizedBox(width: 8),
                     Text(
                       'Trip in Progress',
@@ -149,18 +150,18 @@ class _TripScreenState extends ConsumerState<TripScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         _TripStat(
-                          icon: Icons.route,
+                          icon: HugeIcons.strokeRoundedRoute01,
                           value: '${currentRide.distance.toStringAsFixed(1)} km',
                           label: 'Distance',
                         ),
                         _TripStat(
-                          icon: Icons.monetization_on_outlined,
+                          icon: HugeIcons.strokeRoundedMoney01,
                           value: 'FC ${currentRide.price.toStringAsFixed(0)}',
                           label: 'Fare',
                         ),
                         if (currentRide.driver != null)
                           _TripStat(
-                            icon: Icons.person_outline,
+                            icon: HugeIcons.strokeRoundedUser,
                             value: currentRide.driver!['firstName'] ?? '',
                             label: 'Driver',
                           ),
@@ -186,7 +187,7 @@ class _TripScreenState extends ConsumerState<TripScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.flag_rounded, color: Color(0xFF00C853), size: 48),
+                    const HugeIcon(icon: HugeIcons.strokeRoundedCheckmarkBadge01, color: Color(0xFF00C853), size: 48),
                     const SizedBox(height: 12),
                     const Text(
                       'Trip Complete!',
@@ -243,7 +244,7 @@ class _TripStat extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Icon(icon, color: AppColors.primary, size: 24),
+        HugeIcon(icon: icon, color: AppColors.primary, size: 24),
         const SizedBox(height: 6),
         Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
         Text(label, style: const TextStyle(fontSize: 11, color: AppColors.textSecondary)),

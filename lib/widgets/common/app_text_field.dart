@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hugeicons/hugeicons.dart';
 import '../../core/constants/app_colors.dart';
 
 class AppTextField extends StatefulWidget {
@@ -68,9 +69,10 @@ class _AppTextFieldState extends State<AppTextField> {
         prefixIcon: widget.prefixIcon,
         suffixIcon: widget.obscureText
             ? IconButton(
-                icon: Icon(
-                  _obscure ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                icon: HugeIcon(
+                  icon: _obscure ? HugeIcons.strokeRoundedViewOff : HugeIcons.strokeRoundedEye,
                   color: AppColors.textSecondary,
+                  size: 20,
                 ),
                 onPressed: () => setState(() => _obscure = !_obscure),
               )

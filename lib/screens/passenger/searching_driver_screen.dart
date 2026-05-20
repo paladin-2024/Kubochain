@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -245,8 +246,8 @@ class _SearchingDriverScreenState extends ConsumerState<SearchingDriverScreen>
                           ),
                         ],
                       ),
-                      child: const Icon(
-                        Icons.electric_moped_rounded,
+                      child: const HugeIcon(
+                        icon: HugeIcons.strokeRoundedMotorbike01,
                         color: Colors.white,
                         size: 50,
                       ),
@@ -309,7 +310,7 @@ class _SearchingDriverScreenState extends ConsumerState<SearchingDriverScreen>
                           child: Column(
                             children: [
                               _RouteRow(
-                                icon: Icons.radio_button_checked_rounded,
+                                icon: HugeIcons.strokeRoundedCircle,
                                 color: AppColors.primary,
                                 label: 'PICKUP',
                                 address: ride.currentRide!.pickup.address,
@@ -329,7 +330,7 @@ class _SearchingDriverScreenState extends ConsumerState<SearchingDriverScreen>
                                 ),
                               ),
                               _RouteRow(
-                                icon: Icons.location_on_rounded,
+                                icon: HugeIcons.strokeRoundedMapPin,
                                 color: AppColors.error,
                                 label: 'DESTINATION',
                                 address: ride.currentRide!.destination.address,
@@ -347,21 +348,21 @@ class _SearchingDriverScreenState extends ConsumerState<SearchingDriverScreen>
                                 label: 'Price',
                                 value: 'FC ${ride.currentRide!.price.toStringAsFixed(0)}',
                                 color: AppColors.success,
-                                icon: Icons.payments_rounded,
+                                icon: HugeIcons.strokeRoundedMoney01,
                               ),
                               Container(width: 1, height: 36, color: AppColors.borderDark),
                               _StatChip(
                                 label: 'Distance',
                                 value: '${ride.currentRide!.distance.toStringAsFixed(1)} km',
                                 color: AppColors.primary,
-                                icon: Icons.route_rounded,
+                                icon: HugeIcons.strokeRoundedRoute01,
                               ),
                               Container(width: 1, height: 36, color: AppColors.borderDark),
                               _StatChip(
                                 label: 'Type',
                                 value: ride.currentRide!.rideType == 'premium' ? 'Premium' : 'Economy',
                                 color: AppColors.gold,
-                                icon: Icons.electric_moped_rounded,
+                                icon: HugeIcons.strokeRoundedMotorbike01,
                               ),
                             ],
                           ),
@@ -395,8 +396,8 @@ class _SearchingDriverScreenState extends ConsumerState<SearchingDriverScreen>
                             color: AppColors.warning.withOpacity(0.12),
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          child: const Icon(
-                            Icons.shield_rounded,
+                          child: const HugeIcon(
+                            icon: HugeIcons.strokeRoundedShieldUser,
                             color: AppColors.warning,
                             size: 20,
                           ),
@@ -551,7 +552,7 @@ class _RouteRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, color: color, size: 20),
+        HugeIcon(icon: icon, color: color, size: 20),
         const SizedBox(width: 12),
         Expanded(
           child: Column(
@@ -602,7 +603,7 @@ class _StatChip extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Icon(icon, color: color, size: 20),
+        HugeIcon(icon: icon, color: color, size: 20),
         const SizedBox(height: 4),
         Text(
           value,

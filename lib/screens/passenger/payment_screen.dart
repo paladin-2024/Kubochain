@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/constants/app_colors.dart';
 
@@ -22,7 +23,7 @@ class _PaymentScreenState extends State<PaymentScreen>
       id: 'momo',
       label: 'MTN Mobile Money',
       subtitle: 'Instant transfer · Recommended',
-      icon: Icons.bolt_rounded,
+      icon: HugeIcons.strokeRoundedFlash,
       brandColor: Color(0xFFFFC107),
       bgLight: Color(0xFFFFFBEB),
       tag: 'POPULAR',
@@ -31,7 +32,7 @@ class _PaymentScreenState extends State<PaymentScreen>
       id: 'airtel',
       label: 'Airtel Money',
       subtitle: 'Mobile money · Fast & reliable',
-      icon: Icons.wifi_tethering_rounded,
+      icon: HugeIcons.strokeRoundedWifi01,
       brandColor: Color(0xFFE02020),
       bgLight: Color(0xFFFFF1F1),
       tag: null,
@@ -40,7 +41,7 @@ class _PaymentScreenState extends State<PaymentScreen>
       id: 'cash',
       label: 'Cash',
       subtitle: 'Pay your driver directly',
-      icon: Icons.payments_rounded,
+      icon: HugeIcons.strokeRoundedMoney01,
       brandColor: Color(0xFF10B981),
       bgLight: Color(0xFFF0FDF9),
       tag: null,
@@ -49,7 +50,7 @@ class _PaymentScreenState extends State<PaymentScreen>
       id: 'card',
       label: 'Credit / Debit Card',
       subtitle: 'Visa, Mastercard · Secure',
-      icon: Icons.credit_card_rounded,
+      icon: HugeIcons.strokeRoundedCreditCard,
       brandColor: Color(0xFF2563EB),
       bgLight: Color(0xFFEFF6FF),
       tag: null,
@@ -125,8 +126,8 @@ class _PaymentScreenState extends State<PaymentScreen>
                         color: const Color(0xFFF4F6FB),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(
-                        Icons.arrow_back_ios_new_rounded,
+                      child: const HugeIcon(
+                        icon: HugeIcons.strokeRoundedArrowLeft01,
                         size: 18,
                         color: AppColors.textPrimary,
                       ),
@@ -197,7 +198,7 @@ class _PaymentScreenState extends State<PaymentScreen>
                     color: selected.brandColor.withOpacity(0.15),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(selected.icon, color: selected.brandColor, size: 18),
+                  child: HugeIcon(icon: selected.icon, color: selected.brandColor, size: 18),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -217,7 +218,7 @@ class _PaymentScreenState extends State<PaymentScreen>
                     color: selected.brandColor,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.check, color: Colors.white, size: 13),
+                  child: const HugeIcon(icon: HugeIcons.strokeRoundedTick01, color: Colors.white, size: 13),
                 ),
               ],
             ),
@@ -314,8 +315,8 @@ class _MethodCard extends StatelessWidget {
                     : method.brandColor.withOpacity(0.08),
                 borderRadius: BorderRadius.circular(16),
               ),
-              child: Icon(
-                method.icon,
+              child: HugeIcon(
+                icon: method.icon,
                 color: method.brandColor,
                 size: 26,
               ),
@@ -388,7 +389,7 @@ class _MethodCard extends StatelessWidget {
                 ),
               ),
               child: selected
-                  ? const Icon(Icons.check, color: Colors.white, size: 14)
+                  ? const HugeIcon(icon: HugeIcons.strokeRoundedTick01, color: Colors.white, size: 14)
                   : null,
             ),
           ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hugeicons/hugeicons.dart';
 import '../../core/constants/app_colors.dart';
 
 class AboutScreen extends StatelessWidget {
@@ -12,8 +13,8 @@ class AboutScreen extends StatelessWidget {
         backgroundColor: AppColors.backgroundDark,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded,
-              color: AppColors.textOnDark),
+          icon: const HugeIcon(icon: HugeIcons.strokeRoundedArrowLeft01,
+              color: AppColors.textOnDark, size: 24),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
@@ -40,8 +41,8 @@ class AboutScreen extends StatelessWidget {
                 border:
                     Border.all(color: AppColors.primary.withOpacity(0.4), width: 2),
               ),
-              child: const Icon(Icons.electric_moped_rounded,
-                  size: 52, color: AppColors.primary),
+              child: const HugeIcon(icon: HugeIcons.strokeRoundedMotorbike01,
+                  color: AppColors.primary, size: 52),
             ),
             const SizedBox(height: 16),
 
@@ -100,19 +101,19 @@ class AboutScreen extends StatelessWidget {
               child: Column(
                 children: [
                   _ContactRow(
-                    icon: Icons.email_outlined,
+                    icon: HugeIcons.strokeRoundedMail01,
                     label: 'Email',
                     value: 'cnzabb@gmail.com',
                   ),
                   const SizedBox(height: 12),
                   _ContactRow(
-                    icon: Icons.chat_outlined,
+                    icon: HugeIcons.strokeRoundedMessage01,
                     label: 'WhatsApp',
                     value: '+256 767 579 099',
                   ),
                   const SizedBox(height: 12),
                   _ContactRow(
-                    icon: Icons.tag,
+                    icon: HugeIcons.strokeRoundedTag01,
                     label: 'Twitter',
                     value: '@KuboChain',
                   ),
@@ -208,7 +209,7 @@ class _ContactRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, size: 18, color: AppColors.primary),
+        HugeIcon(icon: icon, color: AppColors.primary, size: 18),
         const SizedBox(width: 10),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -246,7 +247,7 @@ class _LegalTile extends StatelessWidget {
                   style: const TextStyle(
                       color: AppColors.textOnDark, fontSize: 14)),
             ),
-            const Icon(Icons.chevron_right,
+            const HugeIcon(icon: HugeIcons.strokeRoundedArrowRight01,
                 color: AppColors.textSecondary, size: 18),
           ],
         ),

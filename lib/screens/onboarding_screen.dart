@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../core/constants/app_colors.dart';
@@ -213,8 +214,8 @@ class _OnBoardingScreenState extends State<OnBoardingScreen>
                                     color: Colors.white.withOpacity(0.25),
                                     shape: BoxShape.circle,
                                   ),
-                                  child: const Icon(
-                                    Icons.arrow_forward_rounded,
+                                  child: const HugeIcon(
+                                    icon: HugeIcons.strokeRoundedArrowRight01,
                                     color: Colors.white,
                                     size: 16,
                                   ),

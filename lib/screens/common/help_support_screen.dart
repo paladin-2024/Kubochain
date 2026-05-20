@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hugeicons/hugeicons.dart';
 import '../../core/constants/app_colors.dart';
 
 class HelpSupportScreen extends StatelessWidget {
@@ -12,8 +13,8 @@ class HelpSupportScreen extends StatelessWidget {
         backgroundColor: AppColors.backgroundDark,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded,
-              color: AppColors.textOnDark),
+          icon: const HugeIcon(icon: HugeIcons.strokeRoundedArrowLeft01,
+              color: AppColors.textOnDark, size: 24),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
@@ -41,7 +42,7 @@ class HelpSupportScreen extends StatelessWidget {
               ),
               child: Row(
                 children: const [
-                  Icon(Icons.search, color: AppColors.textSecondary, size: 20),
+                  const HugeIcon(icon: HugeIcons.strokeRoundedSearch01, color: AppColors.textSecondary, size: 20),
                   SizedBox(width: 10),
                   Text(
                     'Search for help...',
@@ -124,7 +125,7 @@ class HelpSupportScreen extends StatelessWidget {
               child: Column(
                 children: [
                   _SupportTile(
-                    icon: Icons.chat_outlined,
+                    icon: HugeIcons.strokeRoundedMessage01,
                     label: 'Chat with Support',
                     onTap: () => ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Coming soon')),
@@ -136,7 +137,7 @@ class HelpSupportScreen extends StatelessWidget {
                       indent: 56,
                       endIndent: 0),
                   _SupportTile(
-                    icon: Icons.phone_outlined,
+                    icon: HugeIcons.strokeRoundedPhoneCheck,
                     label: 'Call Us: +256 767 579 099',
                     onTap: () => ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Coming soon')),
@@ -165,7 +166,7 @@ class HelpSupportScreen extends StatelessWidget {
                       color: AppColors.error.withOpacity(0.2),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.phone_in_talk_outlined,
+                    child: const HugeIcon(icon: HugeIcons.strokeRoundedCall02,
                         color: AppColors.error, size: 22),
                   ),
                   const SizedBox(width: 14),
@@ -269,7 +270,7 @@ class _SupportTile extends StatelessWidget {
                 color: AppColors.primary.withOpacity(0.12),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Icon(icon, size: 18, color: AppColors.primary),
+              child: HugeIcon(icon: icon, color: AppColors.primary, size: 18),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -277,7 +278,7 @@ class _SupportTile extends StatelessWidget {
                   style: const TextStyle(
                       color: AppColors.textOnDark, fontSize: 14)),
             ),
-            const Icon(Icons.chevron_right,
+            const HugeIcon(icon: HugeIcons.strokeRoundedArrowRight01,
                 color: AppColors.textSecondary, size: 18),
           ],
         ),

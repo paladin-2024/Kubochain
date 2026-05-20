@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
@@ -34,8 +35,8 @@ class _BookRideScreenState extends ConsumerState<BookRideScreen> {
   bool _isLoadingRoute = false;
 
   static const _rideTypes = [
-    {'type': 'economy', 'label': 'Économique', 'icon': Icons.directions_bike, 'multiplier': 1.0},
-    {'type': 'premium', 'label': 'Premium', 'icon': Icons.electric_bike, 'multiplier': 1.5},
+    {'type': 'economy', 'label': 'Économique', 'icon': HugeIcons.strokeRoundedBicycle01, 'multiplier': 1.0},
+    {'type': 'premium', 'label': 'Premium', 'icon': HugeIcons.strokeRoundedMotorbike01, 'multiplier': 1.5},
   ];
 
   @override
@@ -162,7 +163,7 @@ class _BookRideScreenState extends ConsumerState<BookRideScreen> {
                         children: [
                           GestureDetector(
                             onTap: () => Navigator.pop(context),
-                            child: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+                            child: const HugeIcon(icon: HugeIcons.strokeRoundedArrowLeft01, color: AppColors.textPrimary, size: 24),
                           ),
                           const SizedBox(width: 12),
                           const Text(
@@ -274,7 +275,7 @@ class _BookRideScreenState extends ConsumerState<BookRideScreen> {
                       itemBuilder: (ctx, i) {
                         final place = _suggestions[i];
                         return ListTile(
-                          leading: const Icon(Icons.location_on_outlined, color: AppColors.primary),
+                          leading: const HugeIcon(icon: HugeIcons.strokeRoundedMapPin, color: AppColors.primary, size: 24),
                           title: Text(
                             place.displayName.split(',').first,
                             style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
@@ -317,14 +318,14 @@ class _BookRideScreenState extends ConsumerState<BookRideScreen> {
                     // Trip info
                     Row(
                       children: [
-                        const Icon(Icons.route, color: AppColors.primary, size: 20),
+                        const HugeIcon(icon: HugeIcons.strokeRoundedRoute01, color: AppColors.primary, size: 20),
                         const SizedBox(width: 8),
                         Text(
                           '${_estimatedDistance.toStringAsFixed(1)} km',
                           style: const TextStyle(fontWeight: FontWeight.w600, color: AppColors.textPrimary),
                         ),
                         const SizedBox(width: 16),
-                        const Icon(Icons.access_time, color: AppColors.textSecondary, size: 20),
+                        const HugeIcon(icon: HugeIcons.strokeRoundedClock01, color: AppColors.textSecondary, size: 20),
                         const SizedBox(width: 8),
                         Text(
                           '~${(_estimatedDistance * 4).ceil()} min',
@@ -361,7 +362,7 @@ class _BookRideScreenState extends ConsumerState<BookRideScreen> {
                               ),
                               child: Column(
                                 children: [
-                                  Icon(rt['icon'] as IconData, color: selected ? AppColors.primary : AppColors.textSecondary, size: 28),
+                                  HugeIcon(icon: rt['icon'] as IconData, color: selected ? AppColors.primary : AppColors.textSecondary, size: 28),
                                   const SizedBox(height: 6),
                                   Text(rt['label'] as String,
                                       style: TextStyle(

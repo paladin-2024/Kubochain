@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import '../../core/constants/app_colors.dart';
@@ -61,7 +62,7 @@ class LiveMapWidget extends StatelessWidget {
                 height: 48,
                 child: _LocationMarker(
                   color: AppColors.primary,
-                  icon: Icons.my_location_rounded,
+                  icon: HugeIcons.strokeRoundedGps01,
                 ),
               ),
             if (destinationLocation != null)
@@ -71,7 +72,7 @@ class LiveMapWidget extends StatelessWidget {
                 height: 48,
                 child: _LocationMarker(
                   color: AppColors.error,
-                  icon: Icons.location_on_rounded,
+                  icon: HugeIcons.strokeRoundedMapPin,
                 ),
               ),
             if (driverLocation != null)
@@ -104,7 +105,7 @@ class _LocationMarker extends StatelessWidget {
           BoxShadow(color: color.withOpacity(0.45), blurRadius: 12, spreadRadius: 2),
         ],
       ),
-      child: Icon(icon, color: Colors.white, size: 26),
+      child: HugeIcon(icon: icon, color: Colors.white, size: 26),
     );
   }
 }
@@ -121,7 +122,7 @@ class _DriverMarker extends StatelessWidget {
           BoxShadow(color: AppColors.primary.withOpacity(0.25), blurRadius: 12, spreadRadius: 2),
         ],
       ),
-      child: const Icon(Icons.directions_bike_rounded, color: AppColors.primary, size: 28),
+      child: const HugeIcon(icon: HugeIcons.strokeRoundedMotorbike01, color: AppColors.primary, size: 28),
     );
   }
 }
