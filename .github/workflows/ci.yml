@@ -47,9 +47,14 @@ jobs:
           cache: pip
           cache-dependency-path: backend/fastapi_server/requirements.txt
 
-      - name: Install ruff
-        run: pip install ruff
+      - name: Install dependencies
+        working-directory: backend/fastapi_server
+        run: pip install -r requirements.txt
 
       - name: Ruff lint
         working-directory: backend/fastapi_server
         run: ruff check app
+
+      - name: Pytest
+        working-directory: backend/fastapi_server
+        run: pytest -q
