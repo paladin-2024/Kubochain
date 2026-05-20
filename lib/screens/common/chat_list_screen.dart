@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/services/api_service.dart';
 import '../../providers/providers.dart';
+import '../../widgets/common/user_avatar.dart';
 import 'chat_screen.dart';
 
 class ChatListScreen extends ConsumerStatefulWidget {
@@ -50,7 +51,7 @@ class _ChatListScreenState extends ConsumerState<ChatListScreen> {
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
               child: const Text(
-                'Messages',
+                'Messagerie',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -131,7 +132,7 @@ class _EmptyState extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           const Text(
-            'No Messages, yet.',
+            'Aucun message pour l\'instant.',
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -140,7 +141,7 @@ class _EmptyState extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           const Text(
-            'Start a ride to chat\nwith your driver.',
+            'Commencez un trajet pour discuter\navec votre conducteur.',
             textAlign: TextAlign.center,
             style: TextStyle(
                 color: AppColors.textSecondary, fontSize: 14, height: 1.5),
@@ -180,22 +181,14 @@ class _ConversationTile extends StatelessWidget {
         ),
         child: Row(
           children: [
-            CircleAvatar(
-              radius: 24,
-              backgroundColor: AppColors.primary.withOpacity(0.15),
-              child: Text(
-                name.isNotEmpty ? name[0].toUpperCase() : '?',
-                style: const TextStyle(
-                    color: AppColors.primary, fontWeight: FontWeight.bold),
-              ),
-            ),
+            UserAvatar(name: name.isNotEmpty ? name : '?', radius: 24),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    name.isEmpty ? 'Unknown' : name,
+                    name.isEmpty ? 'Inconnu' : name,
                     style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 15,

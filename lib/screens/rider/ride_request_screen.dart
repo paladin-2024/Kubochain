@@ -118,7 +118,7 @@ class _RideRequestSheetState extends State<RideRequestSheet>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'New Ride Request!',
+                            'Nouvelle demande de course !',
                             style: GoogleFonts.sora(
                               color: AppColors.textOnDark,
                               fontSize: 20,
@@ -127,7 +127,7 @@ class _RideRequestSheetState extends State<RideRequestSheet>
                             ),
                           ),
                           Text(
-                            'Respond quickly',
+                            'Répondez rapidement',
                             style: GoogleFonts.sora(
                               color: AppColors.textSecondary,
                               fontSize: 12,
@@ -206,7 +206,7 @@ class _RideRequestSheetState extends State<RideRequestSheet>
                                     borderRadius: BorderRadius.circular(50),
                                   ),
                                   child: Text(
-                                    'Verified',
+                                    'Vérifié',
                                     style: GoogleFonts.sora(
                                       color: AppColors.success,
                                       fontSize: 10,
@@ -237,7 +237,7 @@ class _RideRequestSheetState extends State<RideRequestSheet>
                       _RouteRow(
                         icon: HugeIcons.strokeRoundedCircle,
                         iconColor: AppColors.primary,
-                        label: 'PICKUP',
+                        label: 'DÉPART',
                         address: widget.ride.pickup.address.split(',').first,
                       ),
                       Padding(
@@ -260,7 +260,7 @@ class _RideRequestSheetState extends State<RideRequestSheet>
                       _RouteRow(
                         icon: HugeIcons.strokeRoundedMapPin,
                         iconColor: AppColors.error,
-                        label: 'DESTINATION',
+                        label: 'ARRIVÉE',
                         address: widget.ride.destination.address.split(',').first,
                       ),
                     ],
@@ -341,7 +341,7 @@ class _RideRequestSheetState extends State<RideRequestSheet>
                       child: _StatBadge(
                         icon: HugeIcons.strokeRoundedMoney01,
                         value: 'FC ${widget.ride.price.toStringAsFixed(0)}',
-                        label: 'Fare',
+                        label: 'Tarif',
                         color: AppColors.success,
                       ),
                     ),
@@ -349,7 +349,7 @@ class _RideRequestSheetState extends State<RideRequestSheet>
                     Expanded(
                       child: _StatBadge(
                         icon: HugeIcons.strokeRoundedMotorbike01,
-                        value: widget.ride.rideType ?? 'Economy',
+                        value: widget.ride.rideType ?? 'Économique',
                         label: 'Type',
                         color: AppColors.orange,
                       ),
@@ -381,7 +381,7 @@ class _RideRequestSheetState extends State<RideRequestSheet>
                               const HugeIcon(icon: HugeIcons.strokeRoundedCancel01, color: AppColors.error, size: 22),
                               const SizedBox(width: 8),
                               Text(
-                                'Decline',
+                                'Refuser',
                                 style: GoogleFonts.sora(
                                   color: AppColors.error,
                                   fontWeight: FontWeight.w700,
@@ -424,7 +424,7 @@ class _RideRequestSheetState extends State<RideRequestSheet>
                               const HugeIcon(icon: HugeIcons.strokeRoundedCheckmarkCircle01, color: Colors.white, size: 24),
                               const SizedBox(width: 8),
                               Text(
-                                'Accept Ride',
+                                'Accepter la course',
                                 style: GoogleFonts.sora(
                                   color: Colors.white,
                                   fontWeight: FontWeight.w800,

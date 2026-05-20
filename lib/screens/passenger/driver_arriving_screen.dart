@@ -262,7 +262,7 @@ class _DriverArrivingScreenState extends ConsumerState<DriverArrivingScreen>
                                             color: AppColors.success, size: 14),
                                         const SizedBox(width: 4),
                                         Text(
-                                          'Verified',
+                                          'Vérifié',
                                           style: GoogleFonts.sora(
                                             color: AppColors.success,
                                             fontSize: 12,

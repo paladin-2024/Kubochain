@@ -89,7 +89,7 @@ class _EarningsScreenState extends ConsumerState<EarningsScreen>
                               ),
                               const SizedBox(width: 14),
                               Text(
-                                'My Earnings',
+                                'Mes revenus',
                                 style: GoogleFonts.sora(
                                   color: Colors.white,
                                   fontSize: 26,
@@ -107,7 +107,7 @@ class _EarningsScreenState extends ConsumerState<EarningsScreen>
                             children: [
                               Expanded(
                                 child: _EarningCard(
-                                  label: 'Today',
+                                  label: "Aujourd'hui",
                                   value: 'FC ${driver.todayEarnings.toStringAsFixed(0)}',
                                   icon: HugeIcons.strokeRoundedSun01,
                                   iconBg: Colors.white.withOpacity(0.15),
@@ -129,7 +129,7 @@ class _EarningsScreenState extends ConsumerState<EarningsScreen>
                               const SizedBox(width: 10),
                               Expanded(
                                 child: _EarningCard(
-                                  label: 'Trips',
+                                  label: 'Courses',
                                   value: '${driver.completedRides.length}',
                                   icon: HugeIcons.strokeRoundedMotorbike01,
                                   iconBg: Colors.white.withOpacity(0.15),
@@ -159,7 +159,7 @@ class _EarningsScreenState extends ConsumerState<EarningsScreen>
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        'Trip History',
+                        'Historique des courses',
                         style: GoogleFonts.sora(
                           color: AppColors.textOnDark,
                           fontSize: 17,
@@ -175,7 +175,7 @@ class _EarningsScreenState extends ConsumerState<EarningsScreen>
                             borderRadius: BorderRadius.circular(50),
                           ),
                           child: Text(
-                            '${driver.completedRides.length} trips',
+                            '${driver.completedRides.length} courses',
                             style: GoogleFonts.sora(
                               color: AppColors.primary,
                               fontSize: 11,
@@ -221,7 +221,7 @@ class _EarningsScreenState extends ConsumerState<EarningsScreen>
                                   ),
                                   const SizedBox(height: 16),
                                   Text(
-                                    'No trips yet',
+                                    'Aucune course pour l\'instant',
                                     style: GoogleFonts.sora(
                                       color: AppColors.textOnDark,
                                       fontSize: 18,
@@ -230,7 +230,7 @@ class _EarningsScreenState extends ConsumerState<EarningsScreen>
                                   ),
                                   const SizedBox(height: 6),
                                   Text(
-                                    'Your completed trips will appear here',
+                                    'Vos courses terminées apparaîtront ici',
                                     style: GoogleFonts.sora(
                                       color: AppColors.textSecondary,
                                       fontSize: 13,

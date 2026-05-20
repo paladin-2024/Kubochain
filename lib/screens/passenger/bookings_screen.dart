@@ -314,7 +314,7 @@ class _HistoryCard extends StatelessWidget {
         ? ('${ride.driver!['firstName'] ?? ride.driver!['user']?['firstName'] ?? ''} '
                 '${ride.driver!['lastName'] ?? ride.driver!['user']?['lastName'] ?? ''}')
             .trim()
-        : 'Pending';
+        : 'En attente';
 
     final months = [
       '',

@@ -102,7 +102,7 @@ class _TripNavigationScreenState extends ConsumerState<TripNavigationScreen>
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            isPickup ? 'Navigate to Pickup' : 'Navigate to Destination',
+                            isPickup ? 'Vers la prise en charge' : 'Vers la destination',
                             style: GoogleFonts.sora(
                               color: AppColors.textOnDark,
                               fontWeight: FontWeight.w700,
@@ -184,7 +184,7 @@ class _TripNavigationScreenState extends ConsumerState<TripNavigationScreen>
                                       ),
                                     ),
                                     Text(
-                                      'Passenger',
+                                      'Passager',
                                       style: GoogleFonts.sora(
                                         color: AppColors.textSecondary,
                                         fontSize: 12,
@@ -239,7 +239,7 @@ class _TripNavigationScreenState extends ConsumerState<TripNavigationScreen>
                                       color: AppColors.primary, size: 18),
                                   const SizedBox(width: 8),
                                   Text(
-                                    'Message Passenger',
+                                    'Envoyer un message',
                                     style: GoogleFonts.sora(
                                       color: AppColors.primary,
                                       fontWeight: FontWeight.w700,
@@ -255,7 +255,7 @@ class _TripNavigationScreenState extends ConsumerState<TripNavigationScreen>
 
                         if (isPickup) ...[
                           AppButton(
-                            label: "I've Arrived at Pickup",
+                            label: 'Arrivé au point de prise en charge',
                             onPressed: () async {
                               await driver.notifyArrived();
                               if (mounted) setState(() {});
@@ -264,7 +264,7 @@ class _TripNavigationScreenState extends ConsumerState<TripNavigationScreen>
                           ),
                           const SizedBox(height: 10),
                           AppButton(
-                            label: 'Start Trip',
+                            label: 'Démarrer le trajet',
                             onPressed: () async {
                               await driver.startTrip();
                               if (mounted) setState(() {});
@@ -272,7 +272,7 @@ class _TripNavigationScreenState extends ConsumerState<TripNavigationScreen>
                           ),
                         ] else ...[
                           AppButton(
-                            label: 'Complete Trip',
+                            label: 'Terminer le trajet',
                             onPressed: () async {
                               final confirmed = await showDialog<bool>(
                                 context: context,
@@ -282,21 +282,21 @@ class _TripNavigationScreenState extends ConsumerState<TripNavigationScreen>
                                     borderRadius: BorderRadius.circular(20),
                                   ),
                                   title: Text(
-                                    'Confirm Payment',
+                                    'Confirmer le paiement',
                                     style: GoogleFonts.sora(
                                       color: AppColors.textOnDark,
                                       fontWeight: FontWeight.w700,
                                     ),
                                   ),
                                   content: Text(
-                                    'Has the passenger paid FC ${activeRide?.price.toStringAsFixed(0) ?? ''}?',
+                                    'Le passager a-t-il payé FC ${activeRide?.price.toStringAsFixed(0) ?? ''} ?',
                                     style: GoogleFonts.sora(color: AppColors.textSecondary),
                                   ),
                                   actions: [
                                     TextButton(
                                       onPressed: () => Navigator.pop(ctx, false),
                                       child: Text(
-                                        'Not Yet',
+                                        'Pas encore',
                                         style: GoogleFonts.sora(color: AppColors.textSecondary),
                                       ),
                                     ),
@@ -309,7 +309,7 @@ class _TripNavigationScreenState extends ConsumerState<TripNavigationScreen>
                                       ),
                                       onPressed: () => Navigator.pop(ctx, true),
                                       child: Text(
-                                        'Yes, Received',
+                                        'Oui, reçu',
                                         style: GoogleFonts.sora(
                                           color: Colors.white,
                                           fontWeight: FontWeight.w700,

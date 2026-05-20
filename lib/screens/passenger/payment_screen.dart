@@ -22,16 +22,16 @@ class _PaymentScreenState extends State<PaymentScreen>
     _PayMethod(
       id: 'momo',
       label: 'MTN Mobile Money',
-      subtitle: 'Instant transfer · Recommended',
+      subtitle: 'Transfert instantané · Recommandé',
       icon: HugeIcons.strokeRoundedFlash,
       brandColor: Color(0xFFFFC107),
       bgLight: Color(0xFFFFFBEB),
-      tag: 'POPULAR',
+      tag: 'POPULAIRE',
     ),
     _PayMethod(
       id: 'airtel',
       label: 'Airtel Money',
-      subtitle: 'Mobile money · Fast & reliable',
+      subtitle: 'Mobile money · Rapide et fiable',
       icon: HugeIcons.strokeRoundedWifi01,
       brandColor: Color(0xFFE02020),
       bgLight: Color(0xFFFFF1F1),
@@ -39,8 +39,8 @@ class _PaymentScreenState extends State<PaymentScreen>
     ),
     _PayMethod(
       id: 'cash',
-      label: 'Cash',
-      subtitle: 'Pay your driver directly',
+      label: 'Espèces',
+      subtitle: 'Payez directement votre conducteur',
       icon: HugeIcons.strokeRoundedMoney01,
       brandColor: Color(0xFF10B981),
       bgLight: Color(0xFFF0FDF9),
@@ -48,8 +48,8 @@ class _PaymentScreenState extends State<PaymentScreen>
     ),
     _PayMethod(
       id: 'card',
-      label: 'Credit / Debit Card',
-      subtitle: 'Visa, Mastercard · Secure',
+      label: 'Carte de crédit / débit',
+      subtitle: 'Visa, Mastercard · Sécurisé',
       icon: HugeIcons.strokeRoundedCreditCard,
       brandColor: Color(0xFF2563EB),
       bgLight: Color(0xFFEFF6FF),
@@ -138,7 +138,7 @@ class _PaymentScreenState extends State<PaymentScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Payment Method',
+                        'Mode de paiement',
                         style: GoogleFonts.sora(
                           fontSize: 20,
                           fontWeight: FontWeight.w800,
@@ -147,7 +147,7 @@ class _PaymentScreenState extends State<PaymentScreen>
                         ),
                       ),
                       Text(
-                        'How would you like to pay?',
+                        'Comment souhaitez-vous payer ?',
                         style: GoogleFonts.dmSans(
                           fontSize: 13,
                           color: AppColors.textSecondary,
@@ -250,7 +250,7 @@ class _PaymentScreenState extends State<PaymentScreen>
                 ),
                 alignment: Alignment.center,
                 child: Text(
-                  'Save Payment Method',
+                  'Enregistrer le mode de paiement',
                   style: GoogleFonts.sora(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,

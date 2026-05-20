@@ -34,11 +34,11 @@ class _SearchingDriverScreenState extends ConsumerState<SearchingDriverScreen>
   int _driverCount = 0;
 
   static const _safetyTips = [
-    'Always confirm the plate number\nbefore boarding.',
-    'Share your trip details with\na trusted contact.',
-    'Your safety rating protects\nevery ride.',
-    'All riders are background\nchecked & verified.',
-    'SOS button available in-app\nduring your trip.',
+    'Vérifiez toujours la plaque d\'immatriculation\navant de monter.',
+    'Partagez les détails de votre trajet\navec un contact de confiance.',
+    'Votre note de sécurité protège\nchaque trajet.',
+    'Tous les conducteurs sont vérifiés\net approuvés.',
+    'Bouton SOS disponible dans l\'appli\npendant votre trajet.',
   ];
 
   @override
@@ -119,7 +119,7 @@ class _SearchingDriverScreenState extends ConsumerState<SearchingDriverScreen>
     } else if (ride.rideStatus == RideStatus.cancelled && mounted) {
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(ride.error ?? 'Ride was cancelled')),
+        SnackBar(content: Text(ride.error ?? 'Trajet annulé')),
       );
     }
   }
@@ -154,7 +154,7 @@ class _SearchingDriverScreenState extends ConsumerState<SearchingDriverScreen>
                 child: Column(
                   children: [
                     Text(
-                      'Finding Your Rider',
+                      'Recherche d\'un conducteur',
                       style: GoogleFonts.sora(
                         fontSize: 28,
                         fontWeight: FontWeight.w800,
@@ -164,7 +164,7 @@ class _SearchingDriverScreenState extends ConsumerState<SearchingDriverScreen>
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      'Connecting you with a nearby boda rider',
+                      'Connexion avec un conducteur boda à proximité',
                       textAlign: TextAlign.center,
                       style: GoogleFonts.sora(
                         fontSize: 14,
@@ -279,7 +279,7 @@ class _SearchingDriverScreenState extends ConsumerState<SearchingDriverScreen>
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        '$_driverCount riders nearby',
+                        '$_driverCount conducteurs à proximité',
                         style: GoogleFonts.sora(
                           color: AppColors.success,
                           fontSize: 13,
@@ -312,7 +312,7 @@ class _SearchingDriverScreenState extends ConsumerState<SearchingDriverScreen>
                               _RouteRow(
                                 icon: HugeIcons.strokeRoundedCircle,
                                 color: AppColors.primary,
-                                label: 'PICKUP',
+                                label: 'DÉPART',
                                 address: ride.currentRide!.pickup.address,
                               ),
                               Padding(
@@ -332,7 +332,7 @@ class _SearchingDriverScreenState extends ConsumerState<SearchingDriverScreen>
                               _RouteRow(
                                 icon: HugeIcons.strokeRoundedMapPin,
                                 color: AppColors.error,
-                                label: 'DESTINATION',
+                                label: 'ARRIVÉE',
                                 address: ride.currentRide!.destination.address,
                               ),
                             ],
@@ -345,7 +345,7 @@ class _SearchingDriverScreenState extends ConsumerState<SearchingDriverScreen>
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
                               _StatChip(
-                                label: 'Price',
+                                label: 'Prix',
                                 value: 'FC ${ride.currentRide!.price.toStringAsFixed(0)}',
                                 color: AppColors.success,
                                 icon: HugeIcons.strokeRoundedMoney01,
@@ -360,7 +360,7 @@ class _SearchingDriverScreenState extends ConsumerState<SearchingDriverScreen>
                               Container(width: 1, height: 36, color: AppColors.borderDark),
                               _StatChip(
                                 label: 'Type',
-                                value: ride.currentRide!.rideType == 'premium' ? 'Premium' : 'Economy',
+                                value: ride.currentRide!.rideType == 'premium' ? 'Premium' : 'Économique',
                                 color: AppColors.gold,
                                 icon: HugeIcons.strokeRoundedMotorbike01,
                               ),
@@ -408,7 +408,7 @@ class _SearchingDriverScreenState extends ConsumerState<SearchingDriverScreen>
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Safety Tip',
+                                'Conseil de sécurité',
                                 style: GoogleFonts.sora(
                                   color: AppColors.warning,
                                   fontSize: 11,
@@ -461,7 +461,7 @@ class _SearchingDriverScreenState extends ConsumerState<SearchingDriverScreen>
                           ),
                         ),
                         child: Text(
-                          'Cancel Request',
+                          'Annuler la demande',
                           style: GoogleFonts.sora(
                             fontWeight: FontWeight.w600,
                             fontSize: 14,

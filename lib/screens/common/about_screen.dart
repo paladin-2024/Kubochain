@@ -18,7 +18,7 @@ class AboutScreen extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
-          'About KuboChain',
+          'À propos de KuboChain',
           style: TextStyle(
               color: AppColors.textOnDark,
               fontWeight: FontWeight.bold,
@@ -56,7 +56,7 @@ class AboutScreen extends StatelessWidget {
             ),
             const SizedBox(height: 6),
             const Text(
-              "Goma's #1 Boda Ride-Hailing App",
+              "L'app n°1 de boda à Goma",
               style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
               textAlign: TextAlign.center,
             ),
@@ -84,9 +84,9 @@ class AboutScreen extends StatelessWidget {
 
             // Mission section
             _SectionCard(
-              title: 'Our Mission',
+              title: 'Notre mission',
               child: const Text(
-                'Connecting passengers with trusted boda drivers across Congo-Goma — fast, safe, and affordable.',
+                'Connecter les passagers avec des conducteurs boda de confiance à travers le Congo-Goma — rapide, sûr et abordable.',
                 style: TextStyle(
                     color: AppColors.textOnDark,
                     fontSize: 14,
@@ -97,12 +97,12 @@ class AboutScreen extends StatelessWidget {
 
             // Contact section
             _SectionCard(
-              title: 'Contact Us',
+              title: 'Nous contacter',
               child: Column(
                 children: [
                   _ContactRow(
                     icon: HugeIcons.strokeRoundedMail01,
-                    label: 'Email',
+                    label: 'E-mail',
                     value: 'cnzabb@gmail.com',
                   ),
                   const SizedBox(height: 12),
@@ -124,13 +124,13 @@ class AboutScreen extends StatelessWidget {
 
             // Legal section
             _SectionCard(
-              title: 'Legal',
+              title: 'Mentions légales',
               child: Column(
                 children: [
                   _LegalTile(
-                    label: 'Terms of Service',
+                    label: 'Conditions d\'utilisation',
                     onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Coming soon')),
+                      const SnackBar(content: Text('Bientôt disponible')),
                     ),
                   ),
                   Divider(
@@ -139,9 +139,9 @@ class AboutScreen extends StatelessWidget {
                       indent: 8,
                       endIndent: 8),
                   _LegalTile(
-                    label: 'Privacy Policy',
+                    label: 'Politique de confidentialité',
                     onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Coming soon')),
+                      const SnackBar(content: Text('Bientôt disponible')),
                     ),
                   ),
                 ],
@@ -151,7 +151,7 @@ class AboutScreen extends StatelessWidget {
 
             // Footer
             const Text(
-              '© 2025 KuboChain. All rights reserved.',
+              '© 2025 KuboChain. Tous droits réservés.',
               style:
                   TextStyle(color: AppColors.textSecondary, fontSize: 12),
               textAlign: TextAlign.center,

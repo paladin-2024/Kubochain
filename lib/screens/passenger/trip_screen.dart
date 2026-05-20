@@ -97,7 +97,7 @@ class _TripScreenState extends ConsumerState<TripScreen> {
                     HugeIcon(icon: HugeIcons.strokeRoundedMotorbike01, color: Colors.white, size: 18),
                     SizedBox(width: 8),
                     Text(
-                      'Trip in Progress',
+                      'Trajet en cours',
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w600,
@@ -157,13 +157,13 @@ class _TripScreenState extends ConsumerState<TripScreen> {
                         _TripStat(
                           icon: HugeIcons.strokeRoundedMoney01,
                           value: 'FC ${currentRide.price.toStringAsFixed(0)}',
-                          label: 'Fare',
+                          label: 'Tarif',
                         ),
                         if (currentRide.driver != null)
                           _TripStat(
                             icon: HugeIcons.strokeRoundedUser,
                             value: currentRide.driver!['firstName'] ?? '',
-                            label: 'Driver',
+                            label: 'Conducteur',
                           ),
                       ],
                     ),
@@ -190,12 +190,12 @@ class _TripScreenState extends ConsumerState<TripScreen> {
                     const HugeIcon(icon: HugeIcons.strokeRoundedCheckmarkBadge01, color: Color(0xFF00C853), size: 48),
                     const SizedBox(height: 12),
                     const Text(
-                      'Trip Complete!',
-                      style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
+                      'Trajet terminé !',
+                      style: TextStyle(color: AppColors.textPrimary, fontSize: 22, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 6),
                     const Text(
-                      'Your driver has ended the trip.\nPlease confirm to complete.',
+                      'Votre conducteur a terminé le trajet.\nVeuillez confirmer pour valider.',
                       textAlign: TextAlign.center,
                       style: TextStyle(color: Color(0xFF8899AA), fontSize: 14),
                     ),
@@ -213,12 +213,12 @@ class _TripScreenState extends ConsumerState<TripScreen> {
                           final ok = await ref.read(rideProvider).passengerConfirmRide();
                           if (!ok && mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Failed to confirm. Try again.')),
+                              const SnackBar(content: Text('Échec de la confirmation. Réessayez.')),
                             );
                           }
                         },
                         child: const Text(
-                          'Confirm Trip Completion',
+                          'Confirmer la fin du trajet',
                           style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
                         ),
                       ),

@@ -157,8 +157,8 @@ class _LoginPageState extends ConsumerState<LoginPage>
                             onFieldSubmitted: (_) => _login(),
                             suffixIcon: GestureDetector(
                               onTap: () => setState(() => _obscurePassword = !_obscurePassword),
-                              child: Icon(
-                                _obscurePassword
+                              child: HugeIcon(
+                                icon: _obscurePassword
                                     ? HugeIcons.strokeRoundedViewOff
                                     : HugeIcons.strokeRoundedView,
                                 color: AppColors.textMuted,
@@ -258,8 +258,8 @@ class _LoginPageState extends ConsumerState<LoginPage>
                 shape: BoxShape.circle,
                 boxShadow: AppColors.softShadow,
               ),
-              child: const Icon(
-                HugeIcons.strokeRoundedArrowLeft01,
+              child: const HugeIcon(
+                icon: HugeIcons.strokeRoundedArrowLeft01,
                 size: 18,
                 color: AppColors.textPrimary,
               ),
@@ -417,7 +417,7 @@ class _StyledField extends StatelessWidget {
           hintStyle: GoogleFonts.dmSans(fontSize: 15, color: AppColors.textHint),
           prefixIcon: Padding(
             padding: const EdgeInsets.only(left: 16, right: 12),
-            child: Icon(icon, color: AppColors.textMuted, size: 20),
+            child: HugeIcon(icon: icon, color: AppColors.textMuted, size: 20),
           ),
           prefixIconConstraints: const BoxConstraints(minWidth: 52),
           suffixIcon: suffixIcon != null
@@ -531,7 +531,7 @@ class _LoginButtonState extends State<_LoginButton>
                         color: Colors.white.withValues(alpha: 0.2),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(HugeIcons.strokeRoundedArrowRight01, color: Colors.white, size: 16),
+                      child: const HugeIcon(icon: HugeIcons.strokeRoundedArrowRight01, color: Colors.white, size: 16),
                     ),
                   ],
                 ),

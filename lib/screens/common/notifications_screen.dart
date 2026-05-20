@@ -70,10 +70,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
   String _timeAgo(DateTime dt) {
     final diff = DateTime.now().difference(dt);
-    if (diff.inSeconds < 60) return 'Just now';
-    if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
-    if (diff.inHours < 24) return '${diff.inHours}h ago';
-    return '${diff.inDays}d ago';
+    if (diff.inSeconds < 60) return 'À l\'instant';
+    if (diff.inMinutes < 60) return 'il y a ${diff.inMinutes}min';
+    if (diff.inHours < 24) return 'il y a ${diff.inHours}h';
+    return 'il y a ${diff.inDays}j';
   }
 
   @override
@@ -93,7 +93,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(
-                    'Notifications',
+                    'Notifications',  // same in French
                     style: TextStyle(
                       color: AppColors.textOnDark,
                       fontSize: 24,
@@ -113,7 +113,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                           border: Border.all(color: AppColors.borderDark),
                         ),
                         child: const Text(
-                          'Clear all',
+                          'Tout effacer',
                           style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
                         ),
                       ),
@@ -220,7 +220,7 @@ class _EmptyState extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           const Text(
-            'No notifications yet',
+            'Aucune notification',
             style: TextStyle(
               color: AppColors.textOnDark,
               fontSize: 18,
@@ -229,7 +229,7 @@ class _EmptyState extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           const Text(
-            'You\'ll be notified about\nride updates here.',
+            'Vous serez notifié\ndes mises à jour ici.',
             textAlign: TextAlign.center,
             style: TextStyle(color: AppColors.textSecondary, fontSize: 14, height: 1.5),
           ),

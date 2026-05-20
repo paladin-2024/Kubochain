@@ -29,9 +29,9 @@ class _DriverVehicleSetupScreenState extends State<DriverVehicleSetupScreen>
   late AnimationController _entryCtrl;
 
   static const _docLabels = [
-    'National ID',
-    "Driver's Licence",
-    'Vehicle Insurance'
+    'Carte nationale d\'identité',
+    'Permis de conduire',
+    'Assurance véhicule',
   ];
   final _docPaths = <String?>[null, null, null];
   final _picker = ImagePicker();
@@ -69,7 +69,7 @@ class _DriverVehicleSetupScreenState extends State<DriverVehicleSetupScreen>
   Future<void> _handleContinue() async {
     if (!_formKey.currentState!.validate()) return;
     if (_docPaths[0] == null) {
-      _snack('Please upload your National ID to continue', AppColors.error);
+      _snack('Veuillez téléverser votre carte nationale d\'identité pour continuer', AppColors.error);
       return;
     }
 
@@ -80,7 +80,7 @@ class _DriverVehicleSetupScreenState extends State<DriverVehicleSetupScreen>
       devOtp = res.data['devOtp'] as String?;
     } catch (e) {
       if (!mounted) return;
-      _snack('Failed to send OTP: $e', AppColors.error);
+      _snack('Échec de l\'envoi du code : $e', AppColors.error);
       setState(() => _loading = false);
       return;
     }
@@ -144,15 +144,15 @@ class _DriverVehicleSetupScreenState extends State<DriverVehicleSetupScreen>
                       children: [
                         IconButton(
                           onPressed: () => Navigator.pop(context),
-                          icon: const Icon(HugeIcons.strokeRoundedArrowLeft01,
-                              color: AppColors.textPrimary),
+                          icon: const HugeIcon(icon: HugeIcons.strokeRoundedArrowLeft01,
+                              color: AppColors.textPrimary, size: 24),
                         ),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Vehicle Details',
+                                'Détails du véhicule',
                                 style: GoogleFonts.sora(
                                   color: AppColors.textPrimary,
                                   fontWeight: FontWeight.w700,
@@ -160,7 +160,7 @@ class _DriverVehicleSetupScreenState extends State<DriverVehicleSetupScreen>
                                 ),
                               ),
                               Text(
-                                'Step 2 of 3 — Driver Verification',
+                                'Étape 2 sur 3 — Vérification conducteur',
                                 style: GoogleFonts.dmSans(
                                   color: AppColors.textSecondary,
                                   fontSize: 12,
@@ -209,9 +209,9 @@ class _DriverVehicleSetupScreenState extends State<DriverVehicleSetupScreen>
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         for (final e in [
-                          ('Account', 0),
-                          ('Vehicle', 1),
-                          ('Verify', 2)
+                          ('Compte', 0),
+                          ('Véhicule', 1),
+                          ('Vérifier', 2)
                         ])
                           Text(
                             e.$1,
@@ -251,13 +251,13 @@ class _DriverVehicleSetupScreenState extends State<DriverVehicleSetupScreen>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _FieldLabel('Vehicle Type'),
+                      _FieldLabel('Type de véhicule'),
                       const SizedBox(height: 10),
                       Row(
                         children: [
                           _VehicleTypePill(
                             icon: HugeIcons.strokeRoundedBicycle01,
-                            label: 'Motorcycle',
+                            label: 'Moto',
                             selected: _vehicleType == 'motorcycle',
                             onTap: () =>
                                 setState(() => _vehicleType = 'motorcycle'),
@@ -265,7 +265,7 @@ class _DriverVehicleSetupScreenState extends State<DriverVehicleSetupScreen>
                           const SizedBox(width: 10),
                           _VehicleTypePill(
                             icon: HugeIcons.strokeRoundedMotorbike01,
-                            label: 'Electric Bike',
+                            label: 'Moto électrique',
                             selected: _vehicleType == 'electric',
                             onTap: () =>
                                 setState(() => _vehicleType = 'electric'),
@@ -274,7 +274,7 @@ class _DriverVehicleSetupScreenState extends State<DriverVehicleSetupScreen>
                       ),
                       const SizedBox(height: 22),
 
-                      _FieldLabel('Plate Number'),
+                      _FieldLabel('Numéro de plaque'),
                       const SizedBox(height: 8),
                       _FormField(
                         controller: _plateCtrl,
@@ -282,7 +282,7 @@ class _DriverVehicleSetupScreenState extends State<DriverVehicleSetupScreen>
                         prefixIcon: HugeIcons.strokeRoundedCreditCard,
                         textCapitalization: TextCapitalization.characters,
                         validator: (v) => (v == null || v.trim().isEmpty)
-                            ? 'Plate number is required'
+                            ? 'Numéro de plaque requis'
                             : null,
                       ),
                       const SizedBox(height: 16),
@@ -294,7 +294,7 @@ class _DriverVehicleSetupScreenState extends State<DriverVehicleSetupScreen>
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                _FieldLabel('Make / Brand'),
+                                _FieldLabel('Marque'),
                                 const SizedBox(height: 8),
                                 _FormField(
                                   controller: _makeCtrl,
@@ -302,7 +302,7 @@ class _DriverVehicleSetupScreenState extends State<DriverVehicleSetupScreen>
                                   prefixIcon: HugeIcons.strokeRoundedMotorbike01,
                                   validator: (v) =>
                                       (v == null || v.trim().isEmpty)
-                                          ? 'Required'
+                                          ? 'Requis'
                                           : null,
                                 ),
                               ],
@@ -313,7 +313,7 @@ class _DriverVehicleSetupScreenState extends State<DriverVehicleSetupScreen>
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                _FieldLabel('Model'),
+                                _FieldLabel('Modèle'),
                                 const SizedBox(height: 8),
                                 _FormField(
                                   controller: _modelCtrl,
@@ -321,7 +321,7 @@ class _DriverVehicleSetupScreenState extends State<DriverVehicleSetupScreen>
                                   prefixIcon: HugeIcons.strokeRoundedMotorbike02,
                                   validator: (v) =>
                                       (v == null || v.trim().isEmpty)
-                                          ? 'Required'
+                                          ? 'Requis'
                                           : null,
                                 ),
                               ],
@@ -331,14 +331,14 @@ class _DriverVehicleSetupScreenState extends State<DriverVehicleSetupScreen>
                       ),
                       const SizedBox(height: 16),
 
-                      _FieldLabel('Vehicle Color'),
+                      _FieldLabel('Couleur du véhicule'),
                       const SizedBox(height: 8),
                       _FormField(
                         controller: _colorCtrl,
                         hint: 'e.g. Black, Red, Silver',
                         prefixIcon: HugeIcons.strokeRoundedPaintBrush01,
                         validator: (v) => (v == null || v.trim().isEmpty)
-                            ? 'Color is required'
+                            ? 'Couleur requise'
                             : null,
                       ),
                       const SizedBox(height: 28),
@@ -356,7 +356,7 @@ class _DriverVehicleSetupScreenState extends State<DriverVehicleSetupScreen>
                           ),
                           const SizedBox(width: 10),
                           Text(
-                            'Required Documents',
+                            'Documents requis',
                             style: GoogleFonts.sora(
                               color: AppColors.textPrimary,
                               fontWeight: FontWeight.w700,
@@ -367,7 +367,7 @@ class _DriverVehicleSetupScreenState extends State<DriverVehicleSetupScreen>
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        'Upload clear photos or scans. Reviewed within 24 hours.',
+                        'Téléversez des photos ou scans clairs. Vérifiés sous 24 heures.',
                         style: GoogleFonts.dmSans(
                           color: AppColors.textSecondary,
                           fontSize: 13,
@@ -476,7 +476,7 @@ class _ContinueButtonState extends State<_ContinueButton>
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'Send Verification Code',
+                        'Envoyer le code de vérification',
                         style: GoogleFonts.sora(
                           color: Colors.white,
                           fontWeight: FontWeight.w700,
@@ -491,7 +491,7 @@ class _ContinueButtonState extends State<_ContinueButton>
                           color: Colors.white.withOpacity(0.2),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: const Icon(HugeIcons.strokeRoundedArrowRight01,
+                        child: const HugeIcon(icon: HugeIcons.strokeRoundedArrowRight01,
                             color: Colors.white, size: 16),
                       ),
                     ],
@@ -555,7 +555,7 @@ class _FormField extends StatelessWidget {
               color: AppColors.textHint, fontSize: 14),
           filled: true,
           fillColor: Colors.transparent,
-          prefixIcon: Icon(prefixIcon,
+          prefixIcon: HugeIcon(icon: prefixIcon,
               color: AppColors.textSecondary, size: 18),
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -621,7 +621,7 @@ class _VehicleTypePill extends StatelessWidget {
             ),
             child: Column(
               children: [
-                Icon(icon,
+                HugeIcon(icon: icon,
                     color: selected
                         ? AppColors.primary
                         : AppColors.textSecondary,
@@ -690,8 +690,8 @@ class _DocumentUploadTile extends StatelessWidget {
                     : AppColors.primary.withOpacity(0.07),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(
-                uploaded
+              child: HugeIcon(
+                icon: uploaded
                     ? HugeIcons.strokeRoundedCheckmarkCircle01
                     : HugeIcons.strokeRoundedUpload01,
                 color: uploaded ? AppColors.success : AppColors.primary,
@@ -723,7 +723,7 @@ class _DocumentUploadTile extends StatelessWidget {
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(
-                            'Required',
+                            'Requis',
                             style: GoogleFonts.dmSans(
                               color: AppColors.error,
                               fontSize: 10,
@@ -738,7 +738,7 @@ class _DocumentUploadTile extends StatelessWidget {
                   Text(
                     uploaded
                         ? filePath!.split('/').last
-                        : 'Tap to upload photo or PDF',
+                        : 'Appuyez pour téléverser une photo ou un PDF',
                     style: GoogleFonts.dmSans(
                       color: uploaded
                           ? AppColors.success
@@ -750,8 +750,8 @@ class _DocumentUploadTile extends StatelessWidget {
                 ],
               ),
             ),
-            Icon(
-              uploaded ? HugeIcons.strokeRoundedEdit01 : HugeIcons.strokeRoundedAdd01,
+            HugeIcon(
+              icon: uploaded ? HugeIcons.strokeRoundedEdit01 : HugeIcons.strokeRoundedAdd01,
               color: uploaded ? AppColors.success : AppColors.textSecondary,
               size: 18,
             ),
@@ -793,7 +793,7 @@ class _DocPickerSheet extends StatelessWidget {
                 ),
               ),
               Text(
-                'Upload $label',
+                'Téléverser $label',
                 style: GoogleFonts.sora(
                   color: AppColors.textPrimary,
                   fontWeight: FontWeight.w700,
@@ -803,13 +803,13 @@ class _DocPickerSheet extends StatelessWidget {
               const SizedBox(height: 16),
               _SheetOption(
                 icon: HugeIcons.strokeRoundedCamera01,
-                label: 'Take Photo',
+                label: 'Prendre une photo',
                 onTap: () => Navigator.pop(context, ImageSource.camera),
               ),
               const SizedBox(height: 8),
               _SheetOption(
                 icon: HugeIcons.strokeRoundedImage01,
-                label: 'Choose from Gallery',
+                label: 'Choisir dans la galerie',
                 onTap: () => Navigator.pop(context, ImageSource.gallery),
               ),
               const SizedBox(height: 8),
@@ -848,7 +848,7 @@ class _SheetOption extends StatelessWidget {
                   color: AppColors.primary.withOpacity(0.08),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Icon(icon, color: AppColors.primary, size: 18),
+                child: HugeIcon(icon: icon, color: AppColors.primary, size: 18),
               ),
               const SizedBox(width: 14),
               Text(

@@ -99,7 +99,7 @@ class _SignUpPageState extends State<SignUpPage>
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to send OTP: ${e.toString()}',
+          content: Text('Échec de l\'envoi du code : ${e.toString()}',
               style: GoogleFonts.dmSans(fontWeight: FontWeight.w500)),
           backgroundColor: AppColors.error,
           behavior: SnackBarBehavior.floating,
@@ -168,8 +168,8 @@ class _SignUpPageState extends State<SignUpPage>
                           shape: BoxShape.circle,
                           boxShadow: AppColors.softShadow,
                         ),
-                        child: const Icon(
-                          HugeIcons.strokeRoundedArrowLeft01,
+                        child: const HugeIcon(
+                          icon: HugeIcons.strokeRoundedArrowLeft01,
                           size: 18,
                           color: AppColors.textPrimary,
                         ),
@@ -310,8 +310,8 @@ class _SignUpPageState extends State<SignUpPage>
                               obscureText: _obscurePassword,
                               suffixIcon: GestureDetector(
                                 onTap: () => setState(() => _obscurePassword = !_obscurePassword),
-                                child: Icon(
-                                  _obscurePassword ? HugeIcons.strokeRoundedViewOff : HugeIcons.strokeRoundedView,
+                                child: HugeIcon(
+                                  icon: _obscurePassword ? HugeIcons.strokeRoundedViewOff : HugeIcons.strokeRoundedView,
                                   color: AppColors.textMuted,
                                   size: 20,
                                 ),
@@ -336,8 +336,8 @@ class _SignUpPageState extends State<SignUpPage>
                               textInputAction: TextInputAction.done,
                               suffixIcon: GestureDetector(
                                 onTap: () => setState(() => _obscureConfirm = !_obscureConfirm),
-                                child: Icon(
-                                  _obscureConfirm ? HugeIcons.strokeRoundedViewOff : HugeIcons.strokeRoundedView,
+                                child: HugeIcon(
+                                  icon: _obscureConfirm ? HugeIcons.strokeRoundedViewOff : HugeIcons.strokeRoundedView,
                                   color: AppColors.textMuted,
                                   size: 20,
                                 ),
@@ -489,7 +489,7 @@ class _SignupField extends StatelessWidget {
           hintStyle: GoogleFonts.dmSans(fontSize: 14, color: AppColors.textHint),
           prefixIcon: Padding(
             padding: const EdgeInsets.only(left: 14, right: 10),
-            child: Icon(icon, color: AppColors.textMuted, size: 18),
+            child: HugeIcon(icon: icon, color: AppColors.textMuted, size: 18),
           ),
           prefixIconConstraints: const BoxConstraints(minWidth: 46),
           suffixIcon: suffixIcon != null
@@ -646,8 +646,8 @@ class _RoleCard extends StatelessWidget {
                 color: selected ? Colors.white.withOpacity(0.2) : AppColors.primary.withOpacity(0.08),
                 shape: BoxShape.circle,
               ),
-              child: Icon(
-                icon,
+              child: HugeIcon(
+                icon: icon,
                 color: selected ? Colors.white : AppColors.primary,
                 size: 26,
               ),

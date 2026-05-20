@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,7 +6,10 @@ import 'package:image_picker/image_picker.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/services/api_service.dart';
 import '../../providers/providers.dart';
+import '../../core/services/storage_service.dart';
 import '../../screens/onboarding.dart';
+import '../../widgets/common/avatar_picker_sheet.dart';
+import '../../widgets/common/user_avatar.dart';
 import '../common/notifications_screen.dart';
 
 class RiderProfileScreen extends ConsumerStatefulWidget {
@@ -19,6 +21,21 @@ class RiderProfileScreen extends ConsumerStatefulWidget {
 
 class _RiderProfileScreenState extends ConsumerState<RiderProfileScreen> {
   bool _uploading = false;
+  int _avatarColorIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _avatarColorIndex = StorageService.getAvatarColorIndex();
+  }
+
+  void _openAvatarPicker(String name) {
+    AvatarPickerSheet.show(
+      context,
+      name: name,
+      onSelected: (i) => setState(() => _avatarColorIndex = i),
+    );
+  }
 
   Future<void> _pickAndUploadPhoto() async {
     final picker = ImagePicker();
@@ -31,12 +48,12 @@ class _RiderProfileScreenState extends ConsumerState<RiderProfileScreen> {
           children: [
             ListTile(
               leading: const HugeIcon(icon: HugeIcons.strokeRoundedCamera01, color: AppColors.textOnDark, size: 20),
-              title: const Text('Camera', style: TextStyle(color: AppColors.textOnDark)),
+              title: const Text('Caméra', style: TextStyle(color: AppColors.textOnDark)),
               onTap: () => Navigator.pop(context, ImageSource.camera),
             ),
             ListTile(
               leading: const HugeIcon(icon: HugeIcons.strokeRoundedImageAdd01, color: AppColors.textOnDark, size: 20),
-              title: const Text('Gallery', style: TextStyle(color: AppColors.textOnDark)),
+              title: const Text('Galerie', style: TextStyle(color: AppColors.textOnDark)),
               onTap: () => Navigator.pop(context, ImageSource.gallery),
             ),
           ],
@@ -53,7 +70,7 @@ class _RiderProfileScreenState extends ConsumerState<RiderProfileScreen> {
       setState(() => _uploading = false);
       if (!ok) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to upload photo')),
+          const SnackBar(content: Text('Échec du chargement de la photo')),
         );
       }
     }
@@ -86,16 +103,16 @@ class _RiderProfileScreenState extends ConsumerState<RiderProfileScreen> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Edit Profile',
+                const Text('Modifier le profil',
                     style: TextStyle(color: AppColors.textOnDark, fontSize: 18, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 20),
-                _DarkField(ctrl: firstCtrl, label: 'First Name', icon: HugeIcons.strokeRoundedUser),
+                _DarkField(ctrl: firstCtrl, label: 'Prénom', icon: HugeIcons.strokeRoundedUser),
                 const SizedBox(height: 12),
-                _DarkField(ctrl: lastCtrl, label: 'Last Name', icon: HugeIcons.strokeRoundedUser),
+                _DarkField(ctrl: lastCtrl, label: 'Nom', icon: HugeIcons.strokeRoundedUser),
                 const SizedBox(height: 12),
-                _DarkField(ctrl: emailCtrl, label: 'Email', icon: HugeIcons.strokeRoundedMail01, keyboardType: TextInputType.emailAddress),
+                _DarkField(ctrl: emailCtrl, label: 'E-mail', icon: HugeIcons.strokeRoundedMail01, keyboardType: TextInputType.emailAddress),
                 const SizedBox(height: 12),
-                _DarkField(ctrl: phoneCtrl, label: 'Phone', icon: HugeIcons.strokeRoundedPhoneCheck, keyboardType: TextInputType.phone),
+                _DarkField(ctrl: phoneCtrl, label: 'Téléphone', icon: HugeIcons.strokeRoundedPhoneCheck, keyboardType: TextInputType.phone),
                 const SizedBox(height: 20),
                 SizedBox(
                   width: double.infinity,
@@ -116,14 +133,14 @@ class _RiderProfileScreenState extends ConsumerState<RiderProfileScreen> {
                       if (ctx.mounted) {
                         Navigator.pop(ctx);
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: Text(ok ? 'Profile updated' : 'Failed to update'),
+                          content: Text(ok ? 'Profil mis à jour' : 'Échec de la mise à jour'),
                           backgroundColor: ok ? AppColors.success : AppColors.error,
                         ));
                       }
                     },
                     child: saving
                         ? const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                        : const Text('Save Changes', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                        : const Text('Enregistrer', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                   ),
                 ),
               ],
@@ -160,29 +177,29 @@ class _RiderProfileScreenState extends ConsumerState<RiderProfileScreen> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Vehicle Details',
+                const Text('Détails du véhicule',
                     style: TextStyle(color: AppColors.textOnDark, fontSize: 18, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 20),
-                _DarkField(ctrl: makeCtrl, label: 'Make (e.g. Honda)', icon: HugeIcons.strokeRoundedMotorbike01),
+                _DarkField(ctrl: makeCtrl, label: 'Marque (ex. Honda)', icon: HugeIcons.strokeRoundedMotorbike01),
                 const SizedBox(height: 12),
-                _DarkField(ctrl: modelCtrl, label: 'Model (e.g. CB200)', icon: HugeIcons.strokeRoundedMotorbike02),
+                _DarkField(ctrl: modelCtrl, label: 'Modèle (ex. CB200)', icon: HugeIcons.strokeRoundedMotorbike02),
                 const SizedBox(height: 12),
-                _DarkField(ctrl: plateCtrl, label: 'Plate Number', icon: HugeIcons.strokeRoundedCreditCard),
+                _DarkField(ctrl: plateCtrl, label: 'Numéro de plaque', icon: HugeIcons.strokeRoundedCreditCard),
                 const SizedBox(height: 12),
-                _DarkField(ctrl: colorCtrl, label: 'Color', icon: HugeIcons.strokeRoundedColorPicker),
+                _DarkField(ctrl: colorCtrl, label: 'Couleur', icon: HugeIcons.strokeRoundedColorPicker),
                 const SizedBox(height: 12),
                 // Vehicle type selector
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Vehicle Type',
+                    const Text('Type de véhicule',
                         style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
                     const SizedBox(height: 8),
                     Row(
                       children: [
                         {'value': 'motorcycle', 'label': 'Moto', 'icon': HugeIcons.strokeRoundedMotorbike01},
-                        {'value': 'bicycle', 'label': 'Bicycle', 'icon': HugeIcons.strokeRoundedBicycle01},
-                        {'value': 'car', 'label': 'Car', 'icon': HugeIcons.strokeRoundedCar01},
+                        {'value': 'bicycle', 'label': 'Vélo', 'icon': HugeIcons.strokeRoundedBicycle01},
+                        {'value': 'car', 'label': 'Voiture', 'icon': HugeIcons.strokeRoundedCar01},
                       ].map((item) {
                         final selected = vehicleType == item['value'];
                         return Expanded(
@@ -242,14 +259,14 @@ class _RiderProfileScreenState extends ConsumerState<RiderProfileScreen> {
                       if (ctx.mounted) {
                         Navigator.pop(ctx);
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: Text(ok ? 'Vehicle updated' : 'Failed to update'),
+                          content: Text(ok ? 'Véhicule mis à jour' : 'Échec de la mise à jour'),
                           backgroundColor: ok ? AppColors.success : AppColors.error,
                         ));
                       }
                     },
                     child: saving
                         ? const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                        : const Text('Save Vehicle', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                        : const Text('Enregistrer', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                   ),
                 ),
               ],
@@ -279,17 +296,17 @@ class _RiderProfileScreenState extends ConsumerState<RiderProfileScreen> {
                 child: Row(children: [
                   const HugeIcon(icon: HugeIcons.strokeRoundedLicense, color: AppColors.primary, size: 20),
                   const SizedBox(width: 12),
-                  const Text('Upload Document', style: TextStyle(color: AppColors.textOnDark, fontSize: 16, fontWeight: FontWeight.bold)),
+                  const Text('Télécharger un document', style: TextStyle(color: AppColors.textOnDark, fontSize: 16, fontWeight: FontWeight.bold)),
                 ]),
               ),
               ListTile(
                 leading: const HugeIcon(icon: HugeIcons.strokeRoundedCamera01, color: AppColors.textSecondary, size: 20),
-                title: const Text('Take Photo', style: TextStyle(color: AppColors.textOnDark)),
+                title: const Text('Prendre une photo', style: TextStyle(color: AppColors.textOnDark)),
                 onTap: () => Navigator.pop(_, 'camera'),
               ),
               ListTile(
                 leading: const HugeIcon(icon: HugeIcons.strokeRoundedImageAdd01, color: AppColors.textSecondary, size: 20),
-                title: const Text('Choose from Gallery', style: TextStyle(color: AppColors.textOnDark)),
+                title: const Text('Choisir dans la galerie', style: TextStyle(color: AppColors.textOnDark)),
                 onTap: () => Navigator.pop(_, 'gallery'),
               ),
             ],
@@ -308,13 +325,13 @@ class _RiderProfileScreenState extends ConsumerState<RiderProfileScreen> {
       await ApiService.uploadDriverDocuments([file.path]);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Document uploaded successfully'), backgroundColor: AppColors.success),
+          const SnackBar(content: Text('Document téléchargé avec succès'), backgroundColor: AppColors.success),
         );
       }
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to upload document'), backgroundColor: AppColors.error),
+          const SnackBar(content: Text('Échec du téléchargement du document'), backgroundColor: AppColors.error),
         );
       }
     } finally {
@@ -336,34 +353,34 @@ class _RiderProfileScreenState extends ConsumerState<RiderProfileScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Help & Support',
+              const Text('Aide & Support',
                   style: TextStyle(color: AppColors.textOnDark, fontSize: 18, fontWeight: FontWeight.bold)),
               const SizedBox(height: 20),
               _SupportTile(
                 icon: HugeIcons.strokeRoundedMail01,
-                title: 'Email Support',
+                title: 'Support par e-mail',
                 subtitle: 'support@kubochain.com',
                 onTap: () {},
               ),
               const SizedBox(height: 8),
               _SupportTile(
                 icon: HugeIcons.strokeRoundedPhoneCheck,
-                title: 'Call Us',
+                title: 'Appelez-nous',
                 subtitle: '+243 XXX XXX XXX',
                 onTap: () {},
               ),
               const SizedBox(height: 8),
               _SupportTile(
                 icon: HugeIcons.strokeRoundedMessage01,
-                title: 'Live Chat',
-                subtitle: 'Chat with our support team',
+                title: 'Chat en direct',
+                subtitle: 'Discutez avec notre équipe',
                 onTap: () {},
               ),
               const SizedBox(height: 8),
               _SupportTile(
                 icon: HugeIcons.strokeRoundedInformationCircle,
                 title: 'FAQ',
-                subtitle: 'Frequently asked questions',
+                subtitle: 'Questions fréquentes',
                 onTap: () {},
               ),
             ],
@@ -402,24 +419,16 @@ class _RiderProfileScreenState extends ConsumerState<RiderProfileScreen> {
                       const SizedBox(height: 20),
                       GestureDetector(
                         onTap: _pickAndUploadPhoto,
+                        onLongPress: () => _openAvatarPicker(user?.firstName ?? 'D'),
                         child: Stack(
                           children: [
-                            CircleAvatar(
+                            UserAvatar(
+                              name: user?.firstName ?? 'D',
+                              imageUrl: user?.profileImage != null
+                                  ? ApiService.imageUrl(user!.profileImage!)
+                                  : null,
                               radius: 42,
-                              backgroundColor: AppColors.primary.withOpacity(0.2),
-                              backgroundImage: user?.profileImage != null
-                                  ? CachedNetworkImageProvider(
-                                      ApiService.imageUrl(user!.profileImage!))
-                                  : null,
-                              child: user?.profileImage == null
-                                  ? Text(
-                                      (user?.firstName ?? 'D')[0].toUpperCase(),
-                                      style: const TextStyle(
-                                          fontSize: 34,
-                                          color: AppColors.primary,
-                                          fontWeight: FontWeight.bold),
-                                    )
-                                  : null,
+                              backgroundColor: AvatarPickerSheet.presets[_avatarColorIndex],
                             ),
                             Positioned(
                               bottom: 0, right: 0,
@@ -443,7 +452,7 @@ class _RiderProfileScreenState extends ConsumerState<RiderProfileScreen> {
                       ),
                       const SizedBox(height: 12),
                       Text(
-                        user?.fullName ?? 'Driver',
+                        user?.fullName ?? 'Conducteur',
                         style: const TextStyle(color: AppColors.textOnDark, fontSize: 20, fontWeight: FontWeight.bold),
                       ),
                       Text(
@@ -464,24 +473,24 @@ class _RiderProfileScreenState extends ConsumerState<RiderProfileScreen> {
                 // Stats row
                 Row(
                   children: [
-                    Expanded(child: _DarkStatCard(value: '${user?.totalRides ?? 0}', label: 'Total Trips')),
+                    Expanded(child: _DarkStatCard(value: '${user?.totalRides ?? 0}', label: 'Courses totales')),
                     const SizedBox(width: 12),
-                    Expanded(child: _DarkStatCard(value: '${user?.rating ?? 5.0}', label: 'Rating')),
+                    Expanded(child: _DarkStatCard(value: '${user?.rating ?? 5.0}', label: 'Note')),
                   ],
                 ),
                 const SizedBox(height: 16),
 
                 _DarkMenuSection(
-                  title: 'ACCOUNT',
+                  title: 'COMPTE',
                   items: [
                     _DarkMenuItem(
                       icon: HugeIcons.strokeRoundedUser,
-                      label: 'Edit Profile',
+                      label: 'Modifier le profil',
                       onTap: _showEditProfile,
                     ),
                     _DarkMenuItem(
                       icon: HugeIcons.strokeRoundedMotorbike01,
-                      label: 'Vehicle Details',
+                      label: 'Détails du véhicule',
                       onTap: _showVehicleDetails,
                     ),
                     _DarkMenuItem(
@@ -506,12 +515,12 @@ class _RiderProfileScreenState extends ConsumerState<RiderProfileScreen> {
                     ),
                     _DarkMenuItem(
                       icon: HugeIcons.strokeRoundedInformationCircle,
-                      label: 'Help & Support',
+                      label: 'Aide & Support',
                       onTap: _showHelpSupport,
                     ),
                     _DarkMenuItem(
                       icon: HugeIcons.strokeRoundedLogout01,
-                      label: 'Log Out',
+                      label: 'Se déconnecter',
                       iconColor: AppColors.error,
                       textColor: AppColors.error,
                       showArrow: false,

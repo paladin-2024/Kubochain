@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hugeicons/hugeicons.dart';
 import '../../core/constants/app_colors.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -96,7 +97,7 @@ class AppButton extends StatelessWidget {
       return Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, color: color, size: 22),
+          HugeIcon(icon: icon!, color: color, size: 22),
           const SizedBox(width: 8),
           Text(label, style: GoogleFonts.sora(color: color, fontWeight: FontWeight.w700, fontSize: 16)),
         ],

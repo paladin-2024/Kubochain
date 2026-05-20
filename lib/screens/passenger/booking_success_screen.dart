@@ -198,7 +198,7 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen>
                       child: Column(
                         children: [
                           Text(
-                            'Booking Confirmed!',
+                            'Réservation confirmée !',
                             style: GoogleFonts.sora(
                               fontSize: 32,
                               fontWeight: FontWeight.w800,
@@ -210,7 +210,7 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen>
                           ),
                           const SizedBox(height: 10),
                           Text(
-                            'Your ride is locked in. A driver\nwill be assigned shortly.',
+                            'Votre course est confirmée. Un conducteur\nvous sera assigné sous peu.',
                             style: GoogleFonts.dmSans(
                               fontSize: 15,
                               color: AppColors.textSecondary,
@@ -245,7 +245,7 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen>
                             _RouteRow(
                               icon: HugeIcons.strokeRoundedCircle,
                               color: AppColors.primary,
-                              label: 'From',
+                              label: 'Départ',
                               value: widget.pickup,
                             ),
                             Padding(
@@ -262,7 +262,7 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen>
                             _RouteRow(
                               icon: HugeIcons.strokeRoundedMapPin,
                               color: AppColors.orange,
-                              label: 'To',
+                              label: 'Arrivée',
                               value: widget.destination,
                             ),
                             const Divider(height: 24, color: AppColors.border),
@@ -330,7 +330,7 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen>
                                 const HugeIcon(icon: HugeIcons.strokeRoundedNavigation01, color: Colors.white, size: 20),
                                 const SizedBox(width: 10),
                                 Text(
-                                  'Track My Driver',
+                                  'Suivre mon conducteur',
                                   style: GoogleFonts.sora(
                                     color: Colors.white,
                                     fontSize: 16,
@@ -365,7 +365,7 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen>
                               ),
                             ),
                             child: Text(
-                              'Back to Home',
+                              'Retour à l\'accueil',
                               style: GoogleFonts.dmSans(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w600,

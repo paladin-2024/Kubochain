@@ -8,11 +8,13 @@ import 'package:latlong2/latlong.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/services/notification_service.dart';
+import '../../core/services/storage_service.dart';
 import '../../providers/providers.dart';
+import '../../widgets/common/avatar_picker_sheet.dart';
+import '../../widgets/common/user_avatar.dart';
 import '../../widgets/map/live_map_widget.dart';
 import 'ride_request_screen.dart';
 import 'trip_navigation_screen.dart';
-import '../../widgets/common/user_avatar.dart';
 
 class RiderHomeScreen extends ConsumerStatefulWidget {
   const RiderHomeScreen({super.key});
@@ -117,7 +119,7 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen>
     final driver = ref.watch(driverProvider);
     final location = ref.watch(locationProvider);
     final center = location.currentLocation ?? _defaultCenter;
-    final firstName = auth.user?.firstName ?? 'Driver';
+    final firstName = auth.user?.firstName ?? 'Conducteur';
 
     return Scaffold(
       body: Stack(
@@ -194,7 +196,7 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen>
                               ),
                               const SizedBox(width: 8),
                               Text(
-                                driver.isOnline ? 'Online' : 'Offline',
+                                driver.isOnline ? 'En ligne' : 'Hors ligne',
                                 style: GoogleFonts.sora(
                                   color: driver.isOnline ? Colors.white : AppColors.textSecondary,
                                   fontWeight: FontWeight.w700,
@@ -224,7 +226,7 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen>
                             name: firstName,
                             imageUrl: auth.user?.profileImage,
                             radius: 15,
-                            backgroundColor: AppColors.success,
+                            backgroundColor: AvatarPickerSheet.presets[StorageService.getAvatarColorIndex()],
                           ),
                           const SizedBox(width: 8),
                           Text(
@@ -291,7 +293,7 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen>
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        'Hello, $firstName!',
+                                        'Bonjour, $firstName !',
                                         style: GoogleFonts.sora(
                                           color: AppColors.textOnDark,
                                           fontSize: 22,
@@ -327,8 +329,8 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen>
                                           const SizedBox(width: 6),
                                           Text(
                                             driver.isOnline
-                                                ? 'Waiting for ride requests…'
-                                                : 'Go online to start earning',
+                                                ? 'En attente de demandes de courses…'
+                                                : 'Passez en ligne pour commencer',
                                             style: GoogleFonts.sora(
                                               color: AppColors.textSecondary,
                                               fontSize: 13,
@@ -365,7 +367,7 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen>
                                         ],
                                       ),
                                       child: Text(
-                                        'Go Online',
+                                        'En ligne',
                                         style: GoogleFonts.sora(
                                           color: Colors.white,
                                           fontWeight: FontWeight.w700,
@@ -385,7 +387,7 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen>
                                 Expanded(
                                   child: _StatTile(
                                     icon: HugeIcons.strokeRoundedWallet01,
-                                    label: "Today's Earn",
+                                    label: 'Revenus du jour',
                                     value: 'FC ${driver.todayEarnings.toStringAsFixed(0)}',
                                     color: AppColors.success,
                                     bgColor: const Color(0xFFECFDF5),
@@ -395,7 +397,7 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen>
                                 Expanded(
                                   child: _StatTile(
                                     icon: HugeIcons.strokeRoundedMotorbike01,
-                                    label: 'Trips Today',
+                                    label: 'Courses du jour',
                                     value: '${driver.completedRides.length}',
                                     color: AppColors.primary,
                                     bgColor: const Color(0xFFEFF6FF),
@@ -405,7 +407,7 @@ class _RiderHomeScreenState extends ConsumerState<RiderHomeScreen>
                                 Expanded(
                                   child: _StatTile(
                                     icon: HugeIcons.strokeRoundedStar,
-                                    label: 'Rating',
+                                    label: 'Note',
                                     value: '5.0',
                                     color: AppColors.gold,
                                     bgColor: const Color(0xFFFFFBEB),

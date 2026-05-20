@@ -10,6 +10,8 @@ import '../../providers/providers.dart';
 import '../../screens/onboarding.dart';
 import '../common/about_screen.dart';
 import '../common/help_support_screen.dart';
+import '../../core/services/storage_service.dart';
+import '../../widgets/common/avatar_picker_sheet.dart';
 
 class PassengerProfileScreen extends ConsumerStatefulWidget {
   const PassengerProfileScreen({super.key});
@@ -24,10 +26,12 @@ class _PassengerProfileScreenState
     with SingleTickerProviderStateMixin {
   bool _uploading = false;
   late AnimationController _fadeCtrl;
+  int _avatarColorIndex = 0;
 
   @override
   void initState() {
     super.initState();
+    _avatarColorIndex = StorageService.getAvatarColorIndex();
     _fadeCtrl = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 500),
@@ -72,6 +76,14 @@ class _PassengerProfileScreenState
         );
       }
     }
+  }
+
+  void _openAvatarPicker(String name) {
+    AvatarPickerSheet.show(
+      context,
+      name: name,
+      onSelected: (i) => setState(() => _avatarColorIndex = i),
+    );
   }
 
   Future<void> _showEditDialog(
@@ -171,18 +183,19 @@ class _PassengerProfileScreenState
                       // Avatar
                       GestureDetector(
                         onTap: _pickAndUploadPhoto,
+                        onLongPress: () => _openAvatarPicker(user?.firstName ?? 'U'),
                         child: Stack(
                           children: [
-                            Container(
+                            AnimatedContainer(
+                              duration: const Duration(milliseconds: 300),
                               width: 80,
                               height: 80,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                gradient: AppColors.primaryGradient,
+                                color: AvatarPickerSheet.presets[_avatarColorIndex],
                                 boxShadow: [
                                   BoxShadow(
-                                    color:
-                                        AppColors.primary.withOpacity(0.35),
+                                    color: AvatarPickerSheet.presets[_avatarColorIndex].withOpacity(0.4),
                                     blurRadius: 20,
                                   )
                                 ],
@@ -196,9 +209,9 @@ class _PassengerProfileScreenState
                                         placeholder: (_, __) =>
                                             const SizedBox(),
                                         errorWidget: (_, __, ___) =>
-                                            _AvatarFallback(user: user),
+                                            _AvatarFallback(user: user, color: AvatarPickerSheet.presets[_avatarColorIndex]),
                                       )
-                                    : _AvatarFallback(user: user),
+                                    : _AvatarFallback(user: user, color: AvatarPickerSheet.presets[_avatarColorIndex]),
                               ),
                             ),
                             Positioned(
@@ -220,7 +233,7 @@ class _PassengerProfileScreenState
                                           color: AppColors.primary,
                                         ),
                                       )
-                                    : const Icon(HugeIcons.strokeRoundedCamera01,
+                                    : const HugeIcon(icon: HugeIcons.strokeRoundedCamera01,
                                         size: 14,
                                         color: AppColors.primary),
                               ),
@@ -263,7 +276,7 @@ class _PassengerProfileScreenState
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  const Icon(HugeIcons.strokeRoundedShieldUser,
+                                  const HugeIcon(icon: HugeIcons.strokeRoundedShieldUser,
                                       color: AppColors.success, size: 12),
                                   const SizedBox(width: 4),
                                   Text(
@@ -572,17 +585,21 @@ class _EditDialog extends StatelessWidget {
 // ── Avatar Fallback ────────────────────────────────────────────────────────────
 class _AvatarFallback extends StatelessWidget {
   final dynamic user;
-  const _AvatarFallback({required this.user});
+  final Color? color;
+  const _AvatarFallback({required this.user, this.color});
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text(
-        (user?.firstName ?? 'U')[0].toUpperCase(),
-        style: GoogleFonts.sora(
-          fontSize: 32,
-          color: Colors.white,
-          fontWeight: FontWeight.w700,
+    return Container(
+      color: color,
+      child: Center(
+        child: Text(
+          (user?.firstName ?? 'U')[0].toUpperCase(),
+          style: GoogleFonts.sora(
+            fontSize: 32,
+            color: Colors.white,
+            fontWeight: FontWeight.w700,
+          ),
         ),
       ),
     );
@@ -603,7 +620,7 @@ class _VerifiedBadge extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(HugeIcons.strokeRoundedCheckmarkCircle01,
+          const HugeIcon(icon: HugeIcons.strokeRoundedCheckmarkCircle01,
               size: 11, color: AppColors.success),
           const SizedBox(width: 4),
           Text(
@@ -655,7 +672,7 @@ class _StatCard extends StatelessWidget {
               color: bgColor,
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(icon, color: color, size: 18),
+            child: HugeIcon(icon: icon, color: color, size: 18),
           ),
           const SizedBox(height: 8),
           Text(
@@ -772,7 +789,7 @@ class _InfoTile extends StatelessWidget {
                 color: AppColors.backgroundDark,
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Icon(icon, size: 18, color: AppColors.textSecondary),
+              child: HugeIcon(icon: icon, size: 18, color: AppColors.textSecondary),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -798,7 +815,7 @@ class _InfoTile extends StatelessWidget {
             ),
             if (trailing != null) trailing!,
             if (trailing == null && onTap != null)
-              const Icon(HugeIcons.strokeRoundedEdit01,
+              const HugeIcon(icon: HugeIcons.strokeRoundedEdit01,
                   size: 15, color: AppColors.textSecondary),
           ],
         ),
@@ -831,7 +848,7 @@ class _TrustRow extends StatelessWidget {
                   : AppColors.backgroundDark,
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(icon,
+            child: HugeIcon(icon: icon,
                 size: 18,
                 color: active ? AppColors.success : AppColors.textSecondary),
           ),
@@ -909,7 +926,7 @@ class _ActionTile extends StatelessWidget {
                 color: AppColors.backgroundDark,
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Icon(icon, size: 18, color: iconColor),
+              child: HugeIcon(icon: icon, size: 18, color: iconColor),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -923,7 +940,7 @@ class _ActionTile extends StatelessWidget {
               ),
             ),
             if (showChevron)
-              const Icon(HugeIcons.strokeRoundedArrowRight01,
+              const HugeIcon(icon: HugeIcons.strokeRoundedArrowRight01,
                   color: AppColors.textSecondary, size: 20),
           ],
         ),
@@ -1015,7 +1032,7 @@ class _SourceOption extends StatelessWidget {
                 color: AppColors.primary.withOpacity(0.07),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Icon(icon, size: 18, color: AppColors.primary),
+              child: HugeIcon(icon: icon, size: 18, color: AppColors.primary),
             ),
             const SizedBox(width: 14),
             Text(

@@ -44,7 +44,7 @@ class VerifiedScreen extends StatelessWidget {
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 24),
               child: Text(
-                'Welcome Back 👋',
+                'Bon retour 👋',
                 style: TextStyle(
                     color: Colors.white,
                     fontSize: 22,
@@ -80,13 +80,13 @@ class VerifiedScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 24),
                       const Text(
-                        'Verified!',
+                        'Vérifié !',
                         style: TextStyle(
                             fontSize: 26, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
                       const Text(
-                        'You have successfully verified\nyour account.',
+                        'Votre compte a été vérifié\navec succès.',
                         textAlign: TextAlign.center,
                         style: TextStyle(color: Colors.grey, fontSize: 14),
                       ),
@@ -107,7 +107,7 @@ class VerifiedScreen extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(30)),
                           ),
                           child: const Text(
-                            'Browse Home',
+                            'Accueil',
                             style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 16,
@@ -119,7 +119,7 @@ class VerifiedScreen extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text('Already have an account? ',
+                          const Text('Déjà un compte ? ',
                               style:
                                   TextStyle(color: Colors.grey, fontSize: 13)),
                           GestureDetector(
@@ -130,7 +130,7 @@ class VerifiedScreen extends StatelessWidget {
                               (r) => false,
                             ),
                             child: const Text(
-                              'Log in',
+                              'Se connecter',
                               style: TextStyle(
                                   color: AppColors.primary,
                                   fontWeight: FontWeight.w600,

@@ -157,9 +157,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                           color: AppColors.textOnDark,
                         ),
                         children: [
-                          const TextSpan(text: 'Hey, '),
+                          const TextSpan(text: 'Salut, '),
                           TextSpan(
-                            text: auth.user?.firstName ?? 'there',
+                            text: auth.user?.firstName ?? 'là',
                             style: const TextStyle(color: AppColors.primary),
                           ),
                           const TextSpan(text: ' 👋'),

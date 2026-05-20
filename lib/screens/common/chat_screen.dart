@@ -131,7 +131,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with TickerProviderStat
   Widget build(BuildContext context) {
     final myId = ref.read(authProvider).user?.id ?? '';
     final myRole = ref.read(authProvider).user?.role ?? 'passenger';
-    final counterpartLabel = myRole == 'rider' ? 'passenger' : 'driver';
+    final counterpartLabel = myRole == 'rider' ? 'passager' : 'conducteur';
 
     return Scaffold(
       backgroundColor: AppColors.backgroundDark,
@@ -190,7 +190,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with TickerProviderStat
                         children: [
                           Text(
                             widget.otherUserName.isEmpty
-                                ? 'Chat'
+                                ? 'Discussion'
                                 : widget.otherUserName,
                             style: GoogleFonts.sora(
                               color: AppColors.textOnDark,
@@ -210,7 +210,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with TickerProviderStat
                               ),
                               const SizedBox(width: 5),
                               Text(
-                                'Online',
+                                'En ligne',
                                 style: GoogleFonts.sora(
                                   color: AppColors.success,
                                   fontSize: 11,
@@ -237,7 +237,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with TickerProviderStat
                               color: AppColors.success, size: 13),
                           const SizedBox(width: 4),
                           Text(
-                            'Verified',
+                            'Vérifié',
                             style: GoogleFonts.sora(
                               color: AppColors.success,
                               fontSize: 10,
@@ -317,7 +317,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> with TickerProviderStat
                             fontSize: 14,
                           ),
                           decoration: InputDecoration(
-                            hintText: 'Type a message...',
+                            hintText: 'Tapez un message...',
                             hintStyle: GoogleFonts.sora(
                                 color: AppColors.textHint, fontSize: 14),
                             border: InputBorder.none,
@@ -402,7 +402,7 @@ class _EmptyState extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             Text(
-              'Start chatting with your $counterpartLabel',
+              'Commencez à discuter avec votre $counterpartLabel',
               style: GoogleFonts.sora(
                 color: AppColors.textOnDark,
                 fontWeight: FontWeight.w700,
@@ -413,8 +413,8 @@ class _EmptyState extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               name.isNotEmpty
-                  ? 'Say hello to $name 👋'
-                  : 'Send a message to get started',
+                  ? 'Dites bonjour à $name 👋'
+                  : 'Envoyez un message pour commencer',
               style: GoogleFonts.sora(
                 color: AppColors.textSecondary,
                 fontSize: 13,
@@ -437,7 +437,7 @@ class _EmptyState extends StatelessWidget {
                       color: AppColors.safetyGold, size: 14),
                   const SizedBox(width: 8),
                   Text(
-                    'Messages are end-to-ride encrypted',
+                    'Messages chiffrés de bout en bout',
                     style: GoogleFonts.sora(
                       color: AppColors.textSecondary,
                       fontSize: 11,
@@ -465,7 +465,7 @@ class _DateDivider extends StatelessWidget {
     if (date.year == now.year &&
         date.month == now.month &&
         date.day == now.day) {
-      label = 'Today';
+      label = "Aujourd'hui";
     } else {
       label = '${date.day}/${date.month}/${date.year}';
     }

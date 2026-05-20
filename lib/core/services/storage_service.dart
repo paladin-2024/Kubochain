@@ -7,6 +7,15 @@ class StorageService {
     _prefs = await SharedPreferences.getInstance();
   }
 
+  // Avatar
+  static const _avatarColorIndexKey = 'avatar_color_index';
+
+  static int getAvatarColorIndex() =>
+      _prefs.getInt(_avatarColorIndexKey) ?? 0;
+
+  static Future<void> setAvatarColorIndex(int index) =>
+      _prefs.setInt(_avatarColorIndexKey, index);
+
   // Auth keys
   static const _accessTokenKey  = 'auth_token';
   static const _refreshTokenKey = 'refresh_token';

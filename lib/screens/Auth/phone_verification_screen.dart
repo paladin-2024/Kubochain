@@ -167,7 +167,7 @@ class _PhoneVerificationScreenState
       }
       _focusNodes[0].requestFocus();
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(auth.error ?? 'Verification failed',
+        content: Text(auth.error ?? 'Échec de la vérification',
             style: GoogleFonts.dmSans()),
         backgroundColor: AppColors.error,
         behavior: SnackBarBehavior.floating,
@@ -228,7 +228,7 @@ class _PhoneVerificationScreenState
                       borderRadius: BorderRadius.circular(14),
                       boxShadow: AppColors.softShadow,
                     ),
-                    child: const Icon(HugeIcons.strokeRoundedArrowLeft01,
+                    child: const HugeIcon(icon: HugeIcons.strokeRoundedArrowLeft01,
                         color: AppColors.textPrimary, size: 20),
                   ),
                 ),
@@ -244,7 +244,7 @@ class _PhoneVerificationScreenState
                     border: Border.all(
                         color: AppColors.primary.withOpacity(0.14)),
                   ),
-                  child: const Icon(HugeIcons.strokeRoundedMailOpen01,
+                  child: const HugeIcon(icon: HugeIcons.strokeRoundedMailOpen01,
                       color: AppColors.primary, size: 34),
                 ),
                 const SizedBox(height: 24),
@@ -520,7 +520,7 @@ class _VerifyButtonState extends State<_VerifyButton>
                           color: Colors.white.withOpacity(0.2),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: const Icon(HugeIcons.strokeRoundedArrowRight01,
+                        child: const HugeIcon(icon: HugeIcons.strokeRoundedArrowRight01,
                             color: Colors.white, size: 16),
                       ),
                     ],

@@ -18,7 +18,7 @@ class HelpSupportScreen extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
-          'Help & Support',
+          'Aide & Support',
           style: TextStyle(
               color: AppColors.textOnDark,
               fontWeight: FontWeight.bold,
@@ -45,7 +45,7 @@ class HelpSupportScreen extends StatelessWidget {
                   const HugeIcon(icon: HugeIcons.strokeRoundedSearch01, color: AppColors.textSecondary, size: 20),
                   SizedBox(width: 10),
                   Text(
-                    'Search for help...',
+                    'Rechercher de l\'aide...',
                     style: TextStyle(
                         color: AppColors.textSecondary, fontSize: 14),
                   ),
@@ -56,7 +56,7 @@ class HelpSupportScreen extends StatelessWidget {
 
             // Common Questions
             const Text(
-              'Common Questions',
+              'Questions fréquentes',
               style: TextStyle(
                   color: AppColors.textOnDark,
                   fontWeight: FontWeight.bold,
@@ -75,29 +75,29 @@ class HelpSupportScreen extends StatelessWidget {
                 child: Column(
                   children: const [
                     _FaqTile(
-                      question: 'How do I book a ride?',
+                      question: 'Comment réserver un trajet ?',
                       answer:
-                          "Tap 'Where do you want to go?' on the home screen, enter your destination, choose a ride type, and confirm.",
+                          "Appuyez sur 'Où voulez-vous aller ?' sur l'écran d'accueil, entrez votre destination, choisissez un type de trajet et confirmez.",
                     ),
                     _FaqTile(
-                      question: 'How do I pay?',
+                      question: 'Comment payer ?',
                       answer:
-                          'KuboChain supports Cash, MTN Mobile Money, and Airtel Money. Choose your payment method before confirming a ride.',
+                          'KuboChain accepte les espèces, MTN Mobile Money et Airtel Money. Choisissez votre mode de paiement avant de confirmer.',
                     ),
                     _FaqTile(
-                      question: "My driver didn't show up",
+                      question: "Mon conducteur n'est pas venu",
                       answer:
-                          'You can cancel the ride and request a new one. If this happens frequently, contact our support team.',
+                          'Vous pouvez annuler le trajet et en demander un nouveau. Si cela se reproduit, contactez notre équipe.',
                     ),
                     _FaqTile(
-                      question: 'How do I rate my driver?',
+                      question: 'Comment noter mon conducteur ?',
                       answer:
-                          'After every completed trip, you\'ll be prompted to rate your driver from 1 to 5 stars.',
+                          'Après chaque trajet, vous serez invité à noter votre conducteur de 1 à 5 étoiles.',
                     ),
                     _FaqTile(
-                      question: 'How do I become a driver?',
+                      question: 'Comment devenir conducteur ?',
                       answer:
-                          'Sign up as a Rider on the registration screen and fill in your vehicle details.',
+                          'Inscrivez-vous en tant que Conducteur sur l\'écran d\'inscription et renseignez les informations de votre véhicule.',
                       isLast: true,
                     ),
                   ],
@@ -108,7 +108,7 @@ class HelpSupportScreen extends StatelessWidget {
 
             // Contact Support
             const Text(
-              'Contact Support',
+              'Contacter le support',
               style: TextStyle(
                   color: AppColors.textOnDark,
                   fontWeight: FontWeight.bold,
@@ -126,9 +126,9 @@ class HelpSupportScreen extends StatelessWidget {
                 children: [
                   _SupportTile(
                     icon: HugeIcons.strokeRoundedMessage01,
-                    label: 'Chat with Support',
+                    label: 'Discuter avec le support',
                     onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Coming soon')),
+                      const SnackBar(content: Text('Bientôt disponible')),
                     ),
                   ),
                   Divider(
@@ -138,9 +138,9 @@ class HelpSupportScreen extends StatelessWidget {
                       endIndent: 0),
                   _SupportTile(
                     icon: HugeIcons.strokeRoundedPhoneCheck,
-                    label: 'Call Us: +256 767 579 099',
+                    label: 'Appelez-nous : +256 767 579 099',
                     onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Coming soon')),
+                      const SnackBar(content: Text('Bientôt disponible')),
                     ),
                   ),
                 ],
@@ -175,7 +175,7 @@ class HelpSupportScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Emergency? Call 112',
+                          'Urgence ? Appelez le 112',
                           style: TextStyle(
                               color: AppColors.error,
                               fontWeight: FontWeight.bold,
@@ -183,7 +183,7 @@ class HelpSupportScreen extends StatelessWidget {
                         ),
                         SizedBox(height: 2),
                         Text(
-                          'Kubochain Emergency Services',
+                          'Services d\'urgence KuboChain',
                           style: TextStyle(
                               color: AppColors.textSecondary, fontSize: 12),
                         ),
