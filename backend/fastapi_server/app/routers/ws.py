@@ -10,6 +10,7 @@ from ..models.driver import Driver
 from ..models.ride import Ride
 from ..models.message import Message
 from ..core.security import decode_access_token
+from ..core.audit import audit, AuditEvent
 from ..core.ws_manager import ws_manager
 from ..services.notifications import send_push
 
@@ -44,9 +45,12 @@ async def websocket_endpoint(websocket: WebSocket):
 
     user = await _authenticate_ws(token)
     if not user:
+        ip = websocket.client.host if websocket.client else "-"
+        audit(AuditEvent.WS_AUTH_FAIL, ip=ip)
         await websocket.close(code=4001)
         return
 
+    audit(AuditEvent.WS_AUTH_OK, user_id=str(user.id))
     await ws_manager.connect(websocket, str(user.id))
 
     try:
@@ -77,6 +81,12 @@ async def websocket_endpoint(websocket: WebSocket):
                 lng = data.get("lng")
                 if lat is None or lng is None:
                     continue
+                try:
+                    lat, lng = float(lat), float(lng)
+                except (TypeError, ValueError):
+                    continue
+                if not (-90 <= lat <= 90 and -180 <= lng <= 180):
+                    continue
                 async with AsyncSessionLocal() as db:
                     driver = (await db.execute(select(Driver).where(Driver.user_id == user.id))).scalar_one_or_none()
                     if driver:
@@ -99,12 +109,20 @@ async def websocket_endpoint(websocket: WebSocket):
             elif event == "ride:join":
                 ride_id = data.get("rideId")
                 if ride_id:
-                    ws_manager.join_room(websocket, f"ride_{ride_id}")
+                    try:
+                        uuid.UUID(ride_id)
+                        ws_manager.join_room(websocket, f"ride_{ride_id}")
+                    except ValueError:
+                        pass
 
             elif event == "ride:leave":
                 ride_id = data.get("rideId")
                 if ride_id:
-                    ws_manager.leave_room(websocket, f"ride_{ride_id}")
+                    try:
+                        uuid.UUID(ride_id)
+                        ws_manager.leave_room(websocket, f"ride_{ride_id}")
+                    except ValueError:
+                        pass
 
             elif event == "ride:arrived":
                 ride_id = data.get("rideId")
@@ -120,8 +138,13 @@ async def websocket_endpoint(websocket: WebSocket):
             elif event == "chat:send":
                 ride_id = data.get("rideId")
                 receiver_id = data.get("receiverId")
-                content = (data.get("content") or "").strip()
+                content = (data.get("content") or "").strip()[:1000]
                 if not all([ride_id, receiver_id, content]):
+                    continue
+                try:
+                    uuid.UUID(ride_id)
+                    uuid.UUID(receiver_id)
+                except ValueError:
                     continue
 
                 async with AsyncSessionLocal() as db:

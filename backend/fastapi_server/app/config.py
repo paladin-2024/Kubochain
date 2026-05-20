@@ -36,14 +36,25 @@ class Settings(BaseSettings):
     def origins_list(self) -> list[str]:
         return [o.strip() for o in self.allowed_origins.split(",")]
 
+    @property
+    def is_dev(self) -> bool:
+        return any(
+            "localhost" in o or "127.0.0.1" in o or "192.168" in o
+            for o in self.origins_list
+        )
+
 
 @lru_cache
 def get_settings() -> Settings:
     s = Settings()
     if s.jwt_secret == "change_me":
+        if not s.is_dev:
+            raise RuntimeError(
+                "JWT_SECRET must be set to a strong random value before deploying. "
+                "Generate one with: python -c \"import secrets; print(secrets.token_hex(32))\""
+            )
         warnings.warn(
-            "JWT_SECRET is using the default insecure value. "
-            "Set a strong secret in your .env before deploying.",
+            "JWT_SECRET is using the default insecure value — OK for local dev only.",
             stacklevel=2,
         )
     return s

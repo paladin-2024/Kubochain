@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_jailbreak_detection/flutter_jailbreak_detection.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../providers/providers.dart';
@@ -91,7 +92,54 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     await Future.delayed(const Duration(milliseconds: 500));
     _textController.forward();
     await Future.delayed(const Duration(milliseconds: 1400));
+    await _checkDeviceSecurity();
     _navigate();
+  }
+
+  Future<void> _checkDeviceSecurity() async {
+    if (!mounted) return;
+    try {
+      final isCompromised = await FlutterJailbreakDetection.jailbroken;
+      if (isCompromised && mounted) {
+        await showDialog<void>(
+          context: context,
+          barrierDismissible: false,
+          builder: (ctx) => AlertDialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            title: Text(
+              'Appareil non sécurisé',
+              style: GoogleFonts.sora(fontWeight: FontWeight.w700, color: AppColors.textOnDark),
+            ),
+            content: Text(
+              'Votre appareil semble être rooté ou débloqué. L\'utilisation de KuboChain sur un appareil compromis expose vos données.',
+              style: GoogleFonts.sora(color: AppColors.textSecondary, height: 1.5),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: Text(
+                  'Continuer quand même',
+                  style: GoogleFonts.sora(color: AppColors.textSecondary),
+                ),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.error,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                onPressed: () => SystemNavigator.pop(),
+                child: Text(
+                  'Quitter',
+                  style: GoogleFonts.sora(color: Colors.white, fontWeight: FontWeight.w700),
+                ),
+              ),
+            ],
+          ),
+        );
+      }
+    } catch (_) {
+      // Detection unavailable — proceed normally
+    }
   }
 
   Future<void> _navigate() async {

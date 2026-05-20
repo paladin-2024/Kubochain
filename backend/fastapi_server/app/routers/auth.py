@@ -16,6 +16,7 @@ from ..core.security import (
     create_access_token, create_refresh_token, decode_refresh_token,
 )
 from ..core.dependencies import get_current_user
+from ..core.audit import audit, AuditEvent
 from ..services.otp import send_otp, verify_otp
 from ..services.storage import save_upload
 
@@ -87,21 +88,27 @@ async def register(request: Request, body: RegisterIn, db: AsyncSession = Depend
 
     await db.commit()
     await db.refresh(user)
+    audit(AuditEvent.REGISTER_OK, ip=request.client.host if request.client else "-",
+          user_id=str(user.id))
     return _auth_out(user)
 
 
 @router.post("/login", response_model=AuthOut)
 @limiter.limit("10/minute")
 async def login(request: Request, body: LoginIn, db: AsyncSession = Depends(get_db)):
+    ip = request.client.host if request.client else "-"
     result = await db.execute(select(User).where(User.phone == body.phone))
     user = result.scalar_one_or_none()
     # Always run bcrypt even when user not found — prevents timing-based user enumeration
     dummy_hash = "$2b$12$eImiTXuWVxfM37uY4JANjQuu1WTgP8I9yBLKDFAGHI7tQDq6jZKJy"
     valid = verify_password(body.password, user.password if user else dummy_hash)
     if not user or not valid:
+        audit(AuditEvent.LOGIN_FAIL, ip=ip, detail=f"phone={body.phone[:4]}***")
         raise HTTPException(status_code=401, detail="Numéro de téléphone ou mot de passe incorrect")
     if not user.is_active:
+        audit(AuditEvent.ACCOUNT_DISABLED, ip=ip, user_id=str(user.id))
         raise HTTPException(status_code=403, detail="Account is disabled")
+    audit(AuditEvent.LOGIN_OK, ip=ip, user_id=str(user.id))
     return _auth_out(user)
 
 
