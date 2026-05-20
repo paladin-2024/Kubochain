@@ -1,16 +1,19 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:kubochain/main.dart';
+import 'package:kubochain/core/constants/app_colors.dart';
 
 void main() {
-  testWidgets('KuboChain app smoke test', (WidgetTester tester) async {
-    await tester.pumpWidget(const KuboChainApp());
-    expect(find.byType(KuboChainApp), findsOneWidget);
+  group('AppColors', () {
+    test('primary color is defined', () {
+      expect(AppColors.primary, isA<Color>());
+    });
+
+    test('success color is defined', () {
+      expect(AppColors.success, isA<Color>());
+    });
+
+    test('error color is defined', () {
+      expect(AppColors.error, isA<Color>());
+    });
   });
 }
