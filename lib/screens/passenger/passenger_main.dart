@@ -74,16 +74,12 @@ class _FloatingNavBar extends StatelessWidget {
   final List<_NavItem> items;
   final ValueChanged<int> onTap;
   final Color accentColor;
-  final int unreadIndex;
-  final int unreadCount;
 
   const _FloatingNavBar({
     required this.currentIndex,
     required this.items,
     required this.onTap,
     this.accentColor = AppColors.primary,
-    this.unreadIndex = -1,
-    this.unreadCount = 0,
   });
 
   @override
@@ -126,11 +122,10 @@ class _FloatingNavBar extends StatelessWidget {
               child: Row(
                 children: List.generate(items.length, (i) {
                   final active = i == currentIndex;
-                  final hasUnread = i == unreadIndex && unreadCount > 0;
                   return _NavItemWidget(
                     item: items[i],
                     active: active,
-                    hasUnread: hasUnread,
+                    hasUnread: false,
                     accentColor: accentColor,
                     onTap: () => onTap(i),
                   );

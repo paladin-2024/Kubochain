@@ -206,7 +206,6 @@ class _TripNavigationScreenState extends ConsumerState<TripNavigationScreen>
                           // Message CTA
                           GestureDetector(
                             onTap: () {
-                              if (activeRide == null) return;
                               HapticFeedback.lightImpact();
                               Navigator.push(
                                 context,

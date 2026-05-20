@@ -28,7 +28,6 @@ class _RideRequestSheetState extends State<RideRequestSheet>
   late Timer _timer;
   int _secondsLeft = 30;
   late AnimationController _progressController;
-  late Animation<double> _entryAnim;
 
   @override
   void initState() {
@@ -39,7 +38,6 @@ class _RideRequestSheetState extends State<RideRequestSheet>
       vsync: this,
       duration: const Duration(seconds: 30),
     )..forward();
-    _entryAnim = CurvedAnimation(parent: _progressController, curve: const Interval(0, 0.05, curve: Curves.easeOut));
 
     _timer = Timer.periodic(const Duration(seconds: 1), (t) {
       setState(() => _secondsLeft--);

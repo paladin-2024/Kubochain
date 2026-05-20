@@ -107,7 +107,7 @@ class AuthProvider extends ChangeNotifier {
       SocketService.connect();
       notifyListeners();
       if (role == 'rider' && documentPaths != null && documentPaths.isNotEmpty) {
-        ApiService.uploadDriverDocuments(documentPaths).catchError((_) {});
+        ApiService.uploadDriverDocuments(documentPaths).ignore();
       }
       return true;
     } catch (e) {

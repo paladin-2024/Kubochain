@@ -27,8 +27,6 @@ class _PressScaleState extends State<PressScale> with SingleTickerProviderStateM
   late AnimationController _ctrl;
   late Animation<double> _scaleAnim;
 
-  static const _spring = SpringDescription(mass: 1, stiffness: 400, damping: 28);
-
   @override
   void initState() {
     super.initState();

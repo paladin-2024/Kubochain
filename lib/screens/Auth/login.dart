@@ -374,7 +374,6 @@ class _StyledField extends StatelessWidget {
   final String hint;
   final IconData icon;
   final bool obscureText;
-  final TextInputType keyboardType;
   final TextInputAction textInputAction;
   final Widget? suffixIcon;
   final String? Function(String?)? validator;
@@ -385,7 +384,6 @@ class _StyledField extends StatelessWidget {
     required this.hint,
     required this.icon,
     this.obscureText = false,
-    this.keyboardType = TextInputType.text,
     this.textInputAction = TextInputAction.next,
     this.suffixIcon,
     this.validator,
@@ -403,7 +401,7 @@ class _StyledField extends StatelessWidget {
       child: TextFormField(
         controller: controller,
         obscureText: obscureText,
-        keyboardType: keyboardType,
+        keyboardType: TextInputType.text,
         textInputAction: textInputAction,
         onFieldSubmitted: onFieldSubmitted,
         validator: validator,
