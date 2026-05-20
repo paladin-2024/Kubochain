@@ -6,6 +6,8 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../core/constants/app_colors.dart';
 import '../../models/ride_model.dart';
 import '../../providers/providers.dart';
+import '../../widgets/common/press_scale.dart';
+import '../../widgets/effects/ambient_orbs.dart';
 import 'book_ride_screen.dart';
 import '../../widgets/common/user_avatar.dart';
 
@@ -60,102 +62,149 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header
-              Padding(
-                padding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Mes Trajets',
-                            style: GoogleFonts.sora(
-                              fontSize: 28,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.textOnDark,
-                              letterSpacing: -0.5,
-                            ),
-                          ),
-                          Text(
-                            '${ride.rideHistory.length} trajet(s) au total',
-                            style: GoogleFonts.sora(
-                              fontSize: 13,
-                              color: AppColors.textSecondary,
-                            ),
-                          ),
+              // ── Aurora header ──────────────────────────────────────────
+              Stack(
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          AppColors.primary.withValues(alpha: 0.10),
+                          AppColors.indigo.withValues(alpha: 0.06),
+                          AppColors.backgroundDark,
                         ],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
                       ),
                     ),
-                    // Stats pill
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: AppColors.cardDark,
-                        borderRadius: BorderRadius.circular(50),
-                        border: Border.all(color: AppColors.borderDark),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const HugeIcon(icon: HugeIcons.strokeRoundedMotorbike01,
-                              color: AppColors.primary, size: 16),
-                          const SizedBox(width: 6),
-                          Text(
-                            '${ride.rideHistory.where((r) => r.isCompleted).length} terminé(s)',
-                            style: GoogleFonts.sora(
-                              fontSize: 12,
-                              color: AppColors.textOnDark,
-                              fontWeight: FontWeight.w600,
-                            ),
+                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Mes Trajets',
+                                style: GoogleFonts.sora(
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.w800,
+                                  color: AppColors.textOnDark,
+                                  letterSpacing: -0.8,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                '${ride.rideHistory.length} trajet(s) au total',
+                                style: GoogleFonts.sora(
+                                  fontSize: 13,
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(50),
+                            border: Border.all(
+                              color: AppColors.primary.withValues(alpha: 0.15),
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppColors.primary.withValues(alpha: 0.10),
+                                blurRadius: 14,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const HugeIcon(
+                                icon: HugeIcons.strokeRoundedMotorbike01,
+                                color: AppColors.primary,
+                                size: 16,
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                '${ride.rideHistory.where((r) => r.isCompleted).length} terminé(s)',
+                                style: GoogleFonts.sora(
+                                  fontSize: 12,
+                                  color: AppColors.textOnDark,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Positioned.fill(
+                    child: IgnorePointer(
+                      child: AmbientOrbs(
+                        color: AppColors.primary,
+                        orbCount: 2,
+                        maxOpacity: 0.05,
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
 
-              const SizedBox(height: 20),
-
-              // Filter tabs
+              // ── Glass filter tabs ──────────────────────────────────────────
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
+                padding: const EdgeInsets.fromLTRB(20, 4, 20, 0),
                 child: Container(
-                  height: 40,
+                  height: 44,
+                  padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
-                    color: AppColors.cardDark,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppColors.borderDark),
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: AppColors.primary.withValues(alpha: 0.12),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.primary.withValues(alpha: 0.07),
+                        blurRadius: 12,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
                   ),
                   child: Row(
                     children: List.generate(_filters.length, (i) {
                       final active = i == _filterIdx;
                       return Expanded(
-                        child: GestureDetector(
+                        child: PressScale(
+                          scale: 0.94,
                           onTap: () => setState(() => _filterIdx = i),
                           child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 200),
-                            margin: const EdgeInsets.all(4),
+                            duration: const Duration(milliseconds: 250),
+                            curve: AppColors.springEasing,
                             decoration: active
                                 ? BoxDecoration(
                                     gradient: AppColors.primaryGradient,
-                                    borderRadius: BorderRadius.circular(8),
+                                    borderRadius: BorderRadius.circular(11),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: AppColors.primary.withValues(alpha: 0.25),
+                                        blurRadius: 8,
+                                        offset: const Offset(0, 3),
+                                      ),
+                                    ],
                                   )
-                                : null,
+                                : const BoxDecoration(),
                             child: Center(
                               child: Text(
                                 _filters[i],
                                 style: GoogleFonts.sora(
                                   fontSize: 12,
-                                  fontWeight: active
-                                      ? FontWeight.w600
-                                      : FontWeight.w400,
-                                  color: active
-                                      ? Colors.white
-                                      : AppColors.textSecondary,
+                                  fontWeight: active ? FontWeight.w700 : FontWeight.w500,
+                                  color: active ? Colors.white : AppColors.textSecondary,
                                 ),
                               ),
                             ),
@@ -218,25 +267,33 @@ class _EmptyState extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 88,
-            height: 88,
+            width: 80,
+            height: 80,
             decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.08),
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: AppColors.primary.withOpacity(0.15),
-              ),
+              gradient: AppColors.auroraGradient,
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.primary.withValues(alpha: 0.30),
+                  blurRadius: 20,
+                  offset: const Offset(0, 6),
+                ),
+              ],
             ),
-            child: const HugeIcon(icon: HugeIcons.strokeRoundedReceiptDollar,
-                size: 40, color: AppColors.primary),
+            child: const HugeIcon(
+              icon: HugeIcons.strokeRoundedReceiptDollar,
+              size: 36,
+              color: Colors.white,
+            ),
           ),
           const SizedBox(height: 20),
           Text(
             filter == 'Tous' ? 'Aucun trajet' : 'Aucun trajet ${filter.toLowerCase()}',
             style: GoogleFonts.sora(
               fontSize: 18,
-              fontWeight: FontWeight.w700,
+              fontWeight: FontWeight.w800,
               color: AppColors.textOnDark,
+              letterSpacing: -0.3,
             ),
           ),
           const SizedBox(height: 8),
@@ -248,24 +305,30 @@ class _EmptyState extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 28),
-          GestureDetector(
+          PressScale(
+            scale: 0.93,
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const BookRideScreen()),
             ),
             child: Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
               decoration: BoxDecoration(
-                gradient: AppColors.primaryGradient,
+                gradient: AppColors.auroraGradient,
                 borderRadius: BorderRadius.circular(50),
-                boxShadow: AppColors.primaryGlow,
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primary.withValues(alpha: 0.35),
+                    blurRadius: 16,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
               ),
               child: Text(
                 'Réserver un trajet',
                 style: GoogleFonts.sora(
                   color: Colors.white,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w700,
                   fontSize: 14,
                 ),
               ),
@@ -325,13 +388,29 @@ class _HistoryCard extends StatelessWidget {
     final dateStr =
         '${dt.day} ${months[dt.month]}, ${dt.hour}:${dt.minute.toString().padLeft(2, '0')}';
 
-    return GestureDetector(
+    return PressScale(
+      scale: 0.97,
       onTap: () => _showDetails(context),
       child: Container(
         decoration: BoxDecoration(
-          color: AppColors.cardDark,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: AppColors.borderDark),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(
+            color: AppColors.borderDark,
+            width: 0.8,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: _statusColor.withValues(alpha: 0.07),
+              blurRadius: 16,
+              offset: const Offset(0, 4),
+            ),
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
         child: Column(
           children: [
@@ -444,7 +523,7 @@ class _HistoryCard extends StatelessWidget {
                     bold: true,
                   ),
                   const HugeIcon(icon: HugeIcons.strokeRoundedArrowRight01,
-                      color: AppColors.textSecondary, size: 18),
+                      color: AppColors.textMuted, size: 16),
                 ],
               ),
             ),

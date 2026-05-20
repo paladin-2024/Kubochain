@@ -94,6 +94,38 @@ class AppColors {
     end: Alignment.bottomRight,
   );
 
+  // ── 2026 Premium Tokens ───────────────────────────────────────────────────
+  static const Color surface           = Color(0xFFFFFFFF);
+  static const Color surfaceElevated   = Color(0xFFF8FBFF);
+  static const Color indigo            = Color(0xFF6366F1);
+  static const Color indigoLight       = Color(0xFF818CF8);
+  static const Color violet            = Color(0xFF8B5CF6);
+  static const Color primaryUltraLight = Color(0xFFEFF6FF);
+  static const Color shimmer1          = Color(0xFFEFF6FF);
+  static const Color shimmer2          = Color(0xFFDBEAFE);
+
+  // Aurora gradient (blue spectrum)
+  static const LinearGradient auroraGradient = LinearGradient(
+    colors: [Color(0xFF2563EB), Color(0xFF6366F1), Color(0xFF8B5CF6)],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
+  static const LinearGradient auroraSoft = LinearGradient(
+    colors: [Color(0xFFEFF6FF), Color(0xFFEDE9FE), Color(0xFFEFF6FF)],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
+  static const LinearGradient riderGradient = LinearGradient(
+    colors: [Color(0xFF059669), Color(0xFF10B981), Color(0xFF34D399)],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
+  // ── Easing Curve (Spring-like, expo-out) ─────────────────────────────────
+  static const Cubic springEasing = Cubic(0.16, 1.0, 0.3, 1.0);
+
   // ── Shadows ───────────────────────────────────────────────────────────────
   static List<BoxShadow> primaryGlow = [
     BoxShadow(color: primary.withOpacity(0.3), blurRadius: 20, spreadRadius: 0),

@@ -1,4 +1,4 @@
-import 'dart:ui' as ui;
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -12,6 +12,8 @@ import '../../providers/providers.dart';
 import '../../providers/location_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../models/ride_model.dart';
+import '../../widgets/effects/ambient_orbs.dart';
+import '../../widgets/common/press_scale.dart';
 import '../common/notifications_screen.dart';
 import 'book_ride_screen.dart';
 import 'top_riders_screen.dart';
@@ -26,17 +28,15 @@ class HomeScreen extends ConsumerStatefulWidget {
 class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStateMixin {
   final MapController _mapController = MapController();
   int _unreadCount = 0;
-  late AnimationController _fadeController;
-  late Animation<double> _fadeAnim;
+  late AnimationController _entryCtrl;
 
   @override
   void initState() {
     super.initState();
-    _fadeController = AnimationController(
+    _entryCtrl = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 800),
+      duration: const Duration(milliseconds: 1100),
     )..forward();
-    _fadeAnim = CurvedAnimation(parent: _fadeController, curve: Curves.easeOut);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(locationProvider).init();
@@ -53,69 +53,132 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
   @override
   void dispose() {
     NotificationService.removeListener(_onNotificationsChanged);
-    _fadeController.dispose();
+    _entryCtrl.dispose();
     super.dispose();
   }
 
+  Animation<double> _fade(double start, double end) => CurvedAnimation(
+    parent: _entryCtrl,
+    curve: Interval(start, end, curve: Curves.easeOut),
+  );
+
+  Animation<Offset> _slide(double start, double end) =>
+    Tween<Offset>(begin: const Offset(0, 0.18), end: Offset.zero).animate(
+      CurvedAnimation(parent: _entryCtrl, curve: Interval(start, end, curve: AppColors.springEasing)),
+    );
+
   @override
   Widget build(BuildContext context) {
-    final auth   = ref.watch(authProvider);
-    final loc    = ref.watch(locationProvider);
-    final ride   = ref.watch(rideProvider);
-    final center = loc.currentLocation ?? AppConstants.defaultLocation;
-    final hour   = DateTime.now().hour;
+    final auth     = ref.watch(authProvider);
+    final loc      = ref.watch(locationProvider);
+    final ride     = ref.watch(rideProvider);
+    final center   = loc.currentLocation ?? AppConstants.defaultLocation;
+    final hour     = DateTime.now().hour;
     final greeting = hour < 12 ? 'Bonjour' : hour < 17 ? 'Bon après-midi' : 'Bonsoir';
 
     return Scaffold(
       backgroundColor: AppColors.backgroundDark,
-      body: FadeTransition(
-        opacity: _fadeAnim,
-        child: CustomScrollView(
-          physics: const BouncingScrollPhysics(),
-          slivers: [
+      body: CustomScrollView(
+        physics: const BouncingScrollPhysics(),
+        slivers: [
+          // ── Hero Header ──────────────────────────────────────────────────
+          SliverToBoxAdapter(
+            child: FadeTransition(
+              opacity: _fade(0.0, 0.5),
+              child: _buildHeader(auth, greeting),
+            ),
+          ),
 
-            // ── Header ──────────────────────────────────────────────────
-            SliverToBoxAdapter(child: _buildHeader(auth, greeting)),
+          // ── Search bar ───────────────────────────────────────────────────
+          SliverToBoxAdapter(
+            child: SlideTransition(
+              position: _slide(0.1, 0.55),
+              child: FadeTransition(
+                opacity: _fade(0.1, 0.55),
+                child: _buildSearchBar(),
+              ),
+            ),
+          ),
 
-            // ── Search bar ──────────────────────────────────────────────
-            SliverToBoxAdapter(child: _buildSearchBar()),
+          // ── Quick actions ────────────────────────────────────────────────
+          SliverToBoxAdapter(
+            child: SlideTransition(
+              position: _slide(0.2, 0.65),
+              child: FadeTransition(
+                opacity: _fade(0.2, 0.65),
+                child: _buildQuickActions(),
+              ),
+            ),
+          ),
 
-            // ── Quick actions (saved places) ────────────────────────────
-            SliverToBoxAdapter(child: _buildQuickActions()),
+          // ── Safety card ──────────────────────────────────────────────────
+          SliverToBoxAdapter(
+            child: SlideTransition(
+              position: _slide(0.3, 0.75),
+              child: FadeTransition(
+                opacity: _fade(0.3, 0.75),
+                child: _buildSafetyCard(),
+              ),
+            ),
+          ),
 
-            // ── Safety card ─────────────────────────────────────────────
-            SliverToBoxAdapter(child: _buildSafetyCard()),
+          // ── Map ──────────────────────────────────────────────────────────
+          SliverToBoxAdapter(
+            child: SlideTransition(
+              position: _slide(0.4, 0.85),
+              child: FadeTransition(
+                opacity: _fade(0.4, 0.85),
+                child: _buildMapSection(center, loc),
+              ),
+            ),
+          ),
 
-            // ── Map ─────────────────────────────────────────────────────
-            SliverToBoxAdapter(child: _buildMapSection(center, loc)),
+          // ── Promo banner ─────────────────────────────────────────────────
+          SliverToBoxAdapter(
+            child: SlideTransition(
+              position: _slide(0.5, 0.9),
+              child: FadeTransition(
+                opacity: _fade(0.5, 0.9),
+                child: _buildPromoBanner(),
+              ),
+            ),
+          ),
 
-            // ── Promo banner ─────────────────────────────────────────────
-            SliverToBoxAdapter(child: _buildPromoBanner()),
+          // ── Recent rides ─────────────────────────────────────────────────
+          SliverToBoxAdapter(
+            child: SlideTransition(
+              position: _slide(0.55, 0.95),
+              child: FadeTransition(
+                opacity: _fade(0.55, 0.95),
+                child: const Padding(
+                  padding: EdgeInsets.fromLTRB(20, 24, 20, 12),
+                  child: _SectionHeader(title: 'Trajets récents', actionLabel: 'Voir tout'),
+                ),
+              ),
+            ),
+          ),
 
-            // ── Recent rides ─────────────────────────────────────────────
-            const SliverToBoxAdapter(
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(20, 24, 20, 12),
-                child: _SectionHeader(title: 'Trajets récents', actionLabel: 'Voir tout'),
+          if (ride.rideHistory.isEmpty)
+            const SliverToBoxAdapter(child: _EmptyRides())
+          else
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (ctx, i) => SlideTransition(
+                  position: _slide(0.6 + i * 0.04, 1.0),
+                  child: FadeTransition(
+                    opacity: _fade(0.6 + i * 0.04, 1.0),
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
+                      child: _RideHistoryCard(ride: ride.rideHistory[i]),
+                    ),
+                  ),
+                ),
+                childCount: ride.rideHistory.take(4).length,
               ),
             ),
 
-            if (ride.rideHistory.isEmpty)
-              const SliverToBoxAdapter(child: _EmptyRides())
-            else
-              SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (ctx, i) => Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
-                    child: _RideHistoryCard(ride: ride.rideHistory[i]),
-                  ),
-                  childCount: ride.rideHistory.take(4).length,
-                ),
-              ),
-
-            const SliverToBoxAdapter(child: SizedBox(height: 110)),
-          ],
-        ),
+          const SliverToBoxAdapter(child: SizedBox(height: 110)),
+        ],
       ),
     );
   }
@@ -124,101 +187,162 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
     return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: [Color(0xFFEFF6FF), Color(0xFFF5F8FF)],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
+          colors: [Color(0xFFEFF6FF), Color(0xFFEDE9FE), Color(0xFFF0F7FF)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
       ),
-      child: SafeArea(
-        bottom: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      greeting,
-                      style: GoogleFonts.sora(
-                        fontSize: 13,
-                        color: AppColors.textSecondary,
-                        fontWeight: FontWeight.w400,
-                        letterSpacing: 0.3,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    RichText(
-                      text: TextSpan(
-                        style: GoogleFonts.sora(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.textOnDark,
-                        ),
-                        children: [
-                          const TextSpan(text: 'Salut, '),
-                          TextSpan(
-                            text: auth.user?.firstName ?? 'là',
-                            style: const TextStyle(color: AppColors.primary),
-                          ),
-                          const TextSpan(text: ' 👋'),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              // Notification bell
-              GestureDetector(
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const NotificationsScreen()),
-                ),
-                child: Stack(
-                  children: [
-                    Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: AppColors.cardDark,
-                        shape: BoxShape.circle,
-                        border: Border.all(color: AppColors.borderDark),
-                        boxShadow: AppColors.cardShadow,
-                      ),
-                      child: const HugeIcon(
-                        icon: HugeIcons.strokeRoundedNotification01,
-                        size: 20,
-                        color: AppColors.textOnDark,
-                      ),
-                    ),
-                    if (_unreadCount > 0)
-                      Positioned(
-                        top: 2, right: 2,
-                        child: Container(
-                          width: 16, height: 16,
-                          decoration: const BoxDecoration(
-                            color: AppColors.error,
-                            shape: BoxShape.circle,
-                          ),
-                          child: Center(
-                            child: Text(
-                              _unreadCount > 9 ? '9+' : '$_unreadCount',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 8,
-                                fontWeight: FontWeight.w800,
+      child: Stack(
+        children: [
+          // Ambient orbs background
+          Positioned.fill(
+            child: AmbientOrbs(
+              color: AppColors.primary,
+              orbCount: 3,
+              maxOpacity: 0.06,
+            ),
+          ),
+          SafeArea(
+            bottom: false,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: AppColors.primary.withValues(alpha: 0.10),
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: AppColors.primary.withValues(alpha: 0.18),
+                                  width: 0.8,
+                                ),
                               ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Container(
+                                    width: 6, height: 6,
+                                    decoration: const BoxDecoration(
+                                      color: AppColors.success,
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 5),
+                                  Text(
+                                    greeting,
+                                    style: GoogleFonts.sora(
+                                      fontSize: 11,
+                                      color: AppColors.primary,
+                                      fontWeight: FontWeight.w600,
+                                      letterSpacing: 0.2,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        RichText(
+                          text: TextSpan(
+                            style: GoogleFonts.sora(
+                              fontSize: 26,
+                              fontWeight: FontWeight.w800,
+                              color: AppColors.textOnDark,
+                              letterSpacing: -0.5,
+                              height: 1.1,
+                            ),
+                            children: [
+                              const TextSpan(text: 'Salut, '),
+                              TextSpan(
+                                text: auth.user?.firstName ?? 'là',
+                                style: const TextStyle(color: AppColors.primary),
+                              ),
+                              const TextSpan(text: ' 👋'),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          'Où voulez-vous aller aujourd\'hui ?',
+                          style: GoogleFonts.sora(
+                            fontSize: 13,
+                            color: AppColors.textSecondary,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  // Notification bell
+                  PressScale(
+                    scale: 0.90,
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const NotificationsScreen()),
+                    ),
+                    child: Stack(
+                      children: [
+                        Container(
+                          width: 48,
+                          height: 48,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: AppColors.primary.withValues(alpha: 0.15),
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppColors.primary.withValues(alpha: 0.12),
+                                blurRadius: 16,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: const Center(
+                            child: HugeIcon(
+                              icon: HugeIcons.strokeRoundedNotification01,
+                              size: 22,
+                              color: AppColors.textOnDark,
                             ),
                           ),
                         ),
-                      ),
-                  ],
-                ),
+                        if (_unreadCount > 0)
+                          Positioned(
+                            top: 4, right: 4,
+                            child: Container(
+                              width: 16, height: 16,
+                              decoration: const BoxDecoration(
+                                color: AppColors.error,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Center(
+                                child: Text(
+                                  _unreadCount > 9 ? '9+' : '$_unreadCount',
+                                  style: const TextStyle(
+                                    color: Colors.white, fontSize: 8, fontWeight: FontWeight.w800,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -226,30 +350,55 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
   Widget _buildSearchBar() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 4, 20, 0),
-      child: GestureDetector(
+      child: PressScale(
+        scale: 0.98,
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const BookRideScreen()),
         ),
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: AppColors.borderDark),
-            boxShadow: AppColors.cardShadow,
+            borderRadius: BorderRadius.circular(22),
+            border: Border.all(
+              color: AppColors.primary.withValues(alpha: 0.12),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primary.withValues(alpha: 0.10),
+                blurRadius: 24,
+                offset: const Offset(0, 6),
+                spreadRadius: -2,
+              ),
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
           child: Row(
             children: [
               Container(
-                width: 36,
-                height: 36,
+                width: 48,
+                height: 48,
                 decoration: BoxDecoration(
-                  gradient: AppColors.primaryGradient,
-                  shape: BoxShape.circle,
-                  boxShadow: AppColors.primaryGlow,
+                  gradient: AppColors.auroraGradient,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.primary.withValues(alpha: 0.30),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
-                child: const HugeIcon(icon: HugeIcons.strokeRoundedSearch01, color: Colors.white, size: 18),
+                child: const HugeIcon(
+                  icon: HugeIcons.strokeRoundedSearch01,
+                  color: Colors.white,
+                  size: 20,
+                ),
               ),
               const SizedBox(width: 14),
               Expanded(
@@ -260,35 +409,40 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                       'Où allez-vous ?',
                       style: GoogleFonts.sora(
                         fontSize: 15,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w700,
                         color: AppColors.textOnDark,
                       ),
                     ),
                     Text(
                       'Réservez votre boda en toute sécurité',
-                      style: TextStyle(
+                      style: GoogleFonts.sora(
                         fontSize: 11,
-                        color: AppColors.textSecondary,
+                        color: AppColors.textMuted,
+                        fontWeight: FontWeight.w400,
                       ),
                     ),
                   ],
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                margin: const EdgeInsets.only(right: 6),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.12),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: AppColors.primary.withOpacity(0.25),
-                    width: 0.5,
-                  ),
+                  gradient: AppColors.primaryGradient,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.primary.withValues(alpha: 0.25),
+                      blurRadius: 8,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
                 ),
                 child: Text(
                   'Trajet',
-                  style: TextStyle(
-                    color: AppColors.primary,
-                    fontSize: 11,
+                  style: GoogleFonts.sora(
+                    color: Colors.white,
+                    fontSize: 12,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -312,40 +466,53 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
       child: Row(
         children: actions.map((a) => Expanded(
-          child: GestureDetector(
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => a.dest),
-            ),
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 4),
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              decoration: BoxDecoration(
-                color: AppColors.cardDark,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: AppColors.borderDark, width: 0.5),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: PressScale(
+              scale: 0.91,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => a.dest),
               ),
-              child: Column(
-                children: [
-                  Container(
-                    width: 34,
-                    height: 34,
-                    decoration: BoxDecoration(
-                      color: a.color.withOpacity(0.12),
-                      shape: BoxShape.circle,
-                    ),
-                    child: HugeIcon(icon: a.icon, size: 17, color: a.color),
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(
+                    color: a.color.withValues(alpha: 0.12),
+                    width: 1,
                   ),
-                  const SizedBox(height: 6),
-                  Text(
-                    a.label,
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.textSubDark,
+                  boxShadow: [
+                    BoxShadow(
+                      color: a.color.withValues(alpha: 0.08),
+                      blurRadius: 16,
+                      offset: const Offset(0, 4),
                     ),
-                  ),
-                ],
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    Container(
+                      width: 38,
+                      height: 38,
+                      decoration: BoxDecoration(
+                        color: a.color.withValues(alpha: 0.10),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: HugeIcon(icon: a.icon, size: 18, color: a.color),
+                    ),
+                    const SizedBox(height: 7),
+                    Text(
+                      a.label,
+                      style: GoogleFonts.sora(
+                        fontSize: 10.5,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textOnDark,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -357,69 +524,82 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
   Widget _buildSafetyCard() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              AppColors.safetyGold.withOpacity(0.08),
-              AppColors.safetyGold.withOpacity(0.03),
+      child: PressScale(
+        scale: 0.98,
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                AppColors.safetyGold.withValues(alpha: 0.10),
+                AppColors.orange.withValues(alpha: 0.05),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
+              color: AppColors.safetyGold.withValues(alpha: 0.22),
+              width: 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.safetyGold.withValues(alpha: 0.08),
+                blurRadius: 16,
+                offset: const Offset(0, 4),
+              ),
             ],
           ),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: AppColors.safetyGold.withOpacity(0.2),
-            width: 0.5,
+          child: Row(
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  gradient: AppColors.safetyGradient,
+                  borderRadius: BorderRadius.circular(14),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.safetyGold.withValues(alpha: 0.35),
+                      blurRadius: 14,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: const HugeIcon(icon: HugeIcons.strokeRoundedShieldUser, size: 22, color: Colors.white),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Roulez en sécurité avec KuboChain',
+                      style: GoogleFonts.sora(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.safetyGold,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      'Conducteurs vérifiés • SOS disponible',
+                      style: GoogleFonts.sora(
+                        fontSize: 11,
+                        color: AppColors.textSecondary,
+                        height: 1.4,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              HugeIcon(
+                icon: HugeIcons.strokeRoundedArrowRight01,
+                color: AppColors.safetyGold.withValues(alpha: 0.6),
+                size: 18,
+              ),
+            ],
           ),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                gradient: AppColors.safetyGradient,
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.safetyGold.withOpacity(0.3),
-                    blurRadius: 12,
-                  ),
-                ],
-              ),
-              child: const HugeIcon(icon: HugeIcons.strokeRoundedShieldUser, size: 20, color: Colors.white),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Roulez en sécurité avec KuboChain',
-                    style: GoogleFonts.sora(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.safetyGold,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    'Tous les conducteurs sont vérifiés • SOS disponible',
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: AppColors.textSecondary,
-                      height: 1.4,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            HugeIcon(
-              icon: HugeIcons.strokeRoundedArrowRight01,
-              color: AppColors.safetyGold.withOpacity(0.6),
-              size: 20,
-            ),
-          ],
         ),
       ),
     );
@@ -427,7 +607,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
 
   Widget _buildMapSection(LatLng center, LocationProvider loc) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -438,7 +618,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                 decoration: BoxDecoration(
                   color: AppColors.success,
                   shape: BoxShape.circle,
-                  boxShadow: [BoxShadow(color: AppColors.success.withOpacity(0.5), blurRadius: 6)],
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.success.withValues(alpha: 0.5),
+                      blurRadius: 6,
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(width: 8),
@@ -446,22 +631,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                 'Votre position',
                 style: GoogleFonts.sora(
                   fontSize: 14,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w700,
                   color: AppColors.textOnDark,
                 ),
               ),
             ],
           ),
           const SizedBox(height: 12),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(22),
-            child: Container(
-              height: 190,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(22),
-                border: Border.all(color: AppColors.borderDark, width: 0.5),
-                boxShadow: AppColors.cardShadow,
+          Container(
+            height: 190,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(
+                color: AppColors.primary.withValues(alpha: 0.12),
               ),
+              boxShadow: AppColors.cardShadow,
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(24),
               child: Stack(
                 children: [
                   FlutterMap(
@@ -477,8 +664,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                         MarkerLayer(markers: [
                           Marker(
                             point: loc.currentLocation!,
-                            width: 44,
-                            height: 44,
+                            width: 44, height: 44,
                             child: Container(
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
@@ -486,20 +672,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                                 border: Border.all(color: Colors.white, width: 2.5),
                                 boxShadow: AppColors.primaryGlow,
                               ),
-                              child: const HugeIcon(icon: HugeIcons.strokeRoundedLocation01, color: Colors.white, size: 20),
+                              child: const HugeIcon(
+                                icon: HugeIcons.strokeRoundedLocation01,
+                                color: Colors.white, size: 20,
+                              ),
                             ),
                           ),
                         ]),
                     ],
                   ),
-                  // Top gradient overlay
                   Positioned(
                     top: 0, left: 0, right: 0,
                     child: Container(
-                      height: 50,
+                      height: 40,
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
-                          colors: [Colors.black.withOpacity(0.3), Colors.transparent],
+                          colors: [Colors.black.withValues(alpha: 0.2), Colors.transparent],
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                         ),
@@ -518,22 +706,33 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
   Widget _buildPromoBanner() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-      child: GestureDetector(
+      child: PressScale(
+        scale: 0.97,
         onTap: () => _showPromoSheet(context),
         child: Container(
-          padding: const EdgeInsets.all(18),
+          padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                AppColors.primary.withOpacity(0.18),
-                AppColors.primaryDark.withOpacity(0.10),
+                AppColors.primary.withValues(alpha: 0.12),
+                AppColors.indigo.withValues(alpha: 0.08),
+                AppColors.primaryUltraLight,
               ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(22),
             border: Border.all(
-              color: AppColors.primary.withOpacity(0.2),
-              width: 0.5,
+              color: AppColors.primary.withValues(alpha: 0.18),
+              width: 1,
             ),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primary.withValues(alpha: 0.10),
+                blurRadius: 20,
+                offset: const Offset(0, 6),
+              ),
+            ],
           ),
           child: Row(
             children: [
@@ -542,10 +741,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
                       decoration: BoxDecoration(
-                        gradient: AppColors.primaryGradient,
-                        borderRadius: BorderRadius.circular(6),
+                        gradient: AppColors.auroraGradient,
+                        borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
                         'OFFRE LIMITÉE',
@@ -557,37 +756,48 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with TickerProviderStat
                         ),
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 10),
                     Text(
                       '20% de réduction\nsur vos 3 prochains trajets',
                       style: GoogleFonts.sora(
                         fontSize: 16,
                         fontWeight: FontWeight.w800,
                         color: AppColors.textOnDark,
-                        height: 1.2,
+                        height: 1.25,
+                        letterSpacing: -0.3,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 6),
                     Text(
                       'Appuyez pour entrer votre code',
-                      style: TextStyle(
+                      style: GoogleFonts.sora(
                         fontSize: 11,
-                        color: AppColors.primaryLight,
-                        fontWeight: FontWeight.w500,
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ],
                 ),
               ),
               Container(
-                width: 64,
-                height: 64,
+                width: 68,
+                height: 68,
                 decoration: BoxDecoration(
-                  gradient: AppColors.primaryGradient,
-                  shape: BoxShape.circle,
-                  boxShadow: AppColors.primaryGlow,
+                  gradient: AppColors.auroraGradient,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.primary.withValues(alpha: 0.35),
+                      blurRadius: 16,
+                      offset: const Offset(0, 6),
+                    ),
+                  ],
                 ),
-                child: const HugeIcon(icon: HugeIcons.strokeRoundedDiscountTag01, color: Colors.white, size: 30),
+                child: const HugeIcon(
+                  icon: HugeIcons.strokeRoundedDiscountTag01,
+                  color: Colors.white,
+                  size: 32,
+                ),
               ),
             ],
           ),
@@ -620,18 +830,26 @@ class _SectionHeader extends StatelessWidget {
         Text(
           title,
           style: GoogleFonts.sora(
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
+            fontSize: 17,
+            fontWeight: FontWeight.w800,
             color: AppColors.textOnDark,
+            letterSpacing: -0.3,
           ),
         ),
         if (actionLabel != null)
-          Text(
-            actionLabel!,
-            style: const TextStyle(
-              fontSize: 12,
-              color: AppColors.primary,
-              fontWeight: FontWeight.w600,
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            decoration: BoxDecoration(
+              color: AppColors.primary.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Text(
+              actionLabel!,
+              style: GoogleFonts.sora(
+                fontSize: 11,
+                color: AppColors.primary,
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ),
       ],
@@ -645,26 +863,48 @@ class _EmptyRides extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const SliverToBoxAdapter(
-      child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 32),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
+      child: Container(
+        padding: const EdgeInsets.all(32),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: AppColors.borderDark),
+          boxShadow: AppColors.softShadow,
+        ),
         child: Column(
           children: [
-            HugeIcon(icon: HugeIcons.strokeRoundedBicycle01,
-                size: 48, color: AppColors.textSecondary),
-            SizedBox(height: 12),
+            Container(
+              width: 64,
+              height: 64,
+              decoration: BoxDecoration(
+                color: AppColors.primary.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: const HugeIcon(
+                icon: HugeIcons.strokeRoundedBicycle01,
+                size: 32,
+                color: AppColors.primary,
+              ),
+            ),
+            const SizedBox(height: 16),
             Text(
               'Aucun trajet',
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
+              style: GoogleFonts.sora(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
                 color: AppColors.textOnDark,
               ),
             ),
-            SizedBox(height: 4),
+            const SizedBox(height: 6),
             Text(
               'Votre premier trajet boda vous attend !',
-              style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+              style: GoogleFonts.sora(
+                fontSize: 13,
+                color: AppColors.textSecondary,
+              ),
+              textAlign: TextAlign.center,
             ),
           ],
         ),
@@ -700,126 +940,127 @@ class _RideHistoryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final statusColor = _statusColor();
 
-    return Container(
-      decoration: BoxDecoration(
-        gradient: AppColors.cardGradient,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.borderDark, width: 0.5),
-        boxShadow: AppColors.cardShadow,
-      ),
-      child: Column(
-        children: [
-          // Route
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
-            child: Row(
-              children: [
-                // Timeline dots
-                Column(
-                  children: [
-                    Container(
-                      width: 10, height: 10,
-                      decoration: BoxDecoration(
-                        color: AppColors.primary,
-                        shape: BoxShape.circle,
-                        boxShadow: AppColors.primaryGlow,
-                      ),
-                    ),
-                    Container(
-                      width: 1.5, height: 28,
-                      color: AppColors.borderDark,
-                      margin: const EdgeInsets.symmetric(vertical: 4),
-                    ),
-                    Container(
-                      width: 10, height: 10,
-                      decoration: BoxDecoration(
-                        color: statusColor,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(width: 14),
-                // Addresses
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+    return PressScale(
+      scale: 0.97,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(
+            color: AppColors.borderDark,
+            width: 0.8,
+          ),
+          boxShadow: AppColors.cardShadow,
+        ),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
+              child: Row(
+                children: [
+                  Column(
                     children: [
-                      Text(
-                        ride.pickup.address.split(',').first,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.textOnDark,
+                      Container(
+                        width: 10, height: 10,
+                        decoration: BoxDecoration(
+                          color: AppColors.primary,
+                          shape: BoxShape.circle,
+                          boxShadow: AppColors.primaryGlow,
                         ),
                       ),
-                      const SizedBox(height: 18),
-                      Text(
-                        ride.destination.address.split(',').first,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.textOnDark,
+                      Container(
+                        width: 1.5, height: 28,
+                        color: AppColors.borderDark,
+                        margin: const EdgeInsets.symmetric(vertical: 4),
+                      ),
+                      Container(
+                        width: 10, height: 10,
+                        decoration: BoxDecoration(
+                          color: statusColor,
+                          shape: BoxShape.circle,
                         ),
                       ),
                     ],
                   ),
-                ),
-              ],
-            ),
-          ),
-
-          // Divider
-          Divider(height: 1, color: AppColors.borderDark),
-
-          // Meta row
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            child: Row(
-              children: [
-                // Status pill
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                  decoration: BoxDecoration(
-                    color: statusColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: statusColor.withOpacity(0.3), width: 0.5),
-                  ),
-                  child: Text(
-                    _statusLabel(),
-                    style: TextStyle(
-                      color: statusColor,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w700,
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          ride.pickup.address.split(',').first,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.sora(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textOnDark,
+                          ),
+                        ),
+                        const SizedBox(height: 18),
+                        Text(
+                          ride.destination.address.split(',').first,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.sora(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textOnDark,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ),
-                const SizedBox(width: 8),
-                // Date
-                Text(
-                  '${ride.createdAt.day} ${_month(ride.createdAt.month)}, ${ride.createdAt.hour}:${ride.createdAt.minute.toString().padLeft(2, '0')}',
-                  style: const TextStyle(
-                    fontSize: 11, color: AppColors.textSecondary,
-                  ),
-                ),
-                const Spacer(),
-                // Fare
-                Text(
-                  'FC ${ride.price.toStringAsFixed(0)}',
-                  style: GoogleFonts.sora(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.textOnDark,
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+            Divider(height: 1, color: AppColors.divider),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: statusColor.withValues(alpha: 0.10),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: statusColor.withValues(alpha: 0.25),
+                        width: 0.8,
+                      ),
+                    ),
+                    child: Text(
+                      _statusLabel(),
+                      style: GoogleFonts.sora(
+                        color: statusColor,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    '${ride.createdAt.day} ${_month(ride.createdAt.month)}, ${ride.createdAt.hour}:${ride.createdAt.minute.toString().padLeft(2, '0')}',
+                    style: GoogleFonts.sora(
+                      fontSize: 10,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                  const Spacer(),
+                  Text(
+                    'FC ${ride.price.toStringAsFixed(0)}',
+                    style: GoogleFonts.sora(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.textOnDark,
+                      letterSpacing: -0.3,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -848,7 +1089,7 @@ class _PromoSheet extends StatefulWidget {
 
 class _PromoSheetState extends State<_PromoSheet> {
   final _ctrl = TextEditingController();
-  String? _status; // 'success' | 'error'
+  String? _status;
   static const _validCodes = {'KRIDE20', 'BIENVENUE', 'GOMA10'};
 
   @override
@@ -876,7 +1117,7 @@ class _PromoSheetState extends State<_PromoSheet> {
             child: Container(
               width: 40, height: 4,
               decoration: BoxDecoration(
-                color: const Color(0xFFE2E8F0),
+                color: AppColors.divider,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -889,7 +1130,7 @@ class _PromoSheetState extends State<_PromoSheet> {
           const SizedBox(height: 6),
           Text(
             'Codes disponibles : KRIDE20 · BIENVENUE · GOMA10',
-            style: GoogleFonts.dmSans(fontSize: 12, color: AppColors.textSecondary),
+            style: GoogleFonts.sora(fontSize: 12, color: AppColors.textSecondary),
           ),
           const SizedBox(height: 20),
           Row(
@@ -922,7 +1163,7 @@ class _PromoSheetState extends State<_PromoSheet> {
                 ),
               ),
               const SizedBox(width: 12),
-              GestureDetector(
+              PressScale(
                 onTap: _apply,
                 child: Container(
                   height: 52,
@@ -947,19 +1188,23 @@ class _PromoSheetState extends State<_PromoSheet> {
             Row(
               children: [
                 HugeIcon(
-                  icon: _status == 'success' ? HugeIcons.strokeRoundedCheckmarkCircle01 : HugeIcons.strokeRoundedAlertCircle,
+                  icon: _status == 'success'
+                      ? HugeIcons.strokeRoundedCheckmarkCircle01
+                      : HugeIcons.strokeRoundedAlertCircle,
                   color: _status == 'success' ? AppColors.success : AppColors.error,
                   size: 18,
                 ),
                 const SizedBox(width: 8),
-                Text(
-                  _status == 'success'
-                      ? '🎉 Code appliqué ! 20% de réduction sur votre prochain trajet.'
-                      : 'Code invalide. Vérifiez et réessayez.',
-                  style: GoogleFonts.dmSans(
-                    fontSize: 13,
-                    color: _status == 'success' ? AppColors.success : AppColors.error,
-                    fontWeight: FontWeight.w500,
+                Expanded(
+                  child: Text(
+                    _status == 'success'
+                        ? '🎉 Code appliqué ! 20% de réduction sur votre prochain trajet.'
+                        : 'Code invalide. Vérifiez et réessayez.',
+                    style: GoogleFonts.sora(
+                      fontSize: 13,
+                      color: _status == 'success' ? AppColors.success : AppColors.error,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
               ],
@@ -967,21 +1212,19 @@ class _PromoSheetState extends State<_PromoSheet> {
           ],
           if (_status == 'success') ...[
             const SizedBox(height: 16),
-            SizedBox(
-              width: double.infinity,
-              child: GestureDetector(
-                onTap: () => Navigator.pop(context),
-                child: Container(
-                  height: 52,
-                  decoration: BoxDecoration(
-                    gradient: AppColors.primaryGradient,
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: Center(
-                    child: Text(
-                      'Réserver maintenant',
-                      style: GoogleFonts.sora(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 15),
-                    ),
+            PressScale(
+              onTap: () => Navigator.pop(context),
+              child: Container(
+                width: double.infinity,
+                height: 52,
+                decoration: BoxDecoration(
+                  gradient: AppColors.primaryGradient,
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Center(
+                  child: Text(
+                    'Réserver maintenant',
+                    style: GoogleFonts.sora(color: Colors.white, fontWeight: FontWeight.w700, fontSize: 15),
                   ),
                 ),
               ),

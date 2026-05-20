@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../core/constants/app_colors.dart';
@@ -9,7 +10,9 @@ import '../../providers/providers.dart';
 import '../../core/services/storage_service.dart';
 import '../../screens/onboarding.dart';
 import '../../widgets/common/avatar_picker_sheet.dart';
+import '../../widgets/common/press_scale.dart';
 import '../../widgets/common/user_avatar.dart';
+import '../../widgets/effects/ambient_orbs.dart';
 import '../common/notifications_screen.dart';
 
 class RiderProfileScreen extends ConsumerStatefulWidget {
@@ -394,131 +397,280 @@ class _RiderProfileScreenState extends ConsumerState<RiderProfileScreen> {
   Widget build(BuildContext context) {
     final auth = ref.watch(authProvider);
     final user = auth.user;
+    final avatarColor = AvatarPickerSheet.presets[_avatarColorIndex];
 
     return Scaffold(
       backgroundColor: AppColors.backgroundDark,
       body: CustomScrollView(
+        physics: const BouncingScrollPhysics(),
         slivers: [
-          SliverAppBar(
-            backgroundColor: AppColors.backgroundDark,
-            expandedHeight: 220,
-            pinned: true,
-            flexibleSpace: FlexibleSpaceBar(
-              background: Container(
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [Color(0xFFEFF6FF), Color(0xFFF5F8FF)],
-                  ),
+          // ── Aurora Hero Header ──────────────────────────────────────────────
+          SliverToBoxAdapter(
+            child: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Color(0xFFECFDF5), Color(0xFFD1FAE5), Color(0xFFF5F8FF)],
                 ),
-                child: SafeArea(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const SizedBox(height: 20),
-                      GestureDetector(
-                        onTap: _pickAndUploadPhoto,
-                        onLongPress: () => _openAvatarPicker(user?.firstName ?? 'D'),
-                        child: Stack(
-                          children: [
-                            UserAvatar(
-                              name: user?.firstName ?? 'D',
-                              imageUrl: user?.profileImage != null
-                                  ? ApiService.imageUrl(user!.profileImage!)
-                                  : null,
-                              radius: 42,
-                              backgroundColor: AvatarPickerSheet.presets[_avatarColorIndex],
-                            ),
-                            Positioned(
-                              bottom: 0, right: 0,
-                              child: Container(
-                                width: 28, height: 28,
-                                decoration: BoxDecoration(
-                                  color: AppColors.primary,
-                                  shape: BoxShape.circle,
-                                  border: Border.all(color: Colors.white, width: 2),
-                                ),
-                                child: _uploading
-                                    ? const Padding(
-                                        padding: EdgeInsets.all(5),
-                                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                                      )
-                                    : const HugeIcon(icon: HugeIcons.strokeRoundedCamera01, size: 14, color: Colors.white),
+              ),
+              child: Stack(
+                children: [
+                  Positioned.fill(
+                    child: AmbientOrbs(
+                      color: AppColors.success,
+                      orbCount: 3,
+                      maxOpacity: 0.07,
+                    ),
+                  ),
+                  SafeArea(
+                    bottom: false,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
+                      child: Column(
+                        children: [
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              'Profil',
+                              style: GoogleFonts.sora(
+                                fontSize: 30,
+                                fontWeight: FontWeight.w800,
+                                color: AppColors.textPrimary,
+                                letterSpacing: -0.8,
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                          const SizedBox(height: 20),
+                          Container(
+                            padding: const EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(28),
+                              border: Border.all(
+                                color: AppColors.success.withValues(alpha: 0.12),
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppColors.success.withValues(alpha: 0.10),
+                                  blurRadius: 28,
+                                  offset: const Offset(0, 8),
+                                ),
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.04),
+                                  blurRadius: 6,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Row(
+                              children: [
+                                PressScale(
+                                  scale: 0.92,
+                                  onTap: _pickAndUploadPhoto,
+                                  child: GestureDetector(
+                                    onLongPress: () => _openAvatarPicker(user?.firstName ?? 'D'),
+                                    child: Stack(
+                                      children: [
+                                        AnimatedContainer(
+                                          duration: const Duration(milliseconds: 400),
+                                          curve: AppColors.springEasing,
+                                          width: 80, height: 80,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: avatarColor,
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: avatarColor.withValues(alpha: 0.40),
+                                                blurRadius: 20,
+                                                offset: const Offset(0, 6),
+                                              ),
+                                            ],
+                                          ),
+                                          child: ClipOval(
+                                            child: UserAvatar(
+                                              name: user?.firstName ?? 'D',
+                                              imageUrl: user?.profileImage != null
+                                                  ? ApiService.imageUrl(user!.profileImage!)
+                                                  : null,
+                                              radius: 40,
+                                              backgroundColor: avatarColor,
+                                            ),
+                                          ),
+                                        ),
+                                        Positioned(
+                                          bottom: 0, right: 0,
+                                          child: Container(
+                                            width: 28, height: 28,
+                                            decoration: BoxDecoration(
+                                              gradient: AppColors.riderGradient,
+                                              shape: BoxShape.circle,
+                                              border: Border.all(color: Colors.white, width: 2),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: AppColors.success.withValues(alpha: 0.30),
+                                                  blurRadius: 8,
+                                                ),
+                                              ],
+                                            ),
+                                            child: _uploading
+                                                ? const Padding(
+                                                    padding: EdgeInsets.all(5),
+                                                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                                                  )
+                                                : const HugeIcon(icon: HugeIcons.strokeRoundedCamera01, size: 14, color: Colors.white),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        user?.fullName ?? 'Conducteur',
+                                        style: GoogleFonts.sora(
+                                          color: AppColors.textPrimary,
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w800,
+                                          letterSpacing: -0.4,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 3),
+                                      Text(
+                                        user?.phone ?? '',
+                                        style: GoogleFonts.sora(
+                                          color: AppColors.textSecondary,
+                                          fontSize: 13,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 10),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                        decoration: BoxDecoration(
+                                          gradient: LinearGradient(
+                                            colors: [
+                                              AppColors.success.withValues(alpha: 0.12),
+                                              AppColors.success.withValues(alpha: 0.06),
+                                            ],
+                                          ),
+                                          borderRadius: BorderRadius.circular(50),
+                                          border: Border.all(
+                                            color: AppColors.success.withValues(alpha: 0.22),
+                                          ),
+                                        ),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            const HugeIcon(icon: HugeIcons.strokeRoundedShieldUser, color: AppColors.success, size: 12),
+                                            const SizedBox(width: 4),
+                                            Text(
+                                              'Conducteur Vérifié',
+                                              style: GoogleFonts.sora(
+                                                color: AppColors.success,
+                                                fontSize: 11,
+                                                fontWeight: FontWeight.w700,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 12),
-                      Text(
-                        user?.fullName ?? 'Conducteur',
-                        style: const TextStyle(color: AppColors.textOnDark, fontSize: 20, fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        user?.phone ?? '',
-                        style: const TextStyle(color: AppColors.textSecondary, fontSize: 14),
-                      ),
-                    ],
+                    ),
                   ),
-                ),
+                ],
               ),
             ),
           ),
 
           SliverPadding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
             sliver: SliverList(
               delegate: SliverChildListDelegate([
                 // Stats row
                 Row(
                   children: [
-                    Expanded(child: _DarkStatCard(value: '${user?.totalRides ?? 0}', label: 'Courses totales')),
+                    Expanded(
+                      child: _PremiumStatCard(
+                        value: '${user?.totalRides ?? 0}',
+                        label: 'Courses totales',
+                        icon: HugeIcons.strokeRoundedMotorbike01,
+                        color: AppColors.success,
+                        gradient: AppColors.riderGradient,
+                      ),
+                    ),
                     const SizedBox(width: 12),
-                    Expanded(child: _DarkStatCard(value: '${user?.rating ?? 5.0}', label: 'Note')),
+                    Expanded(
+                      child: _PremiumStatCard(
+                        value: '${user?.rating ?? 5.0}',
+                        label: 'Note',
+                        icon: HugeIcons.strokeRoundedStar,
+                        color: AppColors.gold,
+                        gradient: AppColors.safetyGradient,
+                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 16),
 
-                _DarkMenuSection(
+                _PremiumMenuSection(
                   title: 'COMPTE',
+                  icon: HugeIcons.strokeRoundedUser,
+                  iconColor: AppColors.success,
                   items: [
-                    _DarkMenuItem(
+                    _PremiumMenuItem(
                       icon: HugeIcons.strokeRoundedUser,
                       label: 'Modifier le profil',
+                      iconColor: AppColors.primary,
                       onTap: _showEditProfile,
                     ),
-                    _DarkMenuItem(
+                    _PremiumMenuItem(
                       icon: HugeIcons.strokeRoundedMotorbike01,
                       label: 'Détails du véhicule',
+                      iconColor: AppColors.success,
                       onTap: _showVehicleDetails,
                     ),
-                    _DarkMenuItem(
+                    _PremiumMenuItem(
                       icon: HugeIcons.strokeRoundedLicense,
                       label: 'Documents',
+                      iconColor: AppColors.safetyGold,
                       onTap: _showDocumentUpload,
                     ),
                   ],
                 ),
                 const SizedBox(height: 12),
 
-                _DarkMenuSection(
+                _PremiumMenuSection(
                   title: 'SUPPORT',
+                  icon: HugeIcons.strokeRoundedHelpCircle,
+                  iconColor: AppColors.primary,
                   items: [
-                    _DarkMenuItem(
+                    _PremiumMenuItem(
                       icon: HugeIcons.strokeRoundedNotification01,
                       label: 'Notifications',
+                      iconColor: AppColors.indigo,
                       onTap: () => Navigator.push(
                         context,
                         MaterialPageRoute(builder: (_) => const NotificationsScreen()),
                       ),
                     ),
-                    _DarkMenuItem(
+                    _PremiumMenuItem(
                       icon: HugeIcons.strokeRoundedInformationCircle,
                       label: 'Aide & Support',
+                      iconColor: AppColors.primary,
                       onTap: _showHelpSupport,
                     ),
-                    _DarkMenuItem(
+                    _PremiumMenuItem(
                       icon: HugeIcons.strokeRoundedLogout01,
                       label: 'Se déconnecter',
                       iconColor: AppColors.error,
@@ -537,7 +689,7 @@ class _RiderProfileScreenState extends ConsumerState<RiderProfileScreen> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 110),
               ]),
             ),
           ),
@@ -619,37 +771,97 @@ class _SupportTile extends StatelessWidget {
   }
 }
 
-// ── Stat card ─────────────────────────────────────────────────────────────────
-class _DarkStatCard extends StatelessWidget {
+// ── Premium Stat Card ─────────────────────────────────────────────────────────
+class _PremiumStatCard extends StatelessWidget {
   final String value;
   final String label;
-  const _DarkStatCard({required this.value, required this.label});
+  final IconData icon;
+  final Color color;
+  final LinearGradient gradient;
+
+  const _PremiumStatCard({
+    required this.value,
+    required this.label,
+    required this.icon,
+    required this.color,
+    required this.gradient,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.cardDark,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.borderDark),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withValues(alpha: 0.12)),
+        boxShadow: [
+          BoxShadow(
+            color: color.withValues(alpha: 0.08),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
-      child: Column(
+      child: Row(
         children: [
-          Text(value, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: AppColors.primary)),
-          const SizedBox(height: 4),
-          Text(label, style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+          Container(
+            width: 44, height: 44,
+            decoration: BoxDecoration(
+              gradient: gradient,
+              borderRadius: BorderRadius.circular(14),
+              boxShadow: [
+                BoxShadow(
+                  color: color.withValues(alpha: 0.25),
+                  blurRadius: 10,
+                  offset: const Offset(0, 3),
+                ),
+              ],
+            ),
+            child: HugeIcon(icon: icon, color: Colors.white, size: 22),
+          ),
+          const SizedBox(width: 12),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                value,
+                style: GoogleFonts.sora(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.textPrimary,
+                  letterSpacing: -0.5,
+                ),
+              ),
+              Text(
+                label,
+                style: GoogleFonts.sora(
+                  fontSize: 11,
+                  color: AppColors.textSecondary,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );
   }
 }
 
-// ── Menu section ──────────────────────────────────────────────────────────────
-class _DarkMenuSection extends StatelessWidget {
+// ── Premium Menu Section ───────────────────────────────────────────────────────
+class _PremiumMenuSection extends StatelessWidget {
   final String title;
-  final List<_DarkMenuItem> items;
-  const _DarkMenuSection({required this.title, required this.items});
+  final IconData icon;
+  final Color iconColor;
+  final List<_PremiumMenuItem> items;
+
+  const _PremiumMenuSection({
+    required this.title,
+    required this.icon,
+    required this.iconColor,
+    required this.items,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -658,14 +870,35 @@ class _DarkMenuSection extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.only(left: 4, bottom: 8),
-          child: Text(title,
-              style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.textSecondary, letterSpacing: 1.2)),
+          child: Row(
+            children: [
+              Container(
+                width: 26, height: 26,
+                decoration: BoxDecoration(
+                  color: iconColor.withValues(alpha: 0.10),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: HugeIcon(icon: icon, color: iconColor, size: 13),
+              ),
+              const SizedBox(width: 6),
+              Text(
+                title,
+                style: GoogleFonts.sora(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textSecondary,
+                  letterSpacing: 1.2,
+                ),
+              ),
+            ],
+          ),
         ),
         Container(
           decoration: BoxDecoration(
-            color: AppColors.cardDark,
-            borderRadius: BorderRadius.circular(16),
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(22),
             border: Border.all(color: AppColors.borderDark),
+            boxShadow: AppColors.softShadow,
           ),
           child: Column(
             children: items.map((item) {
@@ -673,7 +906,11 @@ class _DarkMenuSection extends StatelessWidget {
               return Column(
                 children: [
                   item,
-                  if (!isLast) Divider(height: 1, indent: 56, color: AppColors.borderDark),
+                  if (!isLast) Container(
+                    height: 1,
+                    margin: const EdgeInsets.only(left: 58),
+                    color: AppColors.divider,
+                  ),
                 ],
               );
             }).toList(),
@@ -684,8 +921,8 @@ class _DarkMenuSection extends StatelessWidget {
   }
 }
 
-// ── Menu item ─────────────────────────────────────────────────────────────────
-class _DarkMenuItem extends StatelessWidget {
+// ── Premium Menu Item ─────────────────────────────────────────────────────────
+class _PremiumMenuItem extends StatelessWidget {
   final IconData icon;
   final String label;
   final VoidCallback onTap;
@@ -693,7 +930,7 @@ class _DarkMenuItem extends StatelessWidget {
   final Color textColor;
   final bool showArrow;
 
-  const _DarkMenuItem({
+  const _PremiumMenuItem({
     required this.icon,
     required this.label,
     required this.onTap,
@@ -704,18 +941,43 @@ class _DarkMenuItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      leading: Container(
-        width: 38, height: 38,
-        decoration: BoxDecoration(
-          color: iconColor.withOpacity(0.15),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: HugeIcon(icon: icon, color: iconColor, size: 20),
-      ),
-      title: Text(label, style: TextStyle(color: textColor, fontSize: 14, fontWeight: FontWeight.w500)),
-      trailing: showArrow ? const HugeIcon(icon: HugeIcons.strokeRoundedArrowRight01, color: AppColors.textSecondary, size: 20) : null,
+    return PressScale(
+      scale: 0.97,
       onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
+        child: Row(
+          children: [
+            Container(
+              width: 38, height: 38,
+              decoration: BoxDecoration(
+                color: iconColor == AppColors.error
+                    ? AppColors.error.withValues(alpha: 0.08)
+                    : iconColor.withValues(alpha: 0.10),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: HugeIcon(icon: icon, color: iconColor, size: 18),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                label,
+                style: GoogleFonts.sora(
+                  color: textColor,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            if (showArrow)
+              const HugeIcon(
+                icon: HugeIcons.strokeRoundedArrowRight01,
+                color: AppColors.textMuted,
+                size: 18,
+              ),
+          ],
+        ),
+      ),
     );
   }
 }
