@@ -81,3 +81,9 @@ flutter_launcher_icons:
   ios: true
   image_path: "assets/logo.png"
   min_sdk_android: 23
+  # Android adaptive icon — logo as foreground, dark navy background
+  adaptive_icon_background: "#0D1629"
+  adaptive_icon_foreground: "assets/logo.png"
+  # iOS — fill transparent corners with dark navy
+  background_color_ios: "#0D1629"
+  remove_alpha_ios: true
