@@ -49,7 +49,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: backend/fastapi_server
-        run: pip install -r requirements.txt
+        run: pip install -r requirements.txt ruff
 
       - name: Ruff lint
         working-directory: backend/fastapi_server
