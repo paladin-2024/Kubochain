@@ -53,3 +53,5 @@ dashboard/.env.local
 dashboard/.env
 # Firebase service account key — never commit this
 backend/server/src/config/*.json
+backend/firebase-credentials.json
+backend/.env
