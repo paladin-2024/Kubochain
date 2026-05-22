@@ -55,3 +55,4 @@ dashboard/.env
 backend/server/src/config/*.json
 backend/firebase-credentials.json
 backend/.env
+.claude/
