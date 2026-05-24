@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:816842634570:android:5084a6c3a781910bd9fdb3",
         "android_client_info": {
-          "package_name": "com.example.kubochain"
+          "package_name": "com.kubochain.app"
         }
       },
       "oauth_client": [],

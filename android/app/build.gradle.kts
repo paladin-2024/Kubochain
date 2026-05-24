@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.kubochain"
+    namespace = "com.kubochain.app"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -22,7 +22,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.kubochain"
+        applicationId = "com.kubochain.app"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
