@@ -9,6 +9,7 @@ import '../../providers/ride_provider.dart';
 import '../../providers/providers.dart';
 import '../../widgets/map/live_map_widget.dart';
 import 'rate_driver_screen.dart';
+import 'airtel_payment_screen.dart';
 
 class TripScreen extends ConsumerStatefulWidget {
   const TripScreen({super.key});
@@ -35,10 +36,27 @@ class _TripScreenState extends ConsumerState<TripScreen> {
     final ride = ref.read(rideProvider);
     if (ride.rideStatus == RideStatus.completed && mounted) {
       HapticFeedback.mediumImpact();
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const RateDriverScreen()),
-      );
+      final currentRide = ride.currentRide;
+      final method = currentRide?.paymentMethod ?? 'cash';
+      if (method == 'airtel_money' || method == 'mtn_momo') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => AirtelPaymentScreen(
+              rideId: currentRide!.id,
+              amount: currentRide.price,
+              pickupAddress: currentRide.pickup.address,
+              destinationAddress: currentRide.destination.address,
+              driverName: currentRide.driver?['first_name'] as String?,
+            ),
+          ),
+        );
+      } else {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const RateDriverScreen()),
+        );
+      }
     }
     if (ride.rideStatus == RideStatus.awaitingConfirmation && mounted) {
       HapticFeedback.mediumImpact();

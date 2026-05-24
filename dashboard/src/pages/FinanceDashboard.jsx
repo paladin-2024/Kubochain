@@ -99,7 +99,7 @@ export default function FinanceDashboard() {
         const [sRes, cRes, tRes] = await Promise.all([
           api.get(`/admin/finance/stats?period=${period}`),
           api.get(`/admin/finance/chart?period=${period}`),
-          api.get('/admin/finance/transactions?limit=10'),
+          api.get('/admin/transactions?page=1'),
         ]);
         if (sRes.data) setStats(sRes.data);
         if (cRes.data) setChart(cRes.data);
@@ -222,25 +222,25 @@ export default function FinanceDashboard() {
         </div>
 
         <div className="bg-white border border-dark-border rounded-2xl p-5">
-          <h2 className="font-heading font-semibold text-slate-900 mb-4">Revenue by Type</h2>
+          <h2 className="font-heading font-semibold text-slate-900 mb-4">Répartition des paiements</h2>
           <div className="space-y-3">
-            {MOCK_BY_TYPE.map((t, i) => (
-              <div key={t.type}>
-                <div className="flex justify-between text-sm mb-1.5">
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: TYPE_COLORS[i] }} />
-                    <span className="text-slate-700">{t.type}</span>
+            {stats.by_method && Object.entries(stats.by_method).map(([method, data]) => {
+              const label = method === 'airtel_money' ? 'Airtel Money' : method === 'mtn_momo' ? 'MTN MoMo' : 'Espèces';
+              const color = method === 'airtel_money' ? '#E02020' : method === 'mtn_momo' ? '#FFC107' : '#10B981';
+              const total = Object.values(stats.by_method).reduce((s, v) => s + v.count, 0);
+              const pct = total > 0 ? Math.round((data.count / total) * 100) : 0;
+              return (
+                <div key={method}>
+                  <div className="flex justify-between text-sm mb-1.5">
+                    <span className="font-medium" style={{ color }}>{label}</span>
+                    <span className="text-slate-500 text-xs">{data.count} trajets · FC {Number(data.total).toLocaleString()}</span>
                   </div>
-                  <div className="text-right">
-                    <span className="font-bold text-slate-900 text-xs">{fmt(t.revenue)}</span>
-                    <span className="text-slate-400 text-xs ml-1.5">({t.pct}%)</span>
+                  <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                    <div className="h-full rounded-full transition-all duration-700" style={{ width: `${pct}%`, backgroundColor: color }} />
                   </div>
                 </div>
-                <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                  <div className="h-full rounded-full transition-all duration-700" style={{ width: `${t.pct}%`, backgroundColor: TYPE_COLORS[i] }} />
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
           <div className="mt-4 pt-4 border-t border-dark-border space-y-2">
             {[

@@ -16,6 +16,7 @@ class CreateRideIn(BaseModel):
     ride_type: str = "economy"
     price: float
     distance: float
+    payment_method: str = "cash"
 
 
 class CancelRideIn(BaseModel):
@@ -68,6 +69,9 @@ class RideOut(BaseModel):
     rating_tags: Optional[list[str]] = None
     cancel_reason: Optional[str] = None
     cancelled_by: Optional[str] = None
+    payment_method: Optional[str] = "cash"
+    payment_status: Optional[str] = "pending"
+    payment_reference: Optional[str] = None
     accepted_at: Optional[datetime] = None
     arrived_at: Optional[datetime] = None
     started_at: Optional[datetime] = None

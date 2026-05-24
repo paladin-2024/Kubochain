@@ -13,6 +13,7 @@ from .config import get_settings
 from .database import engine, Base
 from .routers import auth, rides, drivers, chat, admin, ws
 from .routers import admin_extras
+from .routers import payments
 
 settings = get_settings()
 
@@ -107,6 +108,7 @@ app.include_router(drivers.router, prefix="/api")
 app.include_router(chat.router, prefix="/api")
 app.include_router(admin.router, prefix="/api")
 app.include_router(admin_extras.router, prefix="/api")
+app.include_router(payments.router, prefix="/api")
 app.include_router(ws.router)
 
 

@@ -20,7 +20,7 @@ class _PaymentScreenState extends State<PaymentScreen>
 
   static const _methods = [
     _PayMethod(
-      id: 'momo',
+      id: 'mtn_momo',
       label: 'MTN Mobile Money',
       subtitle: 'Transfert instantané · Recommandé',
       icon: HugeIcons.strokeRoundedFlash,
@@ -29,7 +29,7 @@ class _PaymentScreenState extends State<PaymentScreen>
       tag: 'POPULAIRE',
     ),
     _PayMethod(
-      id: 'airtel',
+      id: 'airtel_money',
       label: 'Airtel Money',
       subtitle: 'Mobile money · Rapide et fiable',
       icon: HugeIcons.strokeRoundedWifi01,
@@ -44,15 +44,6 @@ class _PaymentScreenState extends State<PaymentScreen>
       icon: HugeIcons.strokeRoundedMoney01,
       brandColor: Color(0xFF10B981),
       bgLight: Color(0xFFF0FDF9),
-      tag: null,
-    ),
-    _PayMethod(
-      id: 'card',
-      label: 'Carte de crédit / débit',
-      subtitle: 'Visa, Mastercard · Sécurisé',
-      icon: HugeIcons.strokeRoundedCreditCard,
-      brandColor: Color(0xFF2563EB),
-      bgLight: Color(0xFFEFF6FF),
       tag: null,
     ),
   ];

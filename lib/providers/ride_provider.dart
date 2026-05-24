@@ -123,6 +123,7 @@ class RideProvider extends ChangeNotifier {
     required String rideType,
     required double price,
     required double distance,
+    String paymentMethod = 'cash',
   }) async {
     _isLoading = true;
     _rideStatus = RideStatus.searching;
@@ -132,9 +133,10 @@ class RideProvider extends ChangeNotifier {
       final res = await ApiService.createRide({
         'pickup': pickup.toJson(),
         'destination': destination.toJson(),
-        'rideType': rideType,
+        'ride_type': rideType,
         'price': price,
         'distance': distance,
+        'payment_method': paymentMethod,
       });
       _currentRide = RideModel.fromJson(res.data['ride']);
       SocketService.joinRideRoom(_currentRide!.id);

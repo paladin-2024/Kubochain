@@ -10,6 +10,7 @@ import '../../providers/providers.dart';
 import '../../screens/onboarding.dart';
 import '../common/about_screen.dart';
 import '../common/help_support_screen.dart';
+import 'payment_history_screen.dart';
 import '../../core/services/storage_service.dart';
 import '../../widgets/common/avatar_picker_sheet.dart';
 import '../../widgets/common/press_scale.dart';
@@ -247,6 +248,15 @@ class _PassengerProfileScreenState
                   iconColor: AppColors.textSecondary,
                   child: Column(
                     children: [
+                      _ActionTile(
+                        icon: HugeIcons.strokeRoundedInvoice01,
+                        label: 'Historique des paiements',
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const PaymentHistoryScreen()),
+                        ),
+                      ),
+                      const _TileDivider(),
                       _ActionTile(
                         icon: HugeIcons.strokeRoundedHelpCircle,
                         label: 'Aide & Support',

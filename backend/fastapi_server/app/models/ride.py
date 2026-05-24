@@ -26,6 +26,11 @@ class Ride(Base):
     estimated_minutes: Mapped[int | None] = mapped_column(Integer, nullable=True)
     ride_type: Mapped[str] = mapped_column(String(20), default="economy")
 
+    payment_method: Mapped[str] = mapped_column(String(20), default="cash")
+    payment_status: Mapped[str] = mapped_column(String(20), default="pending")
+    payment_phone: Mapped[str | None] = mapped_column(Text, nullable=True)
+    payment_reference: Mapped[str | None] = mapped_column(Text, nullable=True)
+
     cancel_reason: Mapped[str | None] = mapped_column(Text, nullable=True)
     cancelled_by: Mapped[str | None] = mapped_column(String(20), nullable=True)
 

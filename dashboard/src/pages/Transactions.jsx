@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Invoice01Icon, CreditCardIcon, Coins01Icon, CheckmarkCircle01Icon, CancelCircleIcon,
   Clock01Icon, FileDownloadIcon, Search01Icon, Cancel01Icon, ArrowUp01Icon,
@@ -7,8 +7,10 @@ import {
 import api from '../config/api';
 
 const STATUS_STYLES = {
+  paid: 'text-success bg-success/10 border-success/20',
   completed: 'text-success bg-success/10 border-success/20',
   pending: 'text-warning bg-warning/10 border-warning/20',
+  processing: 'text-blue-600 bg-blue-50 border-blue-200',
   refunded: 'text-danger bg-danger/10 border-danger/20',
   failed: 'text-slate-500 bg-slate-100 border-slate-200',
 };
@@ -27,10 +29,28 @@ export default function Transactions() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [methodFilter, setMethodFilter] = useState('all');
+  const [page, setPage] = useState(1);
 
-  useEffect(() => {
-    api.get('/admin/transactions').then((r) => { if (r.data?.length) setTxns(r.data); }).catch(() => {});
-  }, []);
+  const load = useCallback(() => {
+    const params = new URLSearchParams({ page });
+    if (statusFilter !== 'all') params.append('status', statusFilter);
+    if (methodFilter !== 'all') params.append('method', methodFilter);
+    if (search) params.append('search', search);
+    api.get(`/admin/transactions?${params}`)
+      .then((r) => { if (r.data) setTxns(r.data); })
+      .catch(() => {});
+  }, [page, statusFilter, methodFilter, search]);
+
+  useEffect(() => { load(); }, [load]);
+
+  const overrideStatus = async (rideId, newStatus) => {
+    try {
+      await api.patch(`/admin/payments/${rideId}/status`, { status: newStatus });
+      setTxns((prev) => prev.map((t) => t.ride_id === rideId ? { ...t, status: newStatus } : t));
+    } catch (e) {
+      console.error('Override failed', e);
+    }
+  };
 
   const filtered = txns.filter((t) => {
     if (statusFilter !== 'all' && t.status !== statusFilter) return false;
@@ -80,8 +100,9 @@ export default function Transactions() {
         </select>
         <select value={methodFilter} onChange={(e) => setMethodFilter(e.target.value)} className="bg-dark-card border border-dark-border rounded-xl px-3 py-2 text-sm text-slate-600 outline-none">
           <option value="all">All Methods</option>
-          <option value="cash">Cash</option>
-          <option value="mobile_money">Mobile Money</option>
+          <option value="cash">Espèces</option>
+          <option value="airtel_money">Airtel Money</option>
+          <option value="mtn_momo">MTN MoMo</option>
         </select>
       </div>
 
@@ -90,7 +111,7 @@ export default function Transactions() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-dark-border">
-                {['Txn ID', 'Rider', 'Driver', 'Ride', 'Amount', 'Commission', 'Method', 'Status', 'Time'].map((h) => (
+                {['Txn ID', 'Rider', 'Driver', 'Ride', 'Amount', 'Commission', 'Method', 'Status', 'Time', 'Actions'].map((h) => (
                   <th key={h} className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-widest text-slate-500">{h}</th>
                 ))}
               </tr>
@@ -112,6 +133,26 @@ export default function Transactions() {
                   </td>
                   <td className="px-4 py-3 text-xs text-slate-500">
                     {new Date(t.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </td>
+                  <td className="px-4 py-3">
+                    {(t.status === 'processing' || t.status === 'failed' || t.status === 'pending') && (
+                      <div className="flex gap-1.5">
+                        <button
+                          onClick={() => overrideStatus(t.ride_id, 'paid')}
+                          className="text-[10px] px-2 py-1 rounded-full bg-success/10 text-success border border-success/20 hover:bg-success/20 font-semibold whitespace-nowrap"
+                        >
+                          Marquer payé
+                        </button>
+                        {t.status !== 'failed' && (
+                          <button
+                            onClick={() => overrideStatus(t.ride_id, 'failed')}
+                            className="text-[10px] px-2 py-1 rounded-full bg-danger/10 text-danger border border-danger/20 hover:bg-danger/20 font-semibold whitespace-nowrap"
+                          >
+                            Échoué
+                          </button>
+                        )}
+                      </div>
+                    )}
                   </td>
                 </tr>
               ))}

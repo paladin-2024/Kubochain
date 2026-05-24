@@ -11,6 +11,7 @@ import '../../models/ride_model.dart';
 import '../../providers/providers.dart';
 import '../../widgets/common/user_avatar.dart';
 import 'booking_success_screen.dart';
+import 'payment_screen.dart';
 
 class ChooseRiderScreen extends ConsumerStatefulWidget {
   final LatLng pickup;
@@ -40,6 +41,7 @@ class _ChooseRiderScreenState extends ConsumerState<ChooseRiderScreen>
     with TickerProviderStateMixin {
   List<dynamic> _drivers = [];
   String _selectedType = 'economy';
+  String _paymentMethod = 'cash';
   bool _loading = true;
   late AnimationController _sheetCtrl;
   late Animation<Offset> _sheetSlide;
@@ -97,6 +99,7 @@ class _ChooseRiderScreenState extends ConsumerState<ChooseRiderScreen>
       rideType: _selectedType,
       price: price,
       distance: widget.distanceKm,
+      paymentMethod: _paymentMethod,
     );
     if (!mounted) return;
     Navigator.pushReplacement(
@@ -377,6 +380,56 @@ class _ChooseRiderScreenState extends ConsumerState<ChooseRiderScreen>
                                 label: widget.destinationAddress.split(',').first,
                               ),
                             ],
+                          ),
+                        ),
+
+                        const SizedBox(height: 12),
+
+                        // Payment method row
+                        GestureDetector(
+                          onTap: () async {
+                            final method = await Navigator.push<String>(
+                              context,
+                              MaterialPageRoute(builder: (_) => const PaymentScreen()),
+                            );
+                            if (method != null) setState(() => _paymentMethod = method);
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFF8FAFC),
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(color: const Color(0xFFE2E8F0)),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  _paymentMethod == 'airtel_money'
+                                      ? Icons.phone_android_rounded
+                                      : Icons.payments_outlined,
+                                  size: 20,
+                                  color: _paymentMethod == 'airtel_money'
+                                      ? const Color(0xFFDC2626)
+                                      : const Color(0xFF10B981),
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    _paymentMethod == 'airtel_money'
+                                        ? 'Airtel Money'
+                                        : 'Espèces',
+                                    style: GoogleFonts.dmSans(
+                                      fontSize: 14, fontWeight: FontWeight.w500,
+                                      color: const Color(0xFF0D1629)),
+                                  ),
+                                ),
+                                const HugeIcon(
+                                  icon: HugeIcons.strokeRoundedArrowRight01,
+                                  size: 16,
+                                  color: Color(0xFF94A3B8),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
 

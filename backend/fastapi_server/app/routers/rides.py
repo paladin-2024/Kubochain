@@ -60,6 +60,9 @@ async def _build_ride_out(ride: Ride, db: AsyncSession) -> RideOut:
         rating_tags=ride.rating_tags,
         cancel_reason=ride.cancel_reason,
         cancelled_by=ride.cancelled_by,
+        payment_method=ride.payment_method,
+        payment_status=ride.payment_status,
+        payment_reference=ride.payment_reference,
         accepted_at=ride.accepted_at,
         arrived_at=ride.arrived_at,
         started_at=ride.started_at,
@@ -86,6 +89,7 @@ async def create_ride(
         price=body.price,
         distance=body.distance,
         estimated_minutes=math.ceil(body.distance * 4),
+        payment_method=body.payment_method,
     )
     db.add(ride)
     await db.commit()

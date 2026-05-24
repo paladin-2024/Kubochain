@@ -155,6 +155,23 @@ class ApiService {
   static Future<Response> passengerConfirmRide(String rideId) =>
       _dio.put('/rides/$rideId/passenger-confirm');
 
+  static Future<Response> initiatePayment({
+    required String rideId,
+    required String phone,
+    required String method,
+  }) =>
+      _dio.post('/payments/initiate', data: {
+        'ride_id': rideId,
+        'phone_number': phone,
+        'payment_method': method,
+      });
+
+  static Future<Response> getPaymentStatus(String rideId) =>
+      _dio.get('/payments/$rideId/status');
+
+  static Future<Response> getPaymentHistory() =>
+      _dio.get('/payments/history');
+
   static Future<Response> acceptRide(String rideId) =>
       _dio.put('/rides/$rideId/accept');
 

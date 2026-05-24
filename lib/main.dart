@@ -32,6 +32,8 @@ void main() async {
       NavigationService.navigateTo(AppRoutes.passengerMain);
     } else if (type == 'chat_message') {
       NavigationService.navigateTo(AppRoutes.passengerMain);
+    } else if (type == 'payment_received') {
+      NavigationService.navigateTo(AppRoutes.riderMain);
     }
   });
 

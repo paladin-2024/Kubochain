@@ -469,44 +469,156 @@ async def update_referral_config(body: dict, db: AsyncSession = Depends(get_db),
 # ── Finance / Transactions ────────────────────────────────────────────────────
 
 @router.get("/transactions")
-async def list_transactions(db: AsyncSession = Depends(get_db), _: User = Depends(admin_only)):
-    result = await db.execute(
-        select(Ride).where(Ride.status.in_(["completed", "cancelled"]))
-        .order_by(Ride.created_at.desc()).limit(100)
-    )
+async def list_transactions(
+    db: AsyncSession = Depends(get_db),
+    _: User = Depends(admin_only),
+    status: str = "",
+    method: str = "",
+    search: str = "",
+    page: int = 1,
+):
+    q = select(Ride).where(Ride.status.in_(["completed", "cancelled"])).order_by(Ride.created_at.desc())
+    result = await db.execute(q)
     rides = result.scalars().all()
-    return [
-        {
+
+    items = []
+    for r in rides:
+        passenger_name = ""
+        if r.passenger_id:
+            p = await db.get(User, r.passenger_id)
+            if p:
+                passenger_name = f"{p.first_name} {p.last_name}"
+
+        driver_name = ""
+        if r.driver_id:
+            d = (await db.execute(select(Driver).where(Driver.id == r.driver_id))).scalar_one_or_none()
+            if d:
+                du = await db.get(User, d.user_id)
+                if du:
+                    driver_name = f"{du.first_name} {du.last_name}"
+
+        items.append({
             "id": f"TXN-{str(r.id)[:8].upper()}",
             "ride_id": str(r.id),
+            "rider": passenger_name,
+            "driver": driver_name,
             "amount": float(r.price or 0),
             "commission": round(float(r.price or 0) * 0.15, 2),
             "driver_earning": round(float(r.price or 0) * 0.85, 2),
-            "method": "cash",
-            "status": r.status,
-            "created_at": r.created_at.isoformat(),
-        }
-        for r in rides
-    ]
+            "method": r.payment_method or "cash",
+            "status": r.payment_status or "pending",
+            "created_at": r.created_at.isoformat() if r.created_at else None,
+        })
+
+    if status:
+        items = [i for i in items if i["status"] == status]
+    if method:
+        items = [i for i in items if i["method"] == method]
+    if search:
+        s = search.lower()
+        items = [i for i in items if s in i["rider"].lower() or s in i["driver"].lower() or s in i["id"].lower()]
+
+    per_page = 20
+    start = (page - 1) * per_page
+    return items[start:start + per_page]
 
 
-@router.get("/finance/transactions")
-async def finance_transactions(db: AsyncSession = Depends(get_db), _: User = Depends(admin_only)):
+@router.get("/finance/stats")
+async def finance_stats(
+    period: str = "7d",
+    db: AsyncSession = Depends(get_db),
+    _: User = Depends(admin_only),
+):
+    from datetime import timedelta
+    now = datetime.now(timezone.utc)
+    if period == "today":
+        since = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    elif period == "7d":
+        since = now - timedelta(days=7)
+    elif period == "30d":
+        since = now - timedelta(days=30)
+    else:
+        since = datetime(2020, 1, 1, tzinfo=timezone.utc)
+
     result = await db.execute(
-        select(Ride).where(Ride.status == "completed")
-        .order_by(Ride.created_at.desc()).limit(10)
+        select(Ride).where(Ride.status == "completed", Ride.created_at >= since)
     )
     rides = result.scalars().all()
-    return [
-        {
-            "id": f"TXN-{str(r.id)[:8].upper()}",
-            "amount": float(r.price or 0),
-            "commission": round(float(r.price or 0) * 0.15, 2),
-            "status": r.status,
-            "created_at": r.created_at.isoformat(),
-        }
-        for r in rides
-    ]
+
+    total_revenue = sum(float(r.price or 0) for r in rides)
+    platform_commission = round(total_revenue * 0.15, 2)
+    driver_earnings = round(total_revenue * 0.85, 2)
+    avg_fare = round(total_revenue / len(rides), 2) if rides else 0
+
+    by_method: dict = {}
+    for r in rides:
+        m = r.payment_method or "cash"
+        if m not in by_method:
+            by_method[m] = {"count": 0, "total": 0.0}
+        by_method[m]["count"] += 1
+        by_method[m]["total"] = round(by_method[m]["total"] + float(r.price or 0), 2)
+
+    paid_count = sum(1 for r in rides if r.payment_status == "paid")
+
+    return {
+        "total_revenue": total_revenue,
+        "platform_commission": platform_commission,
+        "driver_earnings": driver_earnings,
+        "avg_fare": avg_fare,
+        "total_rides": len(rides),
+        "total_transactions": paid_count,
+        "by_method": by_method,
+    }
+
+
+@router.get("/finance/chart")
+async def finance_chart(
+    period: str = "7d",
+    db: AsyncSession = Depends(get_db),
+    _: User = Depends(admin_only),
+):
+    from datetime import timedelta
+    from collections import defaultdict
+
+    now = datetime.now(timezone.utc)
+    days = 1 if period == "today" else 7 if period == "7d" else 30
+    since = now - timedelta(days=days)
+
+    result = await db.execute(
+        select(Ride).where(Ride.status == "completed", Ride.created_at >= since)
+    )
+    rides = result.scalars().all()
+
+    by_day: dict = defaultdict(lambda: {"revenue": 0.0, "commission": 0.0})
+    fmt = "%a" if days <= 7 else "%d/%m"
+    for r in rides:
+        day = r.created_at.strftime(fmt)
+        by_day[day]["revenue"] = round(by_day[day]["revenue"] + float(r.price or 0), 2)
+        by_day[day]["commission"] = round(by_day[day]["commission"] + float(r.price or 0) * 0.15, 2)
+
+    return [{"day": k, **v} for k, v in by_day.items()]
+
+
+@router.patch("/payments/{ride_id}/status")
+async def override_payment_status(
+    ride_id: str,
+    body: dict,
+    db: AsyncSession = Depends(get_db),
+    admin: User = Depends(admin_only),
+):
+    ride = await db.get(Ride, uuid.UUID(ride_id))
+    if not ride:
+        raise HTTPException(status_code=404, detail="Ride not found")
+
+    new_status = body.get("status")
+    if new_status not in ("paid", "failed", "pending"):
+        raise HTTPException(status_code=422, detail="status must be paid, failed, or pending")
+
+    ride.payment_status = new_status
+    await db.commit()
+    await _audit(db, f"payment_status_override:{new_status}", admin, ride_id)
+    await db.commit()
+    return {"ride_id": ride_id, "payment_status": new_status}
 
 
 # ── Driver Onboarding ─────────────────────────────────────────────────────────

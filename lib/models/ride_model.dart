@@ -9,6 +9,9 @@ class RideModel {
   final double distance;
   final int? estimatedMinutes;
   final String? rideType; // economy|premium
+  final String paymentMethod;
+  final String paymentStatus;
+  final String? paymentReference;
   final String? cancelReason;
   final int? rating;
   final String? ratingComment;
@@ -32,6 +35,9 @@ class RideModel {
     required this.distance,
     this.estimatedMinutes,
     this.rideType = 'economy',
+    this.paymentMethod = 'cash',
+    this.paymentStatus = 'pending',
+    this.paymentReference,
     this.cancelReason,
     this.rating,
     this.ratingComment,
@@ -66,8 +72,11 @@ class RideModel {
       price: (json['price'] ?? 0).toDouble(),
       distance: (json['distance'] ?? 0).toDouble(),
       estimatedMinutes: json['estimatedMinutes'],
-      rideType: json['rideType'] ?? 'economy',
-      cancelReason: json['cancelReason'],
+      rideType: json['rideType'] ?? json['ride_type'] ?? 'economy',
+      paymentMethod: json['payment_method'] ?? json['paymentMethod'] ?? 'cash',
+      paymentStatus: json['payment_status'] ?? json['paymentStatus'] ?? 'pending',
+      paymentReference: json['payment_reference'] ?? json['paymentReference'],
+      cancelReason: json['cancelReason'] ?? json['cancel_reason'],
       rating: json['rating'],
       ratingComment: json['ratingComment'],
       createdAt: json['createdAt'] != null
