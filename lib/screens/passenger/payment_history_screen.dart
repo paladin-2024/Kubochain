@@ -72,8 +72,6 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
     switch (method) {
       case 'airtel_money':
         return 'Airtel Money';
-      case 'mtn_momo':
-        return 'MTN MoMo';
       default:
         return 'Espèces';
     }

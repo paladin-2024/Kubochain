@@ -20,15 +20,6 @@ class _PaymentScreenState extends State<PaymentScreen>
 
   static const _methods = [
     _PayMethod(
-      id: 'mtn_momo',
-      label: 'MTN Mobile Money',
-      subtitle: 'Transfert instantané · Recommandé',
-      icon: HugeIcons.strokeRoundedFlash,
-      brandColor: Color(0xFFFFC107),
-      bgLight: Color(0xFFFFFBEB),
-      tag: 'POPULAIRE',
-    ),
-    _PayMethod(
       id: 'airtel_money',
       label: 'Airtel Money',
       subtitle: 'Mobile money · Rapide et fiable',

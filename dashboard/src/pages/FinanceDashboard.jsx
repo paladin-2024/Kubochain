@@ -225,8 +225,8 @@ export default function FinanceDashboard() {
           <h2 className="font-heading font-semibold text-slate-900 mb-4">Répartition des paiements</h2>
           <div className="space-y-3">
             {stats.by_method && Object.entries(stats.by_method).map(([method, data]) => {
-              const label = method === 'airtel_money' ? 'Airtel Money' : method === 'mtn_momo' ? 'MTN MoMo' : 'Espèces';
-              const color = method === 'airtel_money' ? '#E02020' : method === 'mtn_momo' ? '#FFC107' : '#10B981';
+              const label = method === 'airtel_money' ? 'Airtel Money' : 'Espèces';
+              const color = method === 'airtel_money' ? '#E02020' : '#10B981';
               const total = Object.values(stats.by_method).reduce((s, v) => s + v.count, 0);
               const pct = total > 0 ? Math.round((data.count / total) * 100) : 0;
               return (

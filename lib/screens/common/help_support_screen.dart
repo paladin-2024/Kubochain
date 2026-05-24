@@ -82,7 +82,7 @@ class HelpSupportScreen extends StatelessWidget {
                     _FaqTile(
                       question: 'Comment payer ?',
                       answer:
-                          'KuboChain accepte les espèces, MTN Mobile Money et Airtel Money. Choisissez votre mode de paiement avant de confirmer.',
+                          'KuboChain accepte les espèces et Airtel Money. Choisissez votre mode de paiement avant de confirmer.',
                     ),
                     _FaqTile(
                       question: "Mon conducteur n'est pas venu",

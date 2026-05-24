@@ -11,8 +11,8 @@ class PaymentInitiateIn(BaseModel):
     @field_validator("payment_method")
     @classmethod
     def valid_method(cls, v: str) -> str:
-        if v not in ("airtel_money", "mtn_momo", "cash"):
-            raise ValueError("payment_method must be airtel_money, mtn_momo, or cash")
+        if v not in ("airtel_money", "cash"):
+            raise ValueError("payment_method must be airtel_money or cash")
         return v
 
     @field_validator("phone_number")

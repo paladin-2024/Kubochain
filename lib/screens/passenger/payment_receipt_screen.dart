@@ -26,17 +26,11 @@ class PaymentReceiptScreen extends StatelessWidget {
     this.paidAt,
   });
 
-  String get _methodLabel => paymentMethod == 'airtel_money'
-      ? 'Airtel Money'
-      : paymentMethod == 'mtn_momo'
-          ? 'MTN MoMo'
-          : 'Espèces';
+  String get _methodLabel =>
+      paymentMethod == 'airtel_money' ? 'Airtel Money' : 'Espèces';
 
-  Color get _methodColor => paymentMethod == 'airtel_money'
-      ? const Color(0xFFE02020)
-      : paymentMethod == 'mtn_momo'
-          ? const Color(0xFFFFC107)
-          : AppColors.success;
+  Color get _methodColor =>
+      paymentMethod == 'airtel_money' ? const Color(0xFFE02020) : AppColors.success;
 
   Future<void> _shareWhatsApp() async {
     final date = (paidAt ?? DateTime.now()).toLocal();

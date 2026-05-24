@@ -102,7 +102,6 @@ export default function Transactions() {
           <option value="all">All Methods</option>
           <option value="cash">Espèces</option>
           <option value="airtel_money">Airtel Money</option>
-          <option value="mtn_momo">MTN MoMo</option>
         </select>
       </div>
 

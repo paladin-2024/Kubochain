@@ -38,7 +38,7 @@ class _TripScreenState extends ConsumerState<TripScreen> {
       HapticFeedback.mediumImpact();
       final currentRide = ride.currentRide;
       final method = currentRide?.paymentMethod ?? 'cash';
-      if (method == 'airtel_money' || method == 'mtn_momo') {
+      if (method == 'airtel_money') {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
