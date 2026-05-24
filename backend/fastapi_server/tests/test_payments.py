@@ -26,13 +26,20 @@ from httpx import AsyncClient
 
 async def _get_token(client: AsyncClient) -> str:
     phone = "+243800000099"
+    email = "paytest@kubochain.com"
+    password = "Secret123"
     await client.post("/api/auth/send-otp", json={"phone": phone})
     reg = await client.post("/api/auth/register", json={
         "first_name": "Pay", "last_name": "Test",
-        "email": "paytest@kubochain.com", "phone": phone,
-        "password": "Secret123", "role": "passenger", "otp_code": "000000",
+        "email": email, "phone": phone,
+        "password": password, "role": "passenger", "otp_code": "000000",
     })
-    return reg.json()["access_token"]
+    data = reg.json()
+    if "access_token" in data:
+        return data["access_token"]
+    # User already registered in a previous test — log in instead
+    login = await client.post("/api/auth/login", json={"phone": phone, "password": password})
+    return login.json()["access_token"]
 
 
 @pytest.mark.asyncio

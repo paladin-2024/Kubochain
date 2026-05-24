@@ -615,7 +615,6 @@ async def override_payment_status(
         raise HTTPException(status_code=422, detail="status must be paid, failed, or pending")
 
     ride.payment_status = new_status
-    await db.commit()
     await _audit(db, f"payment_status_override:{new_status}", admin, ride_id)
     await db.commit()
     return {"ride_id": ride_id, "payment_status": new_status}

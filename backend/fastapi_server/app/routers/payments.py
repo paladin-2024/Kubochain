@@ -15,6 +15,9 @@ import logging
 router = APIRouter(prefix="/payments", tags=["payments"])
 _log = logging.getLogger("kubochain.audit")
 
+_TERMINAL_STATUSES = frozenset({"paid", "processing"})
+_VALID_PAYMENT_STATUSES = frozenset({"paid", "failed", "pending", "processing"})
+
 
 @router.post("/initiate", response_model=PaymentInitiateOut)
 async def initiate(
@@ -22,14 +25,18 @@ async def initiate(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    ride = await db.get(Ride, body.ride_id)
+    # with_for_update() locks the row so concurrent requests serialise here
+    result = await db.execute(
+        select(Ride).where(Ride.id == body.ride_id).with_for_update()
+    )
+    ride = result.scalar_one_or_none()
     if not ride:
         raise HTTPException(status_code=404, detail="Ride not found")
     if ride.passenger_id != current_user.id:
         raise HTTPException(status_code=403, detail="Not your ride")
     if ride.status != "completed":
         raise HTTPException(status_code=400, detail="Ride is not completed")
-    if ride.payment_status == "paid":
+    if ride.payment_status in _TERMINAL_STATUSES:
         raise HTTPException(status_code=409, detail="Ce trajet a déjà été payé")
 
     ride.payment_status = "processing"
@@ -37,15 +44,22 @@ async def initiate(
     ride.payment_method = body.payment_method
     await db.commit()
 
-    result = await initiate_payment(
-        body.phone_number, float(ride.price), str(ride.id), body.payment_method
-    )
+    try:
+        service_result = await initiate_payment(
+            body.phone_number, float(ride.price), str(ride.id), body.payment_method
+        )
+    except Exception as exc:
+        ride.payment_status = "failed"
+        await db.commit()
+        _log.error("payment_service error ride=%s: %s", ride.id, exc)
+        raise HTTPException(status_code=502, detail="Service de paiement indisponible")
 
-    ride.payment_status = result["status"]
-    ride.payment_reference = result["reference"]
+    raw_status = service_result.get("status", "failed")
+    ride.payment_status = raw_status if raw_status in _VALID_PAYMENT_STATUSES else "failed"
+    ride.payment_reference = service_result.get("reference")
     await db.commit()
 
-    _log.info("payment_complete ride=%s method=%s status=%s", ride.id, body.payment_method, result["status"])
+    _log.info("payment_complete ride=%s method=%s status=%s", ride.id, body.payment_method, ride.payment_status)
 
     if ride.driver_id:
         driver = (await db.execute(select(Driver).where(Driver.id == ride.driver_id))).scalar_one_or_none()
@@ -122,7 +136,12 @@ async def get_status(
 
 @router.post("/callback")
 async def airtel_callback(request: Request):
-    """Airtel Money webhook — placeholder, logs and acknowledges."""
+    """Airtel Money webhook — placeholder, logs and acknowledges.
+
+    PRODUCTION REQUIREMENT: Before going live, verify the Airtel Money
+    HMAC-SHA256 signature from the X-Airtel-Signature header against the
+    shared secret to prevent spoofed callbacks from marking rides as paid.
+    """
     try:
         body = await request.json()
         _log.info("airtel_callback body=%s", body)
