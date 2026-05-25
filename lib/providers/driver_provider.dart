@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../models/ride_model.dart';
 import '../core/services/api_service.dart';
@@ -15,6 +16,7 @@ class DriverProvider extends ChangeNotifier {
   bool _isLoading = false;
   String? _error;
   bool _listeningForRequests = false;
+  StreamSubscription? _locationSub;
 
   bool get isOnline => _isOnline;
   RideModel? get pendingRequest => _pendingRequest;
@@ -58,6 +60,8 @@ class DriverProvider extends ChangeNotifier {
         _startLocationTracking();
       } else {
         stopListeningForRequests();
+        _locationSub?.cancel();
+        _locationSub = null;
       }
       notifyListeners();
     } catch (_) {
@@ -67,7 +71,8 @@ class DriverProvider extends ChangeNotifier {
   }
 
   void _startLocationTracking() {
-    LocationService.positionStream().listen((position) {
+    _locationSub?.cancel();
+    _locationSub = LocationService.positionStream().listen((position) {
       SocketService.sendDriverLocation(position.latitude, position.longitude);
       ApiService.updateDriverLocation(position.latitude, position.longitude);
     });

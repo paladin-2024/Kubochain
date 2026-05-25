@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -24,6 +25,7 @@ class _DriverArrivingScreenState extends ConsumerState<DriverArrivingScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _pulseCtrl;
   late Animation<double> _pulseAnim;
+  final _mapController = MapController();
 
   @override
   void initState() {
@@ -40,6 +42,10 @@ class _DriverArrivingScreenState extends ConsumerState<DriverArrivingScreen>
 
   void _onStatusChange() {
     final ride = ref.read(rideProvider);
+    // Keep camera centred on the driver as they approach
+    if (ride.driverLocation != null) {
+      try { _mapController.move(ride.driverLocation!, 15); } catch (_) {}
+    }
     if (ride.rideStatus == RideStatus.inProgress && mounted) {
       Navigator.pushReplacement(
         context,
@@ -51,6 +57,7 @@ class _DriverArrivingScreenState extends ConsumerState<DriverArrivingScreen>
   @override
   void dispose() {
     _pulseCtrl.dispose();
+    _mapController.dispose();
     ref.read(rideProvider).removeListener(_onStatusChange);
     super.dispose();
   }
@@ -94,6 +101,7 @@ class _DriverArrivingScreenState extends ConsumerState<DriverArrivingScreen>
           // Map
           LiveMapWidget(
             center: center,
+            mapController: _mapController,
             pickupLocation: currentRide != null
                 ? LatLng(currentRide.pickup.lat, currentRide.pickup.lng)
                 : null,

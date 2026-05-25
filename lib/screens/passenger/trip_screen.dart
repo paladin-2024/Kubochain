@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:latlong2/latlong.dart';
@@ -19,6 +20,8 @@ class TripScreen extends ConsumerStatefulWidget {
 }
 
 class _TripScreenState extends ConsumerState<TripScreen> {
+  final _mapController = MapController();
+
   @override
   void initState() {
     super.initState();
@@ -34,6 +37,10 @@ class _TripScreenState extends ConsumerState<TripScreen> {
 
   void _onStatusChange() {
     final ride = ref.read(rideProvider);
+    // Keep camera centred on the driver as they move
+    if (ride.driverLocation != null) {
+      try { _mapController.move(ride.driverLocation!, 15); } catch (_) {}
+    }
     if (ride.rideStatus == RideStatus.completed && mounted) {
       HapticFeedback.mediumImpact();
       final currentRide = ride.currentRide;
@@ -67,6 +74,7 @@ class _TripScreenState extends ConsumerState<TripScreen> {
   @override
   void dispose() {
     ref.read(rideProvider).removeListener(_onStatusChange);
+    _mapController.dispose();
     super.dispose();
   }
 
@@ -86,6 +94,7 @@ class _TripScreenState extends ConsumerState<TripScreen> {
         children: [
           LiveMapWidget(
             center: center,
+            mapController: _mapController,
             pickupLocation: currentRide != null
                 ? LatLng(currentRide.pickup.lat, currentRide.pickup.lng)
                 : null,
