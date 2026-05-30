@@ -40,7 +40,7 @@ export default function UserProfile() {
   const [loading, setLoading] = useState(null);
 
   useEffect(() => {
-    if (id) api.get(`/admin/users/${id}`).then((r) => { if (r.data) setUser(r.data); }).catch(() => {});
+    if (id) api.get(`/admin/users/${id}`).then((r) => { if (r.data?.user) setUser(r.data.user); }).catch(() => {});
   }, [id]);
 
   const doAction = async (action) => {
@@ -48,11 +48,11 @@ export default function UserProfile() {
     try {
       if (action === 'delete') {
         if (!confirm('Delete this user? This cannot be undone.')) return;
-        await api.delete(`/admin/users/${user._id}`);
+        await api.delete(`/admin/users/${user.id}`);
         navigate('/users');
         return;
       }
-      await api.patch(`/admin/users/${user._id}/${action}`);
+      await api.patch(`/admin/users/${user.id}/${action}`);
       const statusMap = { suspend: 'suspended', activate: 'active' };
       if (statusMap[action]) setUser((u) => ({ ...u, status: statusMap[action] }));
     } catch {}
@@ -68,8 +68,8 @@ export default function UserProfile() {
           <ArrowLeft01Icon size={16} />
         </button>
         <div className="flex-1">
-          <h1 className="font-heading font-bold text-slate-900 text-xl">{user.name}</h1>
-          <p className="text-slate-500 text-sm">User ID: {user._id}</p>
+          <h1 className="font-heading font-bold text-slate-900 text-xl">{user.firstName} {user.lastName}</h1>
+          <p className="text-slate-500 text-sm">User ID: {user.id}</p>
         </div>
         <div className="flex items-center gap-2">
           {user.status !== 'suspended' ? (
@@ -92,9 +92,9 @@ export default function UserProfile() {
         <div className="bg-dark-card border border-dark-border rounded-2xl p-5">
           <div className="flex flex-col items-center text-center mb-4">
             <div className="mb-3">
-              <Avatar name={user.name} size={80} ring />
+              <Avatar name={`${user.firstName || ''} ${user.lastName || ''}`.trim()} size={80} ring />
             </div>
-            <h2 className="font-heading font-bold text-slate-900 text-lg">{user.name}</h2>
+            <h2 className="font-heading font-bold text-slate-900 text-lg">{`${user.firstName || ''} ${user.lastName || ''}`.trim()}</h2>
             <span className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full border mt-1 ${sc}`}>
               {user.status.toUpperCase()}
             </span>

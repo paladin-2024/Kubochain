@@ -2,7 +2,7 @@ import uuid
 import json
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import text, select, func
+from sqlalchemy import text, select, func, or_
 from ..database import get_db
 from ..models.user import User
 from ..models.driver import Driver
@@ -94,15 +94,57 @@ async def get_all_drivers(
     return {"drivers": [_driver_to_out(d, u) for d, u in rows]}
 
 
+@router.delete("/drivers/{driver_id}", status_code=204)
+async def delete_driver(
+    driver_id: str,
+    db: AsyncSession = Depends(get_db),
+    admin: User = Depends(admin_only),
+):
+    driver = await db.get(Driver, uuid.UUID(driver_id))
+    if not driver:
+        raise HTTPException(status_code=404, detail="Driver not found")
+    user = await db.get(User, driver.user_id)
+    await _audit(db, "driver_deleted", admin, f"Driver {driver_id}", {"user_id": str(driver.user_id)})
+    await db.delete(driver)
+    if user:
+        user.is_active = False
+    await db.commit()
+
+
+def _user_out(u: User) -> dict:
+    return {
+        "id": str(u.id),
+        "firstName": u.first_name,
+        "lastName": u.last_name,
+        "email": u.email,
+        "phone": u.phone,
+        "role": u.role,
+        "status": "active" if u.is_active else "suspended",
+        "rating": float(u.rating),
+        "totalRides": u.total_rides,
+        "createdAt": u.created_at.isoformat() if u.created_at else None,
+        "isVerified": u.is_active,
+    }
+
+
 @router.get("/users")
 async def get_all_users(
     db: AsyncSession = Depends(get_db),
     _: User = Depends(admin_only),
+    role: str = "",
+    search: str = "",
 ):
-    result = await db.execute(select(User).order_by(User.created_at.desc()).limit(200))
-    users = result.scalars().all()
-    from ..schemas.auth import UserOut
-    return {"users": [UserOut.model_validate(u) for u in users]}
+    q = select(User)
+    if role:
+        q = q.where(User.role == role)
+    if search:
+        s = f"%{search}%"
+        q = q.where(or_(
+            User.first_name.ilike(s), User.last_name.ilike(s),
+            User.email.ilike(s), User.phone.ilike(s),
+        ))
+    result = await db.execute(q.order_by(User.created_at.desc()).limit(200))
+    return {"users": [_user_out(u) for u in result.scalars().all()]}
 
 
 @router.get("/users/{user_id}")
@@ -111,13 +153,61 @@ async def get_user_by_id(
     db: AsyncSession = Depends(get_db),
     _: User = Depends(admin_only),
 ):
-    import uuid
     user = await db.get(User, uuid.UUID(user_id))
     if not user:
-        from fastapi import HTTPException
         raise HTTPException(status_code=404, detail="User not found")
-    from ..schemas.auth import UserOut
-    return {"user": UserOut.model_validate(user)}
+    rides_result = await db.execute(
+        select(Ride).where(Ride.passenger_id == user.id).order_by(Ride.created_at.desc()).limit(10)
+    )
+    rides = rides_result.scalars().all()
+    return {
+        "user": _user_out(user),
+        "recentRides": [
+            {
+                "id": str(r.id),
+                "destination_address": r.destination_address,
+                "status": r.status,
+                "price": float(r.price or 0),
+                "created_at": r.created_at.isoformat() if r.created_at else None,
+            }
+            for r in rides
+        ],
+    }
+
+
+@router.patch("/users/{user_id}/{action}")
+async def user_action(
+    user_id: str,
+    action: str,
+    db: AsyncSession = Depends(get_db),
+    admin: User = Depends(admin_only),
+):
+    user = await db.get(User, uuid.UUID(user_id))
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    if action == "suspend":
+        user.is_active = False
+    elif action == "activate":
+        user.is_active = True
+    else:
+        raise HTTPException(status_code=400, detail="Invalid action")
+    await _audit(db, f"user_{action}", admin, user_id, {})
+    await db.commit()
+    return _user_out(user)
+
+
+@router.delete("/users/{user_id}", status_code=204)
+async def delete_user(
+    user_id: str,
+    db: AsyncSession = Depends(get_db),
+    admin: User = Depends(admin_only),
+):
+    user = await db.get(User, uuid.UUID(user_id))
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    await _audit(db, "user_deleted", admin, user_id, {"email": user.email})
+    await db.delete(user)
+    await db.commit()
 
 
 @router.get("/reports")

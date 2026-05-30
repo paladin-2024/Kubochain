@@ -149,7 +149,7 @@ export default function Drivers() {
             </div>
           ) : filtered.map((driver) => (
             <DriverCard
-              key={driver._id}
+              key={driver.id}
               driver={driver}
               onAction={doAction}
               actionLoading={actionLoading}
@@ -234,41 +234,41 @@ function DriverCard({ driver, onAction, actionLoading }) {
       <div className="pt-3 border-t border-dark-border flex gap-2 flex-wrap">
         {isPending && (
           <button
-            onClick={() => onAction(driver._id, 'approve')}
+            onClick={() => onAction(driver.id, 'approve')}
             disabled={!!actionLoading}
             className="flex-1 flex items-center justify-center gap-1.5 py-1.5 bg-success/10 text-success border border-success/20 rounded-lg text-xs font-semibold hover:bg-success/20 transition-colors disabled:opacity-50"
           >
             <CheckmarkCircle01Icon size={13} />
-            {actionLoading === `${driver._id}-approve` ? '…' : 'Approve'}
+            {actionLoading === `${driver.id}-approve` ? '…' : 'Approve'}
           </button>
         )}
         {!isPending && !isSuspended && (
           <button
-            onClick={() => onAction(driver._id, 'suspend')}
+            onClick={() => onAction(driver.id, 'suspend')}
             disabled={!!actionLoading}
             className="flex-1 flex items-center justify-center gap-1.5 py-1.5 bg-warning/10 text-warning border border-warning/20 rounded-lg text-xs font-semibold hover:bg-warning/20 transition-colors disabled:opacity-50"
           >
             <UserWarning01Icon size={13} />
-            {actionLoading === `${driver._id}-suspend` ? '…' : 'Suspend'}
+            {actionLoading === `${driver.id}-suspend` ? '…' : 'Suspend'}
           </button>
         )}
         {isSuspended && (
           <button
-            onClick={() => onAction(driver._id, 'activate')}
+            onClick={() => onAction(driver.id, 'activate')}
             disabled={!!actionLoading}
             className="flex-1 flex items-center justify-center gap-1.5 py-1.5 bg-success/10 text-success border border-success/20 rounded-lg text-xs font-semibold hover:bg-success/20 transition-colors disabled:opacity-50"
           >
             <UserCheck01Icon size={13} />
-            {actionLoading === `${driver._id}-activate` ? '…' : 'Activate'}
+            {actionLoading === `${driver.id}-activate` ? '…' : 'Activate'}
           </button>
         )}
         <button
-          onClick={() => onAction(driver._id, 'delete')}
+          onClick={() => onAction(driver.id, 'delete')}
           disabled={!!actionLoading}
           className="flex items-center justify-center gap-1 px-3 py-1.5 bg-danger/10 text-danger border border-danger/20 rounded-lg text-xs hover:bg-danger/20 transition-colors disabled:opacity-50"
         >
           <Delete01Icon size={13} />
-          {actionLoading === `${driver._id}-delete` ? '…' : 'Delete'}
+          {actionLoading === `${driver.id}-delete` ? '…' : 'Delete'}
         </button>
       </div>
 

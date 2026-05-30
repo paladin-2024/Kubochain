@@ -47,7 +47,7 @@ export default function Users() {
     setSelectedUser(user);
     setDetailLoading(true);
     try {
-      const res = await api.get(`/admin/users/${user._id}`);
+      const res = await api.get(`/admin/users/${user.id}`);
       setUserDetail(res.data);
     } catch {
       setUserDetail({ user, recentRides: [] });
@@ -169,7 +169,7 @@ export default function Users() {
             <tbody>
               {users.map((user) => (
                 <tr
-                  key={user._id}
+                  key={user.id}
                   className="border-b border-dark-border/50 hover:bg-slate-50 transition-colors"
                 >
                   <td className="py-3 px-5">
@@ -211,7 +211,7 @@ export default function Users() {
                       </button>
                       {user.status === 'suspended' ? (
                         <button
-                          onClick={() => doAction(user._id, 'activate')}
+                          onClick={() => doAction(user.id, 'activate')}
                           disabled={!!actionLoading}
                           className="p-1.5 bg-success/10 text-success border border-success/20 rounded-lg hover:bg-success/20 transition-colors disabled:opacity-50"
                           title="Activate user"
@@ -220,7 +220,7 @@ export default function Users() {
                         </button>
                       ) : (
                         <button
-                          onClick={() => doAction(user._id, 'suspend')}
+                          onClick={() => doAction(user.id, 'suspend')}
                           disabled={!!actionLoading}
                           className="p-1.5 bg-warning/10 text-warning border border-warning/20 rounded-lg hover:bg-warning/20 transition-colors disabled:opacity-50"
                           title="Suspend user"
@@ -229,7 +229,7 @@ export default function Users() {
                         </button>
                       )}
                       <button
-                        onClick={() => doAction(user._id, 'delete')}
+                        onClick={() => doAction(user.id, 'delete')}
                         disabled={!!actionLoading}
                         className="p-1.5 bg-danger/10 text-danger border border-danger/20 rounded-lg hover:bg-danger/20 transition-colors disabled:opacity-50"
                         title="Delete user"
